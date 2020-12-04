@@ -1,0 +1,125 @@
+client to server:
+
+{
+  type: newUser,
+  username: username,
+  password: password,
+}
+
+{
+  type: login,
+  username: username,
+  password: password
+}
+
+{
+  type: changeUsername,
+  userId: userId,
+  token: token,
+  newUsername: newUsername
+}
+
+{
+  type: changePassword,
+  userId: userId,
+  password: password,
+  token: token,
+  newPassword: newPassword
+}
+
+{
+  type: text,
+  channelId: channelId,
+  userId: userId,,
+  content: msg,
+  token: token
+}
+
+{
+  type: friendRequest,
+  from: userId,
+  to: username,
+  token: token
+}
+
+{
+  type: uploadFile,
+  channelId: channelId,
+  userId: userId,
+  token: token,
+  content: base64string
+}
+
+{
+  type: getFile,
+  userId: userId,
+  token: token,
+  content: base64string
+}
+
+{
+  type: userData,
+  userId: userId,
+  token: token
+}
+
+
+server to client:
+
+
+{
+  type: status,
+  error: null/error_msg
+}
+
+{
+  type: loginStatus,
+  error: null/error_msg,
+  content: null/{
+    token: token,
+    friends: [userId],
+    incoming_friend_requests: [userId],
+    outgoing_friend_requests: [userId],
+    channels: [channelId],
+  }
+}
+
+{
+  type: file,
+  channelId: channelId,
+  content: base64string
+}
+
+{
+  type: message,
+  channelId: channelId,
+  messageType: text/file,
+  content: msg/fileName
+}
+
+
+Data:
+user = {
+  userId: userId,
+  username: username,
+  password: password,
+  friends: [userId],
+  incoming_friend_requests: [userId],
+  outgoing_friend_requests: [userId],
+  blocked: [userId],
+  channels: [channelId],
+  status: active/idle/invisible/dnd
+}
+
+privateChannel = {
+  channelId: channelId,
+  participants: [userId]
+}
+
+groupChannel = {
+  channelId: channelId,
+  participants: [userId],
+  blacklist: [userId],
+  admin: userId
+}
+

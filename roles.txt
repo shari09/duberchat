@@ -1,0 +1,9 @@
+Include a readme.txt that identifies the work done by each student
+
+
+Shari - server
+
+
+
+
+Candice - client

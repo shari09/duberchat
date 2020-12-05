@@ -1,6 +1,6 @@
 package common.entities.payload;
 
-public class NewUser extends ClientToServer {
+public class Login extends ClientToServer {
 
   /**
    *
@@ -9,8 +9,8 @@ public class NewUser extends ClientToServer {
   private String username;
   private String password;
 
-  public NewUser(String username, String password, int priority) {
-    super(PayloadType.NEW_USER, priority);
+  public Login(String username, String password, int priority) {
+    super(PayloadType.LOGIN, priority);
     this.username = username;
     this.password = password;
   }

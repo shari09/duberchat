@@ -2,18 +2,21 @@ client to server:
 
 {
   type: newUser,
+  priority: priority,
   username: username,
   password: password,
 }
 
 {
   type: login,
+  priority: priority,
   username: username,
   password: password
 }
 
 {
   type: changeUsername,
+  priority: priority,
   userId: userId,
   token: token,
   newUsername: newUsername
@@ -21,6 +24,7 @@ client to server:
 
 {
   type: changePassword,
+  priority: priority,
   userId: userId,
   password: password,
   token: token,
@@ -29,6 +33,7 @@ client to server:
 
 {
   type: text,
+  priority: priority,
   channelId: channelId,
   userId: userId,,
   content: msg,
@@ -37,6 +42,7 @@ client to server:
 
 {
   type: friendRequest,
+  priority: priority,
   from: userId,
   to: username,
   token: token
@@ -44,6 +50,7 @@ client to server:
 
 {
   type: uploadFile,
+  priority: priority,
   channelId: channelId,
   userId: userId,
   token: token,
@@ -52,6 +59,7 @@ client to server:
 
 {
   type: getFile,
+  priority: priority,
   userId: userId,
   token: token,
   content: base64string
@@ -59,6 +67,7 @@ client to server:
 
 {
   type: userData,
+  priority: priority,
   userId: userId,
   token: token
 }
@@ -75,13 +84,11 @@ server to client:
 {
   type: loginStatus,
   error: null/error_msg,
-  content: null/{
-    token: token,
-    friends: [userId],
-    incoming_friend_requests: [userId],
-    outgoing_friend_requests: [userId],
-    channels: [channelId],
-  }
+  token: token,
+  friends: [userId],
+  incoming_friend_requests: [userId],
+  outgoing_friend_requests: [userId],
+  channels: [channelId],
 }
 
 {

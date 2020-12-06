@@ -8,6 +8,15 @@ import java.net.Socket;
 import common.entities.payload.NewUser;
 import common.entities.payload.Payload;
 
+/**
+ * The client side of the chat program.
+ * <p>
+ * Created on 2020.12.04.
+ * @author Candice Zhang, Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
 public class Client {
   Socket socket;
   ObjectOutputStream output;
@@ -28,8 +37,8 @@ public class Client {
     }
 
     System.out.println("Connected to server");
-    NewUser user = new NewUser("shari09", "123456", 1);
-    NewUser user2 = new NewUser("shari09", "123456", 1);
+    NewUser user = new NewUser(1, "shari09", "123456", "hi");
+    NewUser user2 = new NewUser(1, "shari09", "123456", "hello");
 
     try {
       this.output.writeObject(user);

@@ -1,5 +1,14 @@
 package server.entities;
 
+/**
+ * [insert description]
+ * <p>
+ * Created on 2020.12.06.
+ * @author Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
 public class Event implements Comparable<Event> {
   private int priority;
   private EventType type;

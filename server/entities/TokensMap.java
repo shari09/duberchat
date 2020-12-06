@@ -2,7 +2,14 @@ package server.entities;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import server.entities.Token;
+/**
+ * [insert description]
+ * <p>
+ * Created on 2020.12.05.
+ * @author Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 
 public class TokensMap {
   private ConcurrentHashMap<String, Token> tokensMap;

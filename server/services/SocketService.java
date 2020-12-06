@@ -9,10 +9,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import common.entities.payload.ClientToServer;
-import common.entities.payload.Payload;
-import server.entities.EventType;
-import server.resources.GlobalEventQueue;
+import common.entities.payload.*;
+import server.entities.*;
+import server.resources.*;
+
+/**
+ * [insert description]
+ * <p>
+ * Created on 2020.12.05.
+ * @author Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 
 public class SocketService {
   private PayloadProcessor payloadProcessor;
@@ -71,7 +79,7 @@ public class SocketService {
           if (this.rawInput.available() > 0) {
             Payload payload = (Payload)this.input.readObject();
             System.out.println("Payload received of type " + payload.getType().toString());
-            payloadProcessor.add((ClientToServer)(payload), this.output);
+            payloadProcessor.add(payload, this.output);
             GlobalEventQueue.queue.addEvent(EventType.PAYLOAD, 1);
           }
         } catch (Exception e) {

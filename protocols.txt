@@ -1,132 +1,184 @@
 client to server:
 
 {
-  type: newUser,
-  priority: priority,
-  username: username,
-  password: password,
+  type:        NEW_USER,
+  priority:    int,
+
+  username:    String,
+  password:    String,
+  description: String
 }
 
 {
-  type: login,
-  priority: priority,
-  username: username,
-  password: password
+  type:        LOGIN,
+  priority:    int,
+
+  username:    String,
+  password:    String
 }
 
 {
-  type: changeUsername,
-  priority: priority,
-  userId: userId,
-  token: token,
-  newUsername: newUsername
+  type:        CHANGE_PASSWORD,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  originalPassword: String,
+  newPassword:      String
 }
 
 {
-  type: changePassword,
-  priority: priority,
-  userId: userId,
-  password: password,
-  token: token,
-  newPassword: newPassword
+  type:          CHANGE_PROFILE,
+  priority:      int,
+
+  userId:        String,
+  token:         Token,
+
+  fieldToChange: ProfileField
+  newValue:      String
 }
 
 {
-  type: text,
-  priority: priority,
-  channelId: channelId,
-  userId: userId,,
-  content: msg,
-  token: token
+  type:        CHANGE_CHANNEL,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  channelId:   String,
+  changeField: ChannelField
+  newValue:    String
 }
 
 {
-  type: friendRequest,
-  priority: priority,
-  from: userId,
-  to: username,
-  token: token
+  type:       SEND_MESSAGE,
+  priority:   int,
+
+  userId:     String,
+  token:      Token,
+
+  channelId:  String,
+  content:    String,
+  attachment: null / byte[]
 }
 
 {
-  type: uploadFile,
-  priority: priority,
-  channelId: channelId,
-  userId: userId,
-  token: token,
-  content: base64string
+  type:       REQUEST_MESSAGES,
+  priority:   int,
+
+  userId:     String,
+  token:      Token,
+
+  channelId:  String,
+  before:     Date, //earliest timestamp in cache
+  quantity:   int
 }
 
 {
-  type: getFile,
-  priority: priority,
-  userId: userId,
-  token: token,
-  content: base64string
+  type:       FRIEND_REQUEST,
+  priority:   int,
+
+  userId:     String,
+  token:      Token,
+
+  recipientName:  String,
+  requestMessage: String 
 }
 
 {
-  type: userData,
+  type:       FRIEND_REQUEST_RESPONSE,
+  priority:   int,
+
+  userId:     String,
+  token:      Token,
+
+  recipientId:  String,
+  accepted:     boolean
+}
+
+{
+  type: GET_FILE,
   priority: priority,
-  userId: userId,
-  token: token
+
+  userId: String,
+  token: Token,
+
+  fileId: String
 }
 
 
 server to client:
 
-
 {
-  type: status,
-  error: null/error_msg
+  type:     CLIENT_REQUEST_STATUS,
+  priority: priority,
+
+  error:  null / String (errorMsg)
 }
 
 {
-  type: loginStatus,
-  error: null/error_msg,
-  token: token,
-  friends: [userId],
-  incoming_friend_requests: [userId],
-  outgoing_friend_requests: [userId],
-  channels: [channelId],
+  type:     CLIENT_INFO,
+  priority: priority,
+
+  userId:   String,
+  token:    Token,
+  friends:  ArrayList<String> (userId),
+  incoming_friend_requests: ArrayList<String> (userId),
+  outgoing_friend_requests: ArrayList<String> (userId),
+  channels: ArrayList<String> (channelId)
 }
 
 {
-  type: file,
+  type: MESSAGES,
+  priority: priority,
+
   channelId: channelId,
-  content: base64string
+  content: Message[]
 }
 
 {
-  type: message,
-  channelId: channelId,
-  messageType: text/file,
-  content: msg/fileName
-}
+  type:      FILE,
+  priority:  priority,
 
+  filename:  String,
+  content:   byte[]
+}
 
 Data:
 user = {
-  userId: userId,
-  username: username,
-  password: password,
-  friends: [userId],
-  incoming_friend_requests: [userId],
-  outgoing_friend_requests: [userId],
-  blocked: [userId],
-  channels: [channelId],
-  status: active/idle/invisible/dnd
+  userId:      String,
+  username:    String,
+  password:    String,
+  description: String,
+  status:   UserStatus (active/idle/invisible/dnd),
+
+  friends:  ArrayList<String>, //user id
+  incoming_friend_requests: ArrayList<String>, //user id
+  outgoing_friend_requests: ConcurrentHashMap<String (userId), FriendRequestStatus>,
+  blocked:  ArrayList<String>, //user id
+  
+  channels: ArrayList<String>, //channel id
 }
 
 privateChannel = {
   channelId: channelId,
+  channelName: channelName,
   participants: [userId]
 }
 
 groupChannel = {
   channelId: channelId,
+  channelName: channelName,
   participants: [userId],
   blacklist: [userId],
   admin: userId
 }
 
+message = {
+  content:    String,
+  sender:     String (userId),
+  channelId:  String,
+  timestamp:  Date,
+  attachment: null / fileId,
+}

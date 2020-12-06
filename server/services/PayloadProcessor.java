@@ -3,15 +3,18 @@ package server.services;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import common.entities.payload.ClientToServer;
-import common.entities.payload.Login;
-import common.entities.payload.LoginStatus;
-import common.entities.payload.NewUser;
-import server.entities.ClientRequest;
-import server.entities.Token;
-import server.entities.EventType;
-import server.resources.GlobalEventQueue;
-import server.resources.StoredData;
+import common.entities.payload.*;
+import server.entities.*;
+import server.resources.*;
+
+/**
+ * [insert description]
+ * <p>
+ * Created on 2020.12.05.
+ * @author Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 
 public class PayloadProcessor implements Runnable {
   private PriorityBlockingQueue<ClientRequest> payloadQueue;
@@ -21,7 +24,7 @@ public class PayloadProcessor implements Runnable {
     GlobalEventQueue.queue.subscribe(EventType.PAYLOAD, this);
   }
 
-  public void add(ClientToServer payload, ObjectOutputStream clientOut) {
+  public void add(Payload payload, ObjectOutputStream clientOut) {
     ClientRequest c = new ClientRequest(payload, clientOut);
     this.payloadQueue.add(c);
   }
@@ -48,11 +51,14 @@ public class PayloadProcessor implements Runnable {
    */
   private void authenticateLogin(ClientRequest client) {
     Login payload = (Login)client.getPayload();
-    Token token = StoredData.users.authenticate(payload.getUsername(), payload.getPassword());
+    Token token = StoredData.users.authenticate(
+      payload.getUsername(),
+      payload.getPassword()
+    );
     if (token == null) { //unauthorized
       PayloadSender.send(
         client.getClientOut(), 
-        new LoginStatus("Incorrect username or password")
+        new ClientRequestStatus(1, "Incorrect username or password")
       );
       return;
     }
@@ -63,11 +69,15 @@ public class PayloadProcessor implements Runnable {
    */
   private void newUser(ClientRequest client) {
     NewUser payload = (NewUser)client.getPayload();
-    Token token = StoredData.users.add(payload.getUsername(), payload.getPassword());
+    Token token = StoredData.users.add(
+      payload.getUsername(),
+      payload.getPassword(),
+      payload.getDescription()
+    );
     if (token == null) { //username taken
       PayloadSender.send(
         client.getClientOut(),
-        new LoginStatus("Username taken")
+        new ClientRequestStatus(1, "Username taken")
       );
       return;
     }

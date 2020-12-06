@@ -5,15 +5,23 @@ import java.io.ObjectOutputStream;
 import common.entities.payload.ClientToServer;
 
 public class ClientRequest implements Comparable<ClientRequest> {
-  public ClientToServer payload;
-  public ObjectOutputStream toClient;
+  private ClientToServer payload;
+  private ObjectOutputStream clientOut;
 
-  public ClientRequest(ClientToServer payload, ObjectOutputStream client) {
+  public ClientRequest(ClientToServer payload, ObjectOutputStream clientOut) {
     this.payload = payload;
-    this.toClient = client;
+    this.clientOut = clientOut;
   }
 
   public int compareTo(ClientRequest other) {
     return this.payload.getPriority() - other.payload.getPriority();
+  }
+
+  public ClientToServer getPayload() {
+    return this.payload;
+  }
+
+  public ObjectOutputStream getClientOut() {
+    return this.clientOut;
   }
 }

@@ -1,4 +1,4 @@
-package server.services.resources.tempdata;
+package server.resources;
 
 import java.io.BufferedWriter;
 import java.util.concurrent.ConcurrentHashMap;

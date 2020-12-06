@@ -1,4 +1,4 @@
-package server.services.resources.tempdata;
+package server.entities;
 
 import java.util.concurrent.ConcurrentHashMap;
 

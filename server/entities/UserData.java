@@ -1,11 +1,16 @@
 package server.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
 import common.entities.Status;
 
-public class UserData {
+public class UserData implements Serializable {
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
   private String userId;
   private String username;
   private String password;

@@ -2,6 +2,8 @@ package server.entities;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import common.entities.Token;
+
 /**
  * [insert description]
  * <p>

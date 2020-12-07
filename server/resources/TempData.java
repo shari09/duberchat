@@ -3,6 +3,9 @@ package server.resources;
 import java.io.BufferedWriter;
 import java.util.concurrent.ConcurrentHashMap;
 
+import common.entities.Token;
+import server.entities.ClientConnections;
+
 /**
  * [insert description]
  * <p>
@@ -13,6 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class TempData {
-  public static ConcurrentHashMap<String, String> tokens = new ConcurrentHashMap<>();
-  public static ConcurrentHashMap<String, BufferedWriter> clientConnections = new ConcurrentHashMap<>();
+  public static ConcurrentHashMap<String, Token> tokens = new ConcurrentHashMap<>();
+  public static ClientConnections clientConnections = new ClientConnections();
 }

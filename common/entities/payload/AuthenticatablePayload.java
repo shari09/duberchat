@@ -1,6 +1,6 @@
 package common.entities.payload;
 
-import server.entities.Token;
+import common.entities.Token;
 
 /**
  * A payload that is authenticatable by user id and token.

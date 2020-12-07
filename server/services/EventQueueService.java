@@ -12,58 +12,60 @@ import server.entities.EventType;
 /**
  * [insert description]
  * <p>
- * Created on 2020.12.06.
+ * Created on 2020.12.05.
  * @author Shari Sun
- * @version 1.0.0
+ * @version 1.1.0
  * @since 1.0.0
  */
 
-public class EventQueue {
+public class EventQueueService {
   private PriorityBlockingQueue<Event> queue;
-  private HashMap<EventType, ArrayList<Runnable>> eventSubscribers;
+  private HashMap<EventType, ArrayList<Subscribable>> eventSubscribers;
   private Thread thread;
-  public EventQueue() {
+  public EventQueueService() {
     this.queue = new PriorityBlockingQueue<>();
     this.eventSubscribers = new HashMap<>();
     this.thread = new Thread(new QueueLoop());
     this.thread.start();
   }
 
-  public void addEvent(EventType event, int priority) {
-    this.queue.add(new Event(event, priority));
+  public void emitEvent(EventType event, int priority, Object emitter) {
+    this.queue.add(new Event(event, priority, emitter));
     synchronized(this.thread) {
       this.thread.notify();
     }
   }
 
-  public void subscribe(EventType type, Runnable subscriber) {
+  public void subscribe(EventType type, Subscribable subscriber) {
     if (this.eventSubscribers.containsKey(type)) {
       this.eventSubscribers.get(type).add(subscriber);
       return;
     }
-    ArrayList<Runnable> subscribers = new ArrayList<>();
+    ArrayList<Subscribable> subscribers = new ArrayList<>();
     subscribers.add(subscriber);
     this.eventSubscribers.put(type, subscribers);
   }
 
-  class QueueLoop implements Runnable {
+  private class QueueLoop implements Runnable {
     private final int MAX_THREAD_COUNT = 10;
     ExecutorService pool = Executors.newFixedThreadPool(this.MAX_THREAD_COUNT);
     
     public void run() {
       //loop through all the events and call their subscribers
       while (true) {
-        while (!EventQueue.this.queue.isEmpty()) {
-          Event event = EventQueue.this.queue.poll();
-          ArrayList<Runnable> subscribers = EventQueue.this.eventSubscribers.get(event.getType());
-          for (int i = 0; i < subscribers.size(); i++) {
-            pool.execute(subscribers.get(i));
+        while (!EventQueueService.this.queue.isEmpty()) {
+          Event event = EventQueueService.this.queue.poll();
+          ArrayList<Subscribable> subscribers = EventQueueService.this.eventSubscribers.get(event.getType());
+          if (subscribers != null) {
+            for (int i = 0; i < subscribers.size(); i++) {
+              pool.execute(new OnEvent(event.getEmitter(), subscribers.get(i)));
+            }
           }
         }
         //inactive until a new event comes
-        synchronized(EventQueue.this.thread) {
+        synchronized(EventQueueService.this.thread) {
           try {
-            EventQueue.this.thread.wait();
+            EventQueueService.this.thread.wait();
           } catch (Exception e) {
             System.out.println("Unable to pause event queue");
             e.printStackTrace();
@@ -73,6 +75,19 @@ public class EventQueue {
           
     }
     
+  }
+
+  private class OnEvent implements Runnable {
+    private Object emitter;
+    private Subscribable subscriber;
+    public OnEvent(Object emitter, Subscribable subscriber) {
+      this.emitter = emitter;
+      this.subscriber = subscriber;
+    }
+
+    public void run() {
+      this.subscriber.onEvent(this.emitter);
+    }
   }
 
   

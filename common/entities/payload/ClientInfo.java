@@ -1,10 +1,9 @@
 package common.entities.payload;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.LinkedHashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import common.entities.*;
-import server.entities.*;
 
 /**
  * A payload from server to client that
@@ -12,7 +11,7 @@ import server.entities.*;
  * <p>
  * Created on 2020.12.06.
  * @author Shari Sun, Candice Zhang
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
  */
 
@@ -21,22 +20,22 @@ public class ClientInfo extends Payload {
   private static final long serialVersionUID = 1L;
 
   private final String userId;
-  private final String token;
-  private final ArrayList<UserMetadata> friends;
-  private final ArrayList<UserMetadata> incomingFriendRequests;
-  private final Hashtable<UserMetadata, FriendRequestStatus> outgoingFriendRequests;
-  private final ArrayList<UserMetadata> blocked;
-  private final ArrayList<ChannelMetadata> channels;
+  private final Token token;
+  private final LinkedHashSet<UserMetadata> friends;
+  private final LinkedHashSet<UserMetadata> incomingFriendRequests;
+  private final ConcurrentHashMap<UserMetadata, FriendRequestStatus> outgoingFriendRequests;
+  private final LinkedHashSet<UserMetadata> blocked;
+  private final LinkedHashSet<ChannelMetadata> channels;
 
   public ClientInfo(
     int priority,
     String userId,
-    String token, 
-    ArrayList<UserMetadata> friends,
-    ArrayList<UserMetadata> incomingFriendRequests,
-    Hashtable<UserMetadata, FriendRequestStatus> outgoingFriendRequests,
-    ArrayList<UserMetadata> blocked,
-    ArrayList<ChannelMetadata> channels
+    Token token, 
+    LinkedHashSet<UserMetadata> friends,
+    LinkedHashSet<UserMetadata> incomingFriendRequests,
+    ConcurrentHashMap<UserMetadata, FriendRequestStatus> outgoingFriendRequests,
+    LinkedHashSet<UserMetadata> blocked,
+    LinkedHashSet<ChannelMetadata> channels
   ) {
     super(PayloadType.CLIENT_INFO, priority);
 
@@ -53,27 +52,27 @@ public class ClientInfo extends Payload {
     return this.userId;
   }
 
-  public String getToken() {
+  public Token getToken() {
     return this.token;
   }
 
-  public ArrayList<UserMetadata> getFriends() {
+  public LinkedHashSet<UserMetadata> getFriends() {
     return this.friends;
   }
 
-  public ArrayList<UserMetadata> getIncomingFriendRequests() {
+  public LinkedHashSet<UserMetadata> getIncomingFriendRequests() {
     return this.incomingFriendRequests;
   }
 
-  public Hashtable<UserMetadata,FriendRequestStatus> getOutgoingFriendRequests() {
+  public ConcurrentHashMap<UserMetadata,FriendRequestStatus> getOutgoingFriendRequests() {
     return this.outgoingFriendRequests;
   }
 
-  public ArrayList<UserMetadata> getBlocked() {
+  public LinkedHashSet<UserMetadata> getBlocked() {
     return this.blocked;
   }
 
-  public ArrayList<ChannelMetadata> getChannels() {
+  public LinkedHashSet<ChannelMetadata> getChannels() {
     return this.channels;
   }
 }

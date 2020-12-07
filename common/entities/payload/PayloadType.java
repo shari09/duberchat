@@ -5,7 +5,7 @@ package common.entities.payload;
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun, Candice Zhang
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
  */
 
@@ -21,6 +21,8 @@ public enum PayloadType {
   FRIEND_REQUEST,
   FRIEND_REQUEST_RESPONSE,
   GET_FILE,
+
+  KEEP_ALIVE,
 
   // server to client
   CLIENT_REQUEST_STATUS,

@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import common.entities.payload.ClientInfo;
+import common.entities.payload.ClientRequestStatus;
+import common.entities.payload.Login;
 import common.entities.payload.NewUser;
 import common.entities.payload.Payload;
 
@@ -37,8 +40,8 @@ public class Client {
     }
 
     System.out.println("Connected to server");
-    NewUser user = new NewUser(1, "shari09", "123456", "hi");
-    NewUser user2 = new NewUser(1, "shari09", "123456", "hello");
+    Login user = new Login(1, "shari09", "123456");
+    Login user2 = new Login(1, "shari09", "12346");
 
     try {
       this.output.writeObject(user);
@@ -58,6 +61,17 @@ public class Client {
           Payload payload = (Payload)this.input.readObject();
           System.out.println("Response received");
           System.out.println(payload.toString());
+          switch (payload.getType()) {
+            case CLIENT_REQUEST_STATUS:
+              System.out.println(((ClientRequestStatus)payload).hasError());
+              break;
+            case CLIENT_INFO:
+              System.out.println(((ClientInfo)payload).getToken());
+              break;
+            default:
+              break;
+          
+          }
           // running = false;
         }
       } catch (Exception e) {

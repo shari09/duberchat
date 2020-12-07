@@ -1,7 +1,6 @@
 package common.entities.payload;
 
 import common.entities.*;
-import server.entities.*;
 
 /**
  * A payload from client to server that

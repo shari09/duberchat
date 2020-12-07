@@ -1,6 +1,6 @@
 package common.entities.payload;
 
-import server.entities.*;
+import common.entities.*;
 
 import java.util.Date;
 

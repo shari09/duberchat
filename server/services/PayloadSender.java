@@ -1,11 +1,14 @@
 package server.services;
 
 import java.io.ObjectOutputStream;
+import java.net.SocketException;
 
 import common.entities.payload.Payload;
+import server.entities.EventType;
+import server.resources.GlobalEventQueue;
 
 /**
- * [insert description]
+ * A static method that sends a given payload to a given client (output stream).
  * <p>
  * Created on 2020.12.06.
  * @author Shari Sun
@@ -19,9 +22,11 @@ public class PayloadSender {
       try {
         client.writeObject(payload);
         client.flush();
+      } catch (SocketException e) {
+        GlobalEventQueue.queue.emitEvent(EventType.CLIENT_DISCONNECTED, 2, client);
       } catch (Exception e) {
         System.out.println("Failed to send payload to client");
-        System.out.println(e.getMessage());
+        e.printStackTrace();
       }
     }
   }

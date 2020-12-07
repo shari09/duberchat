@@ -1,6 +1,6 @@
 package server.resources;
 
-import server.services.EventQueue;
+import server.services.EventQueueService;
 
 /**
  * [insert description]
@@ -12,5 +12,5 @@ import server.services.EventQueue;
  */
 
 public class GlobalEventQueue {
-  public static EventQueue queue = new EventQueue();
+  public static EventQueueService queue = new EventQueueService();
 }

@@ -2,8 +2,10 @@ Include a readme.txt that identifies the work done by each student
 
 
 Shari - server
-
+Establised client/server connection
+Established communications protocol
 
 
 
 Candice - client
+Established communications protocol

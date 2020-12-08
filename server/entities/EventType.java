@@ -10,9 +10,20 @@ package server.entities;
  */
 
 public enum EventType {
+  /** A new payload is received (no specified client). */
   PAYLOAD,
+  /** A new client connection is received by the server socket. */
   NEW_CLIENT,
+  /**
+   * Once the payload is authenticated,
+   * meaning the token matches with what the server sent back originally.
+   */
   AUTHENTICATED_PAYLOAD,
+  /**
+   * Once the client has successfully authenticated itself either
+   * through logging in or creating a new user.
+   */
   AUTHENTICATED_CLIENT,
+  /** Once the client socket disconnects. */
   CLIENT_DISCONNECTED,
 }

@@ -15,6 +15,11 @@ import server.resources.TempData;
  */
 public class AuthenticatedClientHandler implements Subscribable {
   public AuthenticatedClientHandler() {
+    
+  }
+
+  @Override
+  public void activate() {
     GlobalEventQueue.queue.subscribe(EventType.AUTHENTICATED_CLIENT, this);
   }
 

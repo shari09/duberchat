@@ -17,6 +17,10 @@ import server.resources.TempData;
  */
 public class ClientDisconnectHandler implements Subscribable {
   public ClientDisconnectHandler() {
+    
+  }
+
+  public void activate() {
     GlobalEventQueue.queue.subscribe(EventType.CLIENT_DISCONNECTED, this);
   }
 
@@ -24,10 +28,13 @@ public class ClientDisconnectHandler implements Subscribable {
   public void onEvent(Object emitter) {
     if (emitter instanceof ObjectOutputStream) {
       ObjectOutputStream toClient = (ObjectOutputStream)emitter;
+      String userId = TempData.clientConnections.getUserId(toClient);
       TempData.clientConnections.remove(toClient);
+      TempData.tokens.remove(userId);
       return;
     }
     String userId = (String)emitter;
     TempData.clientConnections.remove(userId);
+    TempData.tokens.remove(userId);
   }
 }

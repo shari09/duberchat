@@ -1,6 +1,5 @@
 package server.services;
 
-import java.io.ObjectOutputStream;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import common.entities.Token;
@@ -9,7 +8,6 @@ import common.entities.payload.ClientInfo;
 import common.entities.payload.ClientRequestStatus;
 import common.entities.payload.Login;
 import common.entities.payload.NewUser;
-import common.entities.payload.Payload;
 import common.entities.payload.PayloadType;
 import server.entities.Client;
 import server.entities.ClientRequest;
@@ -30,31 +28,30 @@ import server.resources.TempData;
 
 public class PayloadProcessor implements Subscribable {
   private PriorityBlockingQueue<ClientRequest> payloadQueue;
-  private AuthenticatedClientHandler authenticatedUserHandler;
-  private AuthenticatedPayloadHandler authenticatedPayloadHandler;
   private boolean running = false;
 
   public PayloadProcessor() {
     this.payloadQueue = new PriorityBlockingQueue<>();
-    this.authenticatedUserHandler = new AuthenticatedClientHandler();
-    this.authenticatedPayloadHandler = new AuthenticatedPayloadHandler();
+  }
+
+  /**
+   * Subscribes to all the events
+   */
+  public void activate() {
     GlobalEventQueue.queue.subscribe(EventType.PAYLOAD, this);
   }
 
-  public void add(Payload payload, ObjectOutputStream clientOut) {
-    ClientRequest c = new ClientRequest(payload, clientOut);
-    this.payloadQueue.add(c);
-  }
-
-  public void onEvent(Object newPayload) {
+  public void onEvent(Object emitter) {
+    ClientRequest clientReq = (ClientRequest)emitter;
+    this.payloadQueue.add(clientReq);
     if (this.running) {
       return;
     }
     this.running = true;
     //authenticate clients differently depending on whether or not
     //they are creating a new user, logging in, or sending another request
-    while (!PayloadProcessor.this.payloadQueue.isEmpty()) {
-      ClientRequest client = PayloadProcessor.this.payloadQueue.poll();
+    while (!this.payloadQueue.isEmpty()) {
+      ClientRequest client = this.payloadQueue.poll();
       if (client.getPayload().getType() == PayloadType.LOGIN) {
         authenticateLogin(client);
       } else if (client.getPayload().getType() == PayloadType.NEW_USER) {
@@ -101,7 +98,7 @@ public class PayloadProcessor implements Subscribable {
     if (!authenticated) {
       PayloadSender.send(
         client.getClientOut(), 
-        new ClientRequestStatus(1, "Unauthenticated token")
+        new ClientRequestStatus(1, "Unauthorized")
       );
       return;
     }

@@ -40,8 +40,10 @@
 ./server/resources/StoredData.java
 ./server/resources/TempData.java
 ./server/services/AuthenticatedClientHandler.java
-./server/services/AuthenticatedPayloadHandler.java
+./server/services/AuthenticatedPayloadProcessor.java
 ./server/services/ClientDisconnectHandler.java
+./server/services/ClientHandler.java
+./server/services/ClientQueue.java
 ./server/services/EventQueueService.java
 ./server/services/PayloadProcessor.java
 ./server/services/PayloadSender.java

@@ -9,5 +9,6 @@ package server.services;
  * @since 1.0.1
  */
 public interface Subscribable {
+  public void activate();
   public void onEvent(Object emitter);
 }

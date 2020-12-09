@@ -1,14 +1,14 @@
 package common.entities.payload;
 
-import common.entities.*;
+import common.entities.Token;
 
 /**
  * A payload from client to server that
  * contains the data for a user to send a message in a channel.
  * <p>
  * Created on 2020.12.06.
- * @author Candice Zhang
- * @version 1.0.0
+ * @author Candice Zhang, Shari Sun
+ * @version 1.0.1
  * @since 1.0.0
  */
 
@@ -16,9 +16,10 @@ public class SendMessage extends AuthenticatablePayload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   
-  private final String channelId;
-  private final String content; // represents filename if has attachment
-  private final byte[] attachment;
+  private String channelId;
+  private String content; // represents filename if has attachment
+  private byte[] attachment;
+  private String attachmentName;
 
   public SendMessage(
     int priority,
@@ -26,7 +27,8 @@ public class SendMessage extends AuthenticatablePayload {
     Token token,
     String channelId,
     String content,
-    byte[] attachment
+    byte[] attachment,
+    String attachmentName
   ) {
     super(
       PayloadType.SEND_MESSAGE,
@@ -38,10 +40,7 @@ public class SendMessage extends AuthenticatablePayload {
     this.channelId = channelId;
     this.content = content;
     this.attachment = attachment;
-  }
-
-  public boolean hasAttachment() {
-    return this.attachment != null;
+    this.attachmentName = attachmentName;
   }
   
   public String getChannelId() {
@@ -54,6 +53,10 @@ public class SendMessage extends AuthenticatablePayload {
 
   public byte[] getAttachment() {
     return this.attachment;
+  }
+
+  public String getAttachmentName() {
+    return this.attachmentName;
   }
 
 }

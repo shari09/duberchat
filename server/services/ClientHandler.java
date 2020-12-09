@@ -73,6 +73,10 @@ public class ClientHandler implements Runnable {
 
   private void handleDisconnection(String disconnectMsg) {
     String userId = TempData.clientConnections.getUserId(this.output);
+    if (userId == null) {
+      System.out.printf("%s %s\n", this.socket, disconnectMsg);
+      return;
+    }
     String username = StoredData.users.getUsername(userId);
     System.out.printf(
       "User %s:%s at %s %s\n", 

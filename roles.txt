@@ -2,10 +2,36 @@ Include a readme.txt that identifies the work done by each student
 
 
 Shari - server
-Establised client/server connection
-Established communications protocol
+- client/server connection
+- communications protocol
+- data storing
+- event queue
+- message/channel creation/interaction on server side
+- 
 
 
 
 Candice - client
-Established communications protocol
+- communications protocol
+
+
+
+Features:
+- new user
+- login
+- status
+- friend request/accept
+- send message
+- send attachement
+- download attachment
+- edit message
+- remove message
+- dm
+- block user
+
+- create group chat
+- add user to group chat
+- remove user from group chat
+- transfer ownership of group chat
+- blacklist user from group chat
+- leave group chat

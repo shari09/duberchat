@@ -1,6 +1,5 @@
 package server.resources;
 
-import java.io.BufferedWriter;
 import java.util.concurrent.ConcurrentHashMap;
 
 import common.entities.Token;

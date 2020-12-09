@@ -52,6 +52,72 @@ client to server:
 }
 
 {
+  type:        CREATE_CHANNEL,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  users:       String[] 
+}
+
+{
+  type:              ADD_PARTICIPANTS_TO_CHANNEL,
+  priority:          int,
+
+  userId:            String,
+  token:             Token,
+
+  channelId:         String,
+  participantsId:    String[] //user id
+}
+
+{
+  type:              REMOVE_PARTICIPANT,
+  priority:          int,
+
+  userId:            String,
+  token:             Token,
+
+  channelId:         String,
+  participantId:     String //user id
+}
+
+{
+  type:              BLOCK_PARTICIPANT,
+  priority:          int,
+
+  userId:            String,
+  token:             Token,
+
+  channelId:         String,
+  participantId:     String //user id
+}
+
+{
+  type:              LEAVE_CHANNEL,
+  priority:          int,
+
+  userId:            String,
+  token:             Token,
+
+  channelId:         String,
+}
+
+{
+  type:              TRANSFER_OWNERSHIP,
+  priority:          int,
+
+  userId:            String,
+  token:             Token,
+
+  channelId:         String,
+  recipientId:       String //user id
+}
+
+
+
+{
   type:       SEND_MESSAGE,
   priority:   int,
 
@@ -64,6 +130,29 @@ client to server:
 }
 
 {
+  type:       REMOVE_MESSAGE,
+  priority:   int,
+
+  userId:     String,
+  token:      Token,
+
+  channelId:  String,
+  messageId:  String,
+}
+
+{
+  type:       EDIT_MESSAGE,
+  priority:   int,
+
+  userId:     String,
+  token:      Token,
+
+  channelId:  String,
+  messageId:  String,
+  newContent: String,
+}
+
+{
   type:       REQUEST_MESSAGES,
   priority:   int,
 
@@ -71,7 +160,7 @@ client to server:
   token:      Token,
 
   channelId:  String,
-  before:     Date, //earliest timestamp in cache
+  before:     Timestamp, //earliest timestamp in cache
   quantity:   int
 }
 
@@ -87,6 +176,16 @@ client to server:
 }
 
 {
+  type:           BLOCK_USER,
+  priority:       int,
+
+  userId:         String,
+  token:          Token,
+
+  blockUsername:  String,
+}
+
+{
   type:       FRIEND_REQUEST_RESPONSE,
   priority:   int,
 
@@ -98,7 +197,7 @@ client to server:
 }
 
 {
-  type: GET_FILE,
+  type: REQUEST_ATTACHMENT,
   priority: priority,
 
   userId: String,
@@ -123,10 +222,10 @@ server to client:
 
   userId:   String,
   token:    Token,
-  friends:  ArrayList<String> (userId),
-  incoming_friend_requests: ArrayList<String> (userId),
-  outgoing_friend_requests: ArrayList<String> (userId),
-  channels: ArrayList<String> (channelId)
+  friends:  ArrayList<userMetadata> (userId),
+  incoming_friend_requests: ArrayList<userMetadata> (userId),
+  outgoing_friend_requests: ArrayList<userMetadata> (userId),
+  channels: ArrayList<channelMetadata> (channelId)
 }
 
 {
@@ -138,7 +237,7 @@ server to client:
 }
 
 {
-  type:      FILE,
+  type:      ATTACHMENT,
   priority:  priority,
 
   filename:  String,
@@ -153,12 +252,12 @@ user = {
   description: String,
   status:   UserStatus (active/idle/invisible/dnd),
 
-  friends:  ArrayList<String>, //user id
-  incoming_friend_requests: ArrayList<String>, //user id
-  outgoing_friend_requests: ConcurrentHashMap<String (userId), FriendRequestStatus>,
-  blocked:  ArrayList<String>, //user id
+  friends:  ArrayList<userMetadata>, //user id
+  incoming_friend_requests: ArrayList<userMetadata>, //user id
+  outgoing_friend_requests: ConcurrentHashMap<userMetadata, FriendRequestStatus>,
+  blocked:  ArrayList<userMetadata>, //user id
   
-  channels: ArrayList<String>, //channel id
+  channels: ArrayList<channelMetadata>, //channel id
 }
 
 privateChannel = {
@@ -178,7 +277,7 @@ groupChannel = {
 message = {
   content:    String,
   sender:     String (userId),
-  channelId:  String,
-  timestamp:  Date,
+  created:    Timestamp,
+  edited:     Timestamp,
   attachment: null / fileId,
 }

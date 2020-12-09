@@ -23,6 +23,10 @@ public enum PayloadType {
   CHANGE_CHANNEL,
   /** Sends a new message */
   SEND_MESSAGE,
+  /** Remove a message */
+  REMOVE_MESSAGE,
+  /** Edit the content of a message */
+  EDIT_MESSAGE,
   /** Requesting the history of messages for a channel. */
   REQUEST_MESSAGES,
   /** Sending a friend request to a specified user */
@@ -30,7 +34,7 @@ public enum PayloadType {
   /** The response to a friend request. Either accepted or denied. */
   FRIEND_REQUEST_RESPONSE,
   /** Request to download a file that someone sent in a channel. */
-  GET_FILE,
+  REQUEST_ATTACHMENT,
   /** A payload with no purpose other than keeping the connection alive */
   KEEP_ALIVE,
 
@@ -45,6 +49,6 @@ public enum PayloadType {
   /** the requested messages from the client */
   MESSAGES,
   /** The requested file from the client */
-  FILE,
+  SEND_ATTACHMENT,
 
 }

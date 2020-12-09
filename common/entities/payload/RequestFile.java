@@ -1,40 +1,40 @@
 package common.entities.payload;
 
-import common.entities.*;
+import common.entities.Token;
 
 /**
  * A payload from client to server that
  * contains the data for a user's download request for a certain file.
  * <p>
  * Created on 2020.12.06.
- * @author Candice Zhang
- * @version 1.0.0
+ * @author Candice Zhang, Shari Sun
+ * @version 1.0.1
  * @since 1.0.0
  */
 
-public class GetFile extends AuthenticatablePayload {
+public class RequestFile extends AuthenticatablePayload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
-  private final String fileId;
+  private final String attachmentId;
 
-  public GetFile(
+  public RequestFile(
     int priority,
     String userId,
     Token token,
-    String fileId
+    String attachmentId
   ) {
     super(
-      PayloadType.GET_FILE,
+      PayloadType.REQUEST_ATTACHMENT,
       priority,
       userId,
       token
     );
 
-    this.fileId = fileId;
+    this.attachmentId = attachmentId;
   }
 
-  public String getFileId() {
-    return this.fileId;
+  public String getAttachmentId() {
+    return this.attachmentId;
   }
 }

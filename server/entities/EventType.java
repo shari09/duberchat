@@ -5,7 +5,7 @@ package server.entities;
  * <p>
  * Created on 2020.12.06.
  * @author Shari Sun
- * @version 1.0.1
+ * @version 1.0.0
  * @since 1.0.0
  */
 
@@ -26,4 +26,12 @@ public enum EventType {
   AUTHENTICATED_CLIENT,
   /** Once the client socket disconnects. */
   CLIENT_DISCONNECTED,
+  /** New message sent */
+  NEW_MESSAGE,
+  /** Message edited */
+  EDIT_MESSAGE,
+  /** Message removed */
+  REMOVE_MESSAGE,
+  /** New, accepting, rejecting, or cancelling friend request */
+  FRIEND_REQUEST,
 }

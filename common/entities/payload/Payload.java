@@ -1,6 +1,7 @@
 package common.entities.payload;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Represent the pack of data that is transferred between server and client.
@@ -15,9 +16,11 @@ public abstract class Payload implements Serializable {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   private PayloadType type;
+  private String id;
   private int priority;
 
   public Payload(PayloadType type, int priority) {
+    this.id = UUID.randomUUID().toString();
     this.type = type;
     this.priority = priority;
   }
@@ -28,6 +31,10 @@ public abstract class Payload implements Serializable {
 
   public int getPriority() {
     return this.priority;
+  }
+
+  public String getId() {
+    return this.id;
   }
 
 }

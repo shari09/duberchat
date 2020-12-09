@@ -1,5 +1,7 @@
 package server.services;
 
+import server.entities.EventType;
+
 /**
  * [insert description]
  * <p>
@@ -16,6 +18,7 @@ public interface Subscribable {
   /**
    * This function is called once the event it subscribed to has happened.
    * @param emitter    the object source that emitted this event
+   * @param eventType  the type of event being emitted
    */
-  public void onEvent(Object emitter);
+  public void onEvent(Object emitter, EventType eventType);
 }

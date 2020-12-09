@@ -12,14 +12,14 @@ import common.entities.*;
  * @since 1.0.0
  */
 
-public class FriendRequest extends AuthenticatablePayload {
+public class FriendRequestToServer extends AuthenticatablePayload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
   private final String recipientName;
   private final String requestMessage;
 
-  public FriendRequest(
+  public FriendRequestToServer(
     int priority,
     String userId,
     Token token,

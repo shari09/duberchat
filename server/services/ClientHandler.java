@@ -63,6 +63,8 @@ public class ClientHandler implements Runnable {
       this.handleDisconnection("has timed out");
     } catch (EOFException e) { //if the client disconnected on their end
       this.handleDisconnection("has disconnected");
+    } catch (SocketException e) { //if the gui just quits without closing the socket
+      this.handleDisconnection(" has reset their connection");
     } catch (Exception e) {
       System.out.println("Failed to receive payload from the client");
       System.out.println(e.getMessage());

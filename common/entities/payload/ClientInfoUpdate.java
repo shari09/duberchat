@@ -4,26 +4,30 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import common.entities.ChannelMetadata;
-import common.entities.Token;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 
 /**
- * A payload from server to client that
- * contains the metadata of a user.
+ * An update on the user's friends.
+ * <ul>
+ * <li> sent new friend request
+ * <li> cancelled friend request
+ * <li> accepted friend request
+ * <li> rejected friend request
+ * <li> blocked (removed as friends) 
+ * <li> new channel
+ * <li> removed from channel
+ * </ul>
  * <p>
- * Created on 2020.12.06.
- * @author Shari Sun, Candice Zhang
- * @version 1.0.2
+ * Created on 2020.12.09.
+ * @author Shari Sun
+ * @version 1.0.0
  * @since 1.0.0
  */
-
-public class ClientInfo extends Payload {
+public class ClientInfoUpdate extends Payload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
-  private final String userId;
-  private final Token token;
   private final UserStatus status;
   private final LinkedHashSet<UserMetadata> friends;
   private final ConcurrentHashMap<UserMetadata, String> incomingFriendRequests;
@@ -31,10 +35,18 @@ public class ClientInfo extends Payload {
   private final LinkedHashSet<UserMetadata> blocked;
   private final LinkedHashSet<ChannelMetadata> channels;
 
-  public ClientInfo(
+  /**
+   * 
+   * @param priority
+   * @param status
+   * @param friends
+   * @param incomingFriendRequests
+   * @param outgoingFriendRequests
+   * @param blocked
+   * @param channels
+   */
+  public ClientInfoUpdate(
     int priority,
-    String userId,
-    Token token, 
     UserStatus status,
     LinkedHashSet<UserMetadata> friends,
     ConcurrentHashMap<UserMetadata, String> incomingFriendRequests,
@@ -44,22 +56,12 @@ public class ClientInfo extends Payload {
   ) {
     super(PayloadType.CLIENT_INFO, priority);
 
-    this.userId = userId;
-    this.token = token;
     this.status = status;
     this.friends = friends;
     this.incomingFriendRequests = incomingFriendRequests;
     this.outgoingFriendRequests = outgoingFriendRequests;
     this.blocked = blocked;
     this.channels = channels;
-  }
-
-  public String getUserId() {
-    return this.userId;
-  }
-
-  public Token getToken() {
-    return this.token;
   }
 
   public UserStatus getStatus() {
@@ -85,4 +87,5 @@ public class ClientInfo extends Payload {
   public LinkedHashSet<ChannelMetadata> getChannels() {
     return this.channels;
   }
+
 }

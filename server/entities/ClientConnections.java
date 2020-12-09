@@ -39,6 +39,10 @@ public class ClientConnections {
     this.idToSocket.remove(userId);
   }
 
+  public boolean hasClient(String userId) {
+    return this.idToSocket.contains(userId);
+  }
+
   public ObjectOutputStream getClient(String userId) {
     return this.idToSocket.get(userId);
   }

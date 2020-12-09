@@ -15,6 +15,12 @@ import java.io.ObjectOutputStream;
  * @since 1.0.2
  */
 public class DataService {
+  /**
+   * Loads a file from the specified path.
+   * @param <T>
+   * @param filePath
+   * @return           file data or null
+   */
   @SuppressWarnings("unchecked")
   public synchronized static <T> T loadData(String filePath) {
     T data = null;

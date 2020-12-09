@@ -8,6 +8,7 @@ import common.entities.UserMetadata;
 import common.entities.UserStatus;
 
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -32,8 +33,9 @@ public class User implements Serializable {
   private UserStatus status;
 
   private LinkedHashSet<UserMetadata> friends;
-  private LinkedHashSet<UserMetadata> incomingFriendRequests;
-  private LinkedHashSet<UserMetadata> outgoingFriendRequests;
+  /** the user requesting and their requesting message */
+  private ConcurrentHashMap<UserMetadata, String> incomingFriendRequests;
+  private ConcurrentHashMap<UserMetadata, String> outgoingFriendRequests;
   private LinkedHashSet<UserMetadata> blocked;
 
   private LinkedHashSet<ChannelMetadata> channels;
@@ -47,8 +49,8 @@ public class User implements Serializable {
 
     this.friends = new LinkedHashSet<>();
     
-    this.incomingFriendRequests = new LinkedHashSet<>();
-    this.outgoingFriendRequests = new LinkedHashSet<>();
+    this.incomingFriendRequests = new ConcurrentHashMap<>();
+    this.outgoingFriendRequests = new ConcurrentHashMap<>();
     this.blocked = new LinkedHashSet<>();
 
     this.channels = new LinkedHashSet<>();
@@ -102,24 +104,24 @@ public class User implements Serializable {
     this.friends.remove(user);
   }
   
-  public synchronized LinkedHashSet<UserMetadata> getIncomingFriendRequests() {
+  public ConcurrentHashMap<UserMetadata, String> getIncomingFriendRequests() {
     return this.incomingFriendRequests;
   }
 
-  public synchronized void addIncomingFriendRequest(UserMetadata user) {
-    this.incomingFriendRequests.add(user);
+  public void addIncomingFriendRequest(UserMetadata user, String msg) {
+    this.incomingFriendRequests.put(user, msg);
   }
 
   public synchronized void removeIncomingFriendRequest(UserMetadata user) {
     this.incomingFriendRequests.remove(user);
   }
 
-  public synchronized LinkedHashSet<UserMetadata> getOutgoingFriendRequests() {
+  public ConcurrentHashMap<UserMetadata, String> getOutgoingFriendRequests() {
     return this.outgoingFriendRequests;
   }
 
-  public synchronized void addOutgoingFriendRequest(UserMetadata user) {
-    this.outgoingFriendRequests.add(user);
+  public void addOutgoingFriendRequest(UserMetadata user, String msg) {
+    this.outgoingFriendRequests.put(user, msg);
   }
 
   public synchronized void removeOutgoingFriendRequest(UserMetadata user) {

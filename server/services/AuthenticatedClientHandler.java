@@ -10,7 +10,7 @@ import server.resources.TempData;
  * <p>
  * Created on 2020.12.07.
  * @author Shari Sun
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.1
  */
 public class AuthenticatedClientHandler implements Subscribable {
@@ -24,7 +24,7 @@ public class AuthenticatedClientHandler implements Subscribable {
   }
 
   @Override
-  public void onEvent(Object emitter) {
+  public void onEvent(Object emitter, EventType eventType) {
     Client client = (Client)emitter;
     TempData.clientConnections.add(client.getUserId(), client.getClient());
   }

@@ -12,7 +12,7 @@ import common.entities.Token;
  * @since 1.0.0
  */
 
-public class SendMessage extends AuthenticatablePayload {
+public class MessageToServer extends AuthenticatablePayload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   
@@ -21,7 +21,7 @@ public class SendMessage extends AuthenticatablePayload {
   private byte[] attachment;
   private String attachmentName;
 
-  public SendMessage(
+  public MessageToServer(
     int priority,
     String userId,
     Token token,
@@ -31,7 +31,7 @@ public class SendMessage extends AuthenticatablePayload {
     String attachmentName
   ) {
     super(
-      PayloadType.SEND_MESSAGE,
+      PayloadType.MESSAGE_TO_SERVER,
       priority,
       userId,
       token

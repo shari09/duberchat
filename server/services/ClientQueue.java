@@ -11,7 +11,7 @@ import server.resources.GlobalEventQueue;
  * Created on 2020.12.07.
  * 
  * @author Shari Sun
- * @version 1.1.0
+ * @version 1.1.1
  * @since 1.0.0
  */
 public class ClientQueue implements Subscribable {
@@ -26,7 +26,8 @@ public class ClientQueue implements Subscribable {
     GlobalEventQueue.queue.subscribe(EventType.NEW_CLIENT, this);
   }
 
-  public void onEvent(Object newClient) {
+  @Override
+  public void onEvent(Object newClient, EventType eventType) {
     this.queue.add((ClientHandler)newClient);
     if (this.running) {
       return;

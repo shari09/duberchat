@@ -60,20 +60,21 @@ public abstract class Channel {
     return new ChannelMetadata(this.channelId, null);
   }
 
-  public void addMessage(Message message) {
+  public Message addMessage(Message message) {
     this.messages.put(message, message);
     this.idToMsgMapping.put(message.getMessageId(), message);
+    return message;
   }
 
-  public void removeMessage(String messageId) {
+  public Message removeMessage(String messageId) {
     this.messages.remove(this.idToMsgMapping.get(messageId));
-    this.idToMsgMapping.remove(messageId);
+    return this.idToMsgMapping.remove(messageId);
   }
 
-  public void editMessage(String messageId, String content) {
-    this.messages
-        .get(this.idToMsgMapping.get(messageId))
-        .updateContent(content);
+  public Message editMessage(String messageId, String content) {
+    Message msg = this.messages.get(this.idToMsgMapping.get(messageId));
+    msg.updateContent(content);
+    return msg;
   }
 
   //TODO: improve time complexity???? but java only gives me itr from head/tail

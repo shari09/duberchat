@@ -10,15 +10,17 @@ import common.entities.ChannelMetadata;
 import common.entities.Message;
 import common.entities.UserMetadata;
 import server.entities.Channel;
+import server.entities.EventType;
 import server.entities.GroupChannel;
 import server.entities.PrivateChannel;
+import server.resources.GlobalEventQueue;
 
 /**
  * [insert description]
  * <p>
  * Created on 2020.12.08.
  * @author Shari Sun
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.2
  */
 public class MessagingService {
@@ -73,6 +75,11 @@ public class MessagingService {
     return attachment.getId();
   }
 
+  /**
+   * 
+   * @param channelId
+   * @return               the channel/null
+   */
   private Channel getChannel(String channelId) {
     if (this.channels.containsKey(channelId)) {
       return this.channels.get(channelId);
@@ -107,44 +114,71 @@ public class MessagingService {
    * @param content
    * @param attachment
    * @param attachmentName
+   * @return                   successfully sent or not
    */
-  public void addMessage(
+  public boolean addMessage(
     String senderId, 
     String channelId,
     String content, 
     byte[] attachment,
     String attachmentName
   ) {
-
-    Message message;
+    if (this.getChannel(channelId) == null) {
+      return false;
+    }
+    Message msg;
     if (attachment == null) {
       String attachmentId = this.saveAttatchment(attachmentName, attachment);
-      message = new Message(content, senderId, attachmentId, attachmentName);
+      msg = new Message(
+        content, 
+        senderId, 
+        channelId, 
+        attachmentId, 
+        attachmentName
+      );
     } else {
-      message = new Message(content, senderId, null, null);
+      msg = new Message(content, senderId, channelId, null, null);
     }
 
-    this.addMsgToChannel(channelId, message);
+    this.addMsgToChannel(channelId, msg);
+    GlobalEventQueue.queue.emitEvent(EventType.NEW_MESSAGE, 1, msg);
+    return true;
   }
 
 
+  /**
+   * 
+   * @param channelId
+   * @param before
+   * @param numMessages
+   * @return                the messages/null
+   */
   public Message[] getMessages(
     String channelId, 
     Timestamp before, 
     int numMessages
   ) {
     Channel channel = getChannel(channelId);
+    if (channel == null) {
+      return null;
+    }
     Message[] messages = channel.getMessages(before, numMessages);
     return messages;
   }
 
+  /**
+   * 
+   * @param attachmentId
+   * @return               the attachment/null
+   */
   public Attachment getAttachment(String attachmentId) {
     return DataService.loadData(this.ASSETS_DIR_PATH+attachmentId+".ser");
   }
 
   public void removeMessage(String channelId, String messageId) {
-    this.channels.get(channelId).removeMessage(messageId);
+    Message msg = this.channels.get(channelId).removeMessage(messageId);
     this.updateChannel(channelId);
+    GlobalEventQueue.queue.emitEvent(EventType.REMOVE_MESSAGE, 1, msg);
   }
 
   public void editMessage(
@@ -152,8 +186,10 @@ public class MessagingService {
     String messageId, 
     String newContent
   ) {
-    this.channels.get(channelId).editMessage(messageId, newContent);
+    Channel channel = this.channels.get(channelId);
+    Message msg = channel.editMessage(messageId, newContent);
     this.updateChannel(channelId);
+    GlobalEventQueue.queue.emitEvent(EventType.EDIT_MESSAGE, 1, msg);
   }
 
   public ChannelMetadata createPrivateChannel(
@@ -177,4 +213,7 @@ public class MessagingService {
     return channel.getMetadata();
   }
 
+  public LinkedHashSet<UserMetadata> getParticipants(String channelId) {
+    return this.channels.get(channelId).getParticipants();
+  }
 }

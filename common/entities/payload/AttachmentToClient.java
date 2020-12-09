@@ -13,17 +13,17 @@ import common.entities.Attachment;
  * @since 1.0.0
  */
 
-public class SendAttachment extends Payload {
+public class AttachmentToClient extends Payload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
   private final Attachment attachment;
 
-  public SendAttachment(
+  public AttachmentToClient(
     int priority,
     Attachment attachment
   ) {
-    super(PayloadType.SEND_ATTACHMENT, priority);
+    super(PayloadType.ATTACHMENT_TO_CLIENT, priority);
 
     this.attachment = attachment;
   }

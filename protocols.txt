@@ -58,7 +58,7 @@ client to server:
   userId:      String,
   token:       Token,
 
-  users:       String[] 
+  participants:       LinkedHashSet<UserMetadata> 
 }
 
 {
@@ -69,7 +69,7 @@ client to server:
   token:             Token,
 
   channelId:         String,
-  participantsId:    String[] //user id
+  participants:      LinkedHashSet<UserMetadata>
 }
 
 {
@@ -84,7 +84,7 @@ client to server:
 }
 
 {
-  type:              BLOCK_PARTICIPANT,
+  type:              BLACKLIST_PARTICIPANT,
   priority:          int,
 
   userId:            String,
@@ -118,7 +118,7 @@ client to server:
 
 
 {
-  type:       SEND_MESSAGE,
+  type:       MESSAGE_TO_SERVER,
   priority:   int,
 
   userId:     String,
@@ -222,14 +222,25 @@ server to client:
 
   userId:   String,
   token:    Token,
-  friends:  ArrayList<userMetadata> (userId),
+  status:   UserStatus,
+  friends:  LinkedHashSet<userMetadata> (userId),
   incoming_friend_requests: ArrayList<userMetadata> (userId),
   outgoing_friend_requests: ArrayList<userMetadata> (userId),
-  channels: ArrayList<channelMetadata> (channelId)
+  channels: LinkedHashSet<channelMetadata> (channelId)
 }
 
 {
-  type: MESSAGES,
+  type:        CLIENT_INFO_UPDATE,
+  priority:    int,
+  status:      UserStatus,
+  friends:     LinkedHashSet<userMetadata> (userId),
+  channels:    LinkedHashSet<channelMetadata> (channelId),
+  incoming_friend_requests: ConcurrentHashMap<UserMetadata, String> (userId),
+  outgoing_friend_requests: ConcurrentHashMap<UserMetadata, String> (userId),
+}
+
+{
+  type: MESSAGES_TO_CLIENT,
   priority: priority,
 
   channelId: channelId,
@@ -237,7 +248,17 @@ server to client:
 }
 
 {
-  type:      ATTACHMENT,
+  type: MESSAGE_UPDATE_TO_CLIENT,
+  priority:   int,
+
+  channelId:  String,
+  message:    Message,
+
+  updateType: NEW/EDIT/REMOVE
+}
+
+{
+  type:      ATTACHMENT_TO_CLIENT,
   priority:  priority,
 
   filename:  String,
@@ -275,9 +296,11 @@ groupChannel = {
 }
 
 message = {
-  content:    String,
-  sender:     String (userId),
-  created:    Timestamp,
-  edited:     Timestamp,
-  attachment: null / fileId,
+  content:        String,
+  senderId:       String (userId),
+  channelId:      String
+  created:        Timestamp,
+  edited:         Timestamp,
+  attachmentId:   null/String,
+  attachmentName: null/String
 }

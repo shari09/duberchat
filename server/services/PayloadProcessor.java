@@ -28,10 +28,11 @@ import server.resources.TempData;
 
 public class PayloadProcessor implements Subscribable {
   private PriorityBlockingQueue<ClientRequest> payloadQueue;
-  private boolean running = false;
+  private boolean running;
 
   public PayloadProcessor() {
     this.payloadQueue = new PriorityBlockingQueue<>();
+    this.running = false;
   }
 
   /**
@@ -41,7 +42,8 @@ public class PayloadProcessor implements Subscribable {
     GlobalEventQueue.queue.subscribe(EventType.PAYLOAD, this);
   }
 
-  public void onEvent(Object emitter) {
+  @Override
+  public void onEvent(Object emitter, EventType eventType) {
     ClientRequest clientReq = (ClientRequest)emitter;
     this.payloadQueue.add(clientReq);
     if (this.running) {
@@ -102,11 +104,6 @@ public class PayloadProcessor implements Subscribable {
       );
       return;
     }
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, null)
-    );
     GlobalEventQueue.queue.emitEvent(
       EventType.AUTHENTICATED_PAYLOAD, 
       1,
@@ -154,6 +151,7 @@ public class PayloadProcessor implements Subscribable {
       1,
       user.getUserId(),
       token,
+      user.getStatus(),
       user.getFriends(),
       user.getIncomingFriendRequests(),
       user.getOutgoingFriendRequests(),

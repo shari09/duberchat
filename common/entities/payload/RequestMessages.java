@@ -1,6 +1,6 @@
 package common.entities.payload;
 
-import common.entities.*;
+import common.entities.Token;
 
 import java.sql.Timestamp;
 

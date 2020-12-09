@@ -13,19 +13,19 @@ import common.entities.Message;
  * @since 1.0.0
  */
 
-public class MessagesHistory extends Payload {
+public class MessagesToClient extends Payload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
   private Message[] messages;
   private String channelId;
 
-  public MessagesHistory(
+  public MessagesToClient(
     int priority,
     String channelId,
     Message[] messages
   ) {
-    super(PayloadType.MESSAGES, priority);
+    super(PayloadType.MESSAGES_TO_CLIENT, priority);
     this.messages = messages;
     this.channelId = channelId;
   }

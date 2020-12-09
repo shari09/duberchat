@@ -58,7 +58,7 @@ public class EventQueueService {
           ArrayList<Subscribable> subscribers = EventQueueService.this.eventSubscribers.get(event.getType());
           if (subscribers != null) {
             for (int i = 0; i < subscribers.size(); i++) {
-              pool.execute(new OnEvent(event.getEmitter(), subscribers.get(i)));
+              pool.execute(new OnEvent(event.getEmitter(), subscribers.get(i), event.getType()));
             }
           }
         }
@@ -80,13 +80,14 @@ public class EventQueueService {
   private class OnEvent implements Runnable {
     private Object emitter;
     private Subscribable subscriber;
-    public OnEvent(Object emitter, Subscribable subscriber) {
+    private EventType type;
+    public OnEvent(Object emitter, Subscribable subscriber, EventType type) {
       this.emitter = emitter;
       this.subscriber = subscriber;
     }
 
     public void run() {
-      this.subscriber.onEvent(this.emitter);
+      this.subscriber.onEvent(this.emitter, this.type);
     }
   }
 

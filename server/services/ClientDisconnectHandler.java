@@ -12,7 +12,7 @@ import server.resources.TempData;
  * Created on 2020.12.07.
  * 
  * @author Shari Sun
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.1
  */
 public class ClientDisconnectHandler implements Subscribable {
@@ -25,7 +25,7 @@ public class ClientDisconnectHandler implements Subscribable {
   }
 
   @Override
-  public void onEvent(Object emitter) {
+  public void onEvent(Object emitter, EventType eventType) {
     if (emitter instanceof ObjectOutputStream) {
       ObjectOutputStream toClient = (ObjectOutputStream)emitter;
       String userId = TempData.clientConnections.getUserId(toClient);

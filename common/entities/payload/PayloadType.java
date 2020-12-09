@@ -22,7 +22,7 @@ public enum PayloadType {
   /** Change the channel's settings (description, profile pic, etc) */
   CHANGE_CHANNEL,
   /** Sends a new message */
-  SEND_MESSAGE,
+  MESSAGE_TO_SERVER,
   /** Remove a message */
   REMOVE_MESSAGE,
   /** Edit the content of a message */
@@ -35,6 +35,20 @@ public enum PayloadType {
   FRIEND_REQUEST_RESPONSE,
   /** Request to download a file that someone sent in a channel. */
   REQUEST_ATTACHMENT,
+  /** Create a new group channel */
+  CREATE_CHANNEL,
+  /** Block a certain user knowing their username */
+  BLOCK_USER,
+  /** Add an user to the group channel */
+  ADD_PARTICIPANTS_TO_CHANNEL,
+  /** Remove an user from a group channel */
+  REMOVE_PARTICIPANT,
+  /** Blacklist a user from a group channel */
+  BLACKLIST_PARTICIPANT,
+  /** Leave the group channel */
+  LEAVE_CHANNEL,
+  /** Transfer the ownership/admin to a different user */
+  TRANSFER_OWNERSHIP,
   /** A payload with no purpose other than keeping the connection alive */
   KEEP_ALIVE,
 
@@ -47,8 +61,21 @@ public enum PayloadType {
   /** The information of a client once logged in. */
   CLIENT_INFO,
   /** the requested messages from the client */
-  MESSAGES,
+  MESSAGES_TO_CLIENT,
   /** The requested file from the client */
-  SEND_ATTACHMENT,
+  ATTACHMENT_TO_CLIENT,
+  /** 
+   * An update on the user's friends.
+   * <ul>
+   * <li> sent new friend request
+   * <li> cancelled friend request
+   * <li> accepted friend request
+   * <li> rejected friend request
+   * <li> blocked (removed as friends) 
+   * <li> new channel
+   * <li> removed from channel
+   * </ul>
+   */
+  CLIENT_INFO_UPDATE,
 
 }

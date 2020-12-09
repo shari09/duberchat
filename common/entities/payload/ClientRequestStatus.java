@@ -6,7 +6,7 @@ package common.entities.payload;
  * as well as an error message, if applicable.
  * <p>
  * Created on 2020.12.06.
- * @author Candice Zhang
+ * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -14,14 +14,16 @@ package common.entities.payload;
 public class ClientRequestStatus extends Payload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
-
+  private final String requestPayloadId;
   private final String errorMessage;
 
   public ClientRequestStatus(
     int priority,
+    String requestPayloadId,
     String errorMessage
   ) {
     super(PayloadType.CLIENT_REQUEST_STATUS, priority);
+    this.requestPayloadId = requestPayloadId;
     this.errorMessage = errorMessage;
   }
 
@@ -31,6 +33,10 @@ public class ClientRequestStatus extends Payload {
 
   public String getErrorMessage() {
     return this.errorMessage;
+  }
+
+  public String getRequestPayloadId() {
+    return this.requestPayloadId;
   }
 
 }

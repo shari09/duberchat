@@ -13,7 +13,7 @@ import common.entities.payload.ClientInfo;
  * [description]
  * <p>
  * Created on 2020.12.09.
- * @author Candice Zhang
+ * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */

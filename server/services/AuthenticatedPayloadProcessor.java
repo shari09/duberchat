@@ -21,13 +21,8 @@ import server.resources.StoredData;
  * Created on 2020.12.06.
  * 
  * @author Shari Sun
-<<<<<<< HEAD
- * @version 1.1.1
- * @since 1.0.1
-=======
- * @version 1.1.0
+ * @version 1.0.0
  * @since 1.0.0
->>>>>>> 7a25c22a9ed78d1284104337731193e52c18bbbe
  */
 public class AuthenticatedPayloadProcessor implements Subscribable {
   private PriorityBlockingQueue<AuthenticatedClientRequest> payloadQueue;
@@ -110,13 +105,13 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     if (!success) {
       PayloadSender.send(
         client.getClientOut(), 
-        new ClientRequestStatus(1, "Incorrect original password")
+        new ClientRequestStatus(1, payload.getId(), "Incorrect original password")
       );
       return;
     }
     PayloadSender.send(
       client.getClientOut(), 
-      new ClientRequestStatus(1, null)
+      new ClientRequestStatus(1, payload.getId(), null)
     );
   }
 
@@ -132,13 +127,13 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     if (!success) {
       PayloadSender.send(
         client.getClientOut(), 
-        new ClientRequestStatus(1, "Message sending failure")
+        new ClientRequestStatus(1, payload.getId(), "Message sending failure")
       );
       return;
     }
     PayloadSender.send(
       client.getClientOut(), 
-      new ClientRequestStatus(1, null)
+      new ClientRequestStatus(1, payload.getId(), null)
     );
   }
 
@@ -148,7 +143,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     if (!StoredData.users.usernameExist(friendReq.getRecipientName())) {
       PayloadSender.send(
         client.getClientOut(),
-        new ClientRequestStatus(1, "Recipient does not exist")
+        new ClientRequestStatus(1, friendReq.getId(), "Recipient does not exist")
       );
       return;
     }
@@ -160,7 +155,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
     PayloadSender.send(
       client.getClientOut(),
-      new ClientRequestStatus(1, null)  
+      new ClientRequestStatus(1, friendReq.getId(), null)  
     );
   }
 
@@ -181,14 +176,14 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     if (!success) {
       PayloadSender.send(
         client.getClientOut(),
-        new ClientRequestStatus(1, "Error responding to friend request")  
+        new ClientRequestStatus(1, response.getId(), "Error responding to friend request")  
       );
     }
 
 
     PayloadSender.send(
       client.getClientOut(),
-      new ClientRequestStatus(1, null)  
+      new ClientRequestStatus(1, response.getId(), null)  
     );
   }
 
@@ -207,13 +202,13 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     if (msgs == null) {
       PayloadSender.send(
         client.getClientOut(),
-        new ClientRequestStatus(1, "Error retrieving messages")  
+        new ClientRequestStatus(1, req.getId(), "Error retrieving messages")  
       );
       return;
     }
     PayloadSender.send(
       client.getClientOut(),
-      new ClientRequestStatus(1, null)  
+      new ClientRequestStatus(1, req.getId(), null)  
     );
 
     PayloadSender.send(

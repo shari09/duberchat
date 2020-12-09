@@ -1,5 +1,10 @@
-./client/Client.java
-./client/ClientFrame.java
+./client/ClientMetadata.java
+./client/ClientSocket.java
+./client/ClientSocketThread.java
+./client/LoginFrame.java
+./client/Main.java
+./client/RegistrationFrame.java
+./client/StartFrame.java
 ./common/entities/Attachment.java
 ./common/entities/ChannelField.java
 ./common/entities/ChannelMetadata.java
@@ -12,7 +17,9 @@
 ./common/entities/payload/ChangePassword.java
 ./common/entities/payload/ChangeProfile.java
 ./common/entities/payload/ClientInfo.java
+./common/entities/payload/ClientInfoUpdate.java
 ./common/entities/payload/ClientRequestStatus.java
+./common/entities/payload/CreateChannel.java
 ./common/entities/payload/EditMessage.java
 ./common/entities/payload/FriendRequestResponse.java
 ./common/entities/payload/FriendRequestToServer.java

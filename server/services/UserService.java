@@ -79,7 +79,6 @@ public class UserService {
   }
 
   public String getUsername(String userId) {
-    System.out.println(userId);
     return this.uidToUsername.get(userId);
   }
 

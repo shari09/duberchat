@@ -75,7 +75,11 @@ public class PayloadProcessor implements Subscribable {
     if (user == null) { // unauthorized
       PayloadSender.send(
         client.getClientOut(), 
-        new ClientRequestStatus(1, "Incorrect username or password")
+        new ClientRequestStatus(
+          1, 
+          payload.getId(), 
+          "Incorrect username or password"
+        )
       );
       return;
     }
@@ -84,7 +88,10 @@ public class PayloadProcessor implements Subscribable {
       1,
       new Client(user.getUserId(), client.getClientOut())
     );
-    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, null));
+    PayloadSender.send(
+      client.getClientOut(), 
+      new ClientRequestStatus(1, payload.getId(), null)
+    );
     PayloadSender.send(client.getClientOut(), this.getClientInfo(user));
   }
 
@@ -100,7 +107,7 @@ public class PayloadProcessor implements Subscribable {
     if (!authenticated) {
       PayloadSender.send(
         client.getClientOut(), 
-        new ClientRequestStatus(1, "Unauthorized")
+        new ClientRequestStatus(1, payload.getId(), "Unauthorized")
       );
       return;
     }
@@ -124,14 +131,14 @@ public class PayloadProcessor implements Subscribable {
     if (user == null) { // username taken
       PayloadSender.send(
         client.getClientOut(), 
-        new ClientRequestStatus(1, "Username taken")
+        new ClientRequestStatus(1, payload.getId(), "Username taken")
       );
       return;
     }
     //request status
     PayloadSender.send(
       client.getClientOut(), 
-      new ClientRequestStatus(1, null)
+      new ClientRequestStatus(1, payload.getId(), null)
     );
     //event
     GlobalEventQueue.queue.emitEvent(

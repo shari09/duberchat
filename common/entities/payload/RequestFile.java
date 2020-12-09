@@ -8,7 +8,7 @@ import common.entities.Token;
  * <p>
  * Created on 2020.12.06.
  * @author Candice Zhang, Shari Sun
- * @version 1.0.1
+ * @version 1.0.0
  * @since 1.0.0
  */
 

@@ -21,8 +21,13 @@ import server.resources.StoredData;
  * Created on 2020.12.06.
  * 
  * @author Shari Sun
+<<<<<<< HEAD
  * @version 1.1.1
  * @since 1.0.1
+=======
+ * @version 1.1.0
+ * @since 1.0.0
+>>>>>>> 7a25c22a9ed78d1284104337731193e52c18bbbe
  */
 public class AuthenticatedPayloadProcessor implements Subscribable {
   private PriorityBlockingQueue<AuthenticatedClientRequest> payloadQueue;

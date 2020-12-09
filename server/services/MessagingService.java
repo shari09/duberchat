@@ -20,8 +20,13 @@ import server.resources.GlobalEventQueue;
  * <p>
  * Created on 2020.12.08.
  * @author Shari Sun
+<<<<<<< HEAD
  * @version 1.0.1
  * @since 1.0.2
+=======
+ * @version 1.0.0
+ * @since 1.0.0
+>>>>>>> 7a25c22a9ed78d1284104337731193e52c18bbbe
  */
 public class MessagingService {
   private final String CHANNELS_DIR_PATH = "cliendata/data/channels/";

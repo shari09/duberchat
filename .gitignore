@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 *.class
 clientdata/
+=======
+*.class
+*.ser
+>>>>>>> 7a25c22a9ed78d1284104337731193e52c18bbbe

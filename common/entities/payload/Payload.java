@@ -12,7 +12,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 
-public abstract class Payload implements Serializable {
+public abstract class Payload implements Serializable, Comparable<Payload> {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   private PayloadType type;
@@ -23,6 +23,18 @@ public abstract class Payload implements Serializable {
     this.id = UUID.randomUUID().toString();
     this.type = type;
     this.priority = priority;
+  }
+
+  @Override
+  public int compareTo(Payload otherPayload) {
+    int otherPriority = otherPayload.getPriority();
+    if (this.priority < otherPriority) {
+      return -1;
+    } else if (this.priority == otherPriority) {
+      return 0;
+    } else {
+      return 1;
+    }
   }
 
   public PayloadType getType() {

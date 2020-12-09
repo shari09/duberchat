@@ -153,7 +153,7 @@ public class User implements Serializable {
   }
 
   public UserMetadata getMetdata() {
-    return new UserMetadata(this.userId, this.username, this.status);
+    return new UserMetadata(this.userId, this.username, this.description, this.status);
   }
 
 }

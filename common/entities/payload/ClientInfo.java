@@ -14,7 +14,7 @@ import common.entities.UserStatus;
  * <p>
  * Created on 2020.12.06.
  * @author Shari Sun, Candice Zhang
- * @version 1.0.2
+ * @version 1.0.0
  * @since 1.0.0
  */
 
@@ -25,6 +25,7 @@ public class ClientInfo extends Payload {
   private final String userId;
   private final Token token;
   private final UserStatus status;
+  private final String description;
   private final LinkedHashSet<UserMetadata> friends;
   private final ConcurrentHashMap<UserMetadata, String> incomingFriendRequests;
   private final ConcurrentHashMap<UserMetadata, String> outgoingFriendRequests;
@@ -36,6 +37,7 @@ public class ClientInfo extends Payload {
     String userId,
     Token token, 
     UserStatus status,
+    String description,
     LinkedHashSet<UserMetadata> friends,
     ConcurrentHashMap<UserMetadata, String> incomingFriendRequests,
     ConcurrentHashMap<UserMetadata, String> outgoingFriendRequests,
@@ -47,6 +49,7 @@ public class ClientInfo extends Payload {
     this.userId = userId;
     this.token = token;
     this.status = status;
+    this.description = description;
     this.friends = friends;
     this.incomingFriendRequests = incomingFriendRequests;
     this.outgoingFriendRequests = outgoingFriendRequests;
@@ -66,6 +69,10 @@ public class ClientInfo extends Payload {
     return this.status;
   }
 
+  public String getDescription() {
+    return this.description;
+  }
+  
   public LinkedHashSet<UserMetadata> getFriends() {
     return this.friends;
   }

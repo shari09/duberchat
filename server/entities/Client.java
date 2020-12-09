@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
  * 
  * @author Shari Sun
  * @version 1.0.0
- * @since 1.0.1
+ * @since 1.0.0
  */
 public class Client {
   private String userId;

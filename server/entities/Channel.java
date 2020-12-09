@@ -17,7 +17,7 @@ import common.entities.UserMetadata;
  * <p>
  * Created on 2020.12.06.
  * @author Shari Sun, Candice Zhang
- * @version 1.0.1
+ * @version 1.0.0
  * @since 1.1.0
  */
 

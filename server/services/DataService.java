@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
  * Created on 2020.12.08.
  * @author Shari Sun
  * @version 1.0.0
- * @since 1.0.2
+ * @since 1.0.0
  */
 public class DataService {
   @SuppressWarnings("unchecked")

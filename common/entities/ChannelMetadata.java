@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created on 2020.12.06.
  * @author Shari Sun, Candice Zhang
  * @version 1.0.0
- * @since 1.0.1
+ * @since 1.0.0
  */
 
 //TODO: finish

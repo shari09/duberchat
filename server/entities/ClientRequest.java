@@ -10,7 +10,7 @@ import common.entities.payload.Payload;
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun
- * @version 1.0.1
+ * @version 1.0.0
  * @since 1.0.0
  */
 

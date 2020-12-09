@@ -11,7 +11,7 @@ import server.resources.TempData;
  * Created on 2020.12.07.
  * @author Shari Sun
  * @version 1.0.0
- * @since 1.0.1
+ * @since 1.0.0
  */
 public class AuthenticatedClientHandler implements Subscribable {
   public AuthenticatedClientHandler() {

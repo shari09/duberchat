@@ -19,7 +19,7 @@ import server.entities.PrivateChannel;
  * Created on 2020.12.08.
  * @author Shari Sun
  * @version 1.0.0
- * @since 1.0.2
+ * @since 1.0.0
  */
 public class MessagingService {
   private final String CHANNELS_DIR_PATH = "cliendata/data/channels/";

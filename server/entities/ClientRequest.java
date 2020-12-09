@@ -2,14 +2,15 @@ package server.entities;
 
 import java.io.ObjectOutputStream;
 
-import common.entities.payload.*;
+import common.entities.payload.Payload;
 
 /**
- * [insert description]
+ * Stores the payload from the client and an output stream that writes
+ * to the client socket.
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
  */
 
@@ -23,7 +24,7 @@ public class ClientRequest implements Comparable<ClientRequest> {
   }
 
   public int compareTo(ClientRequest other) {
-    return this.payload.getPriority() - other.payload.getPriority();
+    return this.payload.getPriority() - other.getPayload().getPriority();
   }
 
   public Payload getPayload() {

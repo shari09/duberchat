@@ -40,8 +40,8 @@ public class Client {
     }
 
     System.out.println("Connected to server");
-    Login user = new Login(1, "shari09", "123456");
-    Login user2 = new Login(1, "shari09", "12346");
+    NewUser user = new NewUser(1, "shari09", "123456", "");
+    NewUser user2 = new NewUser(1, "shari09", "12346", "");
 
     try {
       this.output.writeObject(user);
@@ -68,6 +68,8 @@ public class Client {
             case CLIENT_INFO:
               System.out.println(((ClientInfo)payload).getToken());
               break;
+            case CHANGE_PASSWORD:
+              System.out.println();
             default:
               break;
           

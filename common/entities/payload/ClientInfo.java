@@ -1,7 +1,6 @@
 package common.entities.payload;
 
 import java.util.LinkedHashSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 import common.entities.*;
 
@@ -11,7 +10,7 @@ import common.entities.*;
  * <p>
  * Created on 2020.12.06.
  * @author Shari Sun, Candice Zhang
- * @version 1.0.1
+ * @version 1.0.2
  * @since 1.0.0
  */
 
@@ -23,7 +22,7 @@ public class ClientInfo extends Payload {
   private final Token token;
   private final LinkedHashSet<UserMetadata> friends;
   private final LinkedHashSet<UserMetadata> incomingFriendRequests;
-  private final ConcurrentHashMap<UserMetadata, FriendRequestStatus> outgoingFriendRequests;
+  private final LinkedHashSet<UserMetadata> outgoingFriendRequests;
   private final LinkedHashSet<UserMetadata> blocked;
   private final LinkedHashSet<ChannelMetadata> channels;
 
@@ -33,7 +32,7 @@ public class ClientInfo extends Payload {
     Token token, 
     LinkedHashSet<UserMetadata> friends,
     LinkedHashSet<UserMetadata> incomingFriendRequests,
-    ConcurrentHashMap<UserMetadata, FriendRequestStatus> outgoingFriendRequests,
+    LinkedHashSet<UserMetadata> outgoingFriendRequests,
     LinkedHashSet<UserMetadata> blocked,
     LinkedHashSet<ChannelMetadata> channels
   ) {
@@ -64,7 +63,7 @@ public class ClientInfo extends Payload {
     return this.incomingFriendRequests;
   }
 
-  public ConcurrentHashMap<UserMetadata,FriendRequestStatus> getOutgoingFriendRequests() {
+  public LinkedHashSet<UserMetadata> getOutgoingFriendRequests() {
     return this.outgoingFriendRequests;
   }
 

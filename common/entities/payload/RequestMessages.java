@@ -2,7 +2,7 @@ package common.entities.payload;
 
 import common.entities.*;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * A payload from client to server that
@@ -20,7 +20,7 @@ public class RequestMessages extends AuthenticatablePayload {
   private static final long serialVersionUID = 1L;
   
   private final String channelId;
-  private final Date timestamp;
+  private final Timestamp created;
   private final int quantity;
 
   public RequestMessages(
@@ -28,7 +28,7 @@ public class RequestMessages extends AuthenticatablePayload {
     String userId,
     Token token,
     String channelId,
-    Date timestamp,
+    Timestamp created,
     int quantity
   ) {
     super(
@@ -39,7 +39,7 @@ public class RequestMessages extends AuthenticatablePayload {
     );
 
     this.channelId = channelId;
-    this.timestamp = timestamp;
+    this.created = created;
     this.quantity = quantity;
   }
   
@@ -47,8 +47,8 @@ public class RequestMessages extends AuthenticatablePayload {
     return this.channelId;
   }
 
-  public Date getTimestamp() {
-    return this.timestamp;
+  public Timestamp getCreated() {
+    return this.created;
   }
 
   public int getQuantity() {

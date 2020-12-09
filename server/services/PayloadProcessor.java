@@ -53,11 +53,11 @@ public class PayloadProcessor implements Subscribable {
     while (!this.payloadQueue.isEmpty()) {
       ClientRequest client = this.payloadQueue.poll();
       if (client.getPayload().getType() == PayloadType.LOGIN) {
-        authenticateLogin(client);
+        this.authenticateLogin(client);
       } else if (client.getPayload().getType() == PayloadType.NEW_USER) {
-        newUser(client);
+        this.newUser(client);
       } else if (client.getPayload().getType() != PayloadType.KEEP_ALIVE) {
-        authenticateToken(client);
+        this.authenticateToken(client);
       }
 
     }
@@ -110,7 +110,7 @@ public class PayloadProcessor implements Subscribable {
     GlobalEventQueue.queue.emitEvent(
       EventType.AUTHENTICATED_PAYLOAD, 
       1,
-      payload
+      client
     );
   }
 

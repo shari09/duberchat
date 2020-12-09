@@ -27,13 +27,12 @@ public class SocketService {
   }
 
   public void run() {
-    Socket client = null;
     try {
       this.server = new ServerSocket(5000);
       System.out.println("Starting server...");
 
       while (running) {
-        client = server.accept();
+        Socket client = server.accept();
         client.setSoTimeout(Constants.SOCKET_TIMEOUT);
         System.out.println("Client accepted: " + client.toString());
         GlobalEventQueue.queue.emitEvent(

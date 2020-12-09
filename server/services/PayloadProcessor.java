@@ -154,6 +154,7 @@ public class PayloadProcessor implements Subscribable {
       1,
       user.getUserId(),
       token,
+      user.getDescription(),
       user.getFriends(),
       user.getIncomingFriendRequests(),
       user.getOutgoingFriendRequests(),

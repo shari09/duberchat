@@ -222,14 +222,16 @@ server to client:
 
   userId:   String,
   token:    Token,
-  friends:  ArrayList<userMetadata> (userId),
-  incoming_friend_requests: ArrayList<userMetadata> (userId),
-  outgoing_friend_requests: ArrayList<userMetadata> (userId),
-  channels: ArrayList<channelMetadata> (channelId)
+  description: String,
+  friends: LinkedHashSet<userMetadata>,
+  incoming_friend_requests: LinkedHashSet<userMetadata>,
+  outgoing_friend_requests: LinkedHashSet<userMetadata>,
+  blocked: LinkedHashSet<userMetadata>,
+  channels: LinkedHashSet<channelMetadata>
 }
 
 {
-  type: MESSAGES,
+  type: MESSAGES_HISTORY,
   priority: priority,
 
   channelId: channelId,

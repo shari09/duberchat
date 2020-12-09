@@ -25,7 +25,7 @@ public class MessagesHistory extends Payload {
     String channelId,
     Message[] messages
   ) {
-    super(PayloadType.MESSAGES, priority);
+    super(PayloadType.MESSAGES_HISTORY, priority);
     this.messages = messages;
     this.channelId = channelId;
   }

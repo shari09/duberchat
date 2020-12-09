@@ -20,6 +20,7 @@ public class ClientInfo extends Payload {
 
   private final String userId;
   private final Token token;
+  private final String description;
   private final LinkedHashSet<UserMetadata> friends;
   private final LinkedHashSet<UserMetadata> incomingFriendRequests;
   private final LinkedHashSet<UserMetadata> outgoingFriendRequests;
@@ -29,7 +30,8 @@ public class ClientInfo extends Payload {
   public ClientInfo(
     int priority,
     String userId,
-    Token token, 
+    Token token,
+    String description,
     LinkedHashSet<UserMetadata> friends,
     LinkedHashSet<UserMetadata> incomingFriendRequests,
     LinkedHashSet<UserMetadata> outgoingFriendRequests,
@@ -40,6 +42,7 @@ public class ClientInfo extends Payload {
 
     this.userId = userId;
     this.token = token;
+    this.description = description;
     this.friends = friends;
     this.incomingFriendRequests = incomingFriendRequests;
     this.outgoingFriendRequests = outgoingFriendRequests;
@@ -55,6 +58,10 @@ public class ClientInfo extends Payload {
     return this.token;
   }
 
+  public String getDescription() {
+    return this.description;
+  }
+  
   public LinkedHashSet<UserMetadata> getFriends() {
     return this.friends;
   }

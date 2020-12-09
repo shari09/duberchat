@@ -31,7 +31,7 @@ public class RegistrationFrame extends JFrame implements ActionListener {
   public static final int WIDTH = 800;
   public static final int HEIGHT = 600;
 
-  private ClientThread clientThread;
+  private ClientSocketThread clientThread;
   private JTextField usernameField;
   private JTextField descriptionField;
   private JPasswordField passwordField;
@@ -39,7 +39,7 @@ public class RegistrationFrame extends JFrame implements ActionListener {
   private JButton registerButton;
   private JLabel statusLabel;
   
-  public RegistrationFrame(String title, ClientThread clientThread) {
+  public RegistrationFrame(String title, ClientSocketThread clientThread) {
     super(title);
 
     this.clientThread = clientThread;

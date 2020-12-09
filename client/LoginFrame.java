@@ -31,7 +31,7 @@ public class LoginFrame extends JFrame implements ActionListener {
   public static final int WIDTH = 800;
   public static final int HEIGHT = 600;
 
-  private ClientThread clientThread;
+  private ClientSocketThread clientThread;
   private JTextField usernameField;
   private JPasswordField passwordField;
   private JButton loginButton;
@@ -39,7 +39,7 @@ public class LoginFrame extends JFrame implements ActionListener {
   private JLabel statusLabel;
   
 
-  public LoginFrame(String title, ClientThread clientThread) {
+  public LoginFrame(String title, ClientSocketThread clientThread) {
     super(title);
 
     this.clientThread = clientThread;

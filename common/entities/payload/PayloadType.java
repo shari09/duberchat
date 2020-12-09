@@ -47,7 +47,7 @@ public enum PayloadType {
   /** The information of a client once logged in. */
   CLIENT_INFO,
   /** the requested messages from the client */
-  MESSAGES,
+  MESSAGES_HISTORY,
   /** The requested file from the client */
   SEND_ATTACHMENT,
 

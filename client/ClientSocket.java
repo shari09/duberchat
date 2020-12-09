@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import common.entities.payload.ClientInfo;
 import common.entities.payload.NewUser;
 import common.entities.payload.Payload;
 
@@ -26,6 +27,7 @@ public class ClientSocket implements Runnable {
   private ObjectOutputStream output;
   private boolean running;
   private PriorityBlockingQueue<Payload> payloadQueue;
+  private ClientMetadata clientMetadata;
 
   public ClientSocket(String host, int port) throws IOException {
     this.socket = new Socket(host, port);
@@ -56,6 +58,8 @@ public class ClientSocket implements Runnable {
           Payload payload = (Payload)this.input.readObject();
           System.out.println("Response received");
           System.out.println(payload.toString());
+          this.processPayload(payload);
+          
           // running = false;
         }
       } catch (Exception e) {
@@ -72,6 +76,25 @@ public class ClientSocket implements Runnable {
       System.out.println("Failed to close sockets");
     }
 
+  }
+
+  public synchronized void processPayload(Payload payload) {
+    switch (payload.getType()) {
+      case CLIENT_REQUEST_STATUS:
+        break;
+      case CLIENT_INFO:
+        //TODO: finish
+        break;
+      case MESSAGES_HISTORY:
+        //TODO: finish
+        break;
+      case SEND_ATTACHMENT:
+        //TODO: finish
+        break;
+      default:
+          System.out.println("Uh oh, an incorrect payload has ended up here");
+          break;
+    }
   }
 
   public synchronized void sendPayload(Payload payloadToSend) {

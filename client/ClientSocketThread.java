@@ -9,10 +9,10 @@ package client;
  * @since 1.0.0
  */
 
-public class ClientThread extends Thread {
+public class ClientSocketThread extends Thread {
   private ClientSocket socket;
 
-  public ClientThread(ClientSocket socket) {
+  public ClientSocketThread(ClientSocket socket) {
     super(socket);
     this.socket = socket;
   }

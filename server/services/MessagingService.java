@@ -204,17 +204,31 @@ public class MessagingService {
     PrivateChannel channel = new PrivateChannel(userOne, userTwo);
     this.channels.put(channel.getChannelId(), channel);
     this.hardSave(channel.getChannelId());
+    GlobalEventQueue.queue.emitEvent(
+      EventType.CHANNEL_UPDATE, 
+      1,
+      channel
+    );
     return channel.getMetadata();
   }
 
+  /**
+   * Creates a group channel and returns the metadata
+   * @param participants
+   * @param channelName
+   * @param ownerId
+   * @return               the channel's metadata
+   */
   public ChannelMetadata createGroupChannel(
     LinkedHashSet<UserMetadata> participants,
     String channelName,
     String ownerId
   ) {
+    //TODO: verify that all the participants exist
     GroupChannel channel = new GroupChannel(participants, channelName, ownerId);
     this.channels.put(channel.getChannelId(), channel);
     this.hardSave(channel.getChannelId());
+    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel);
     return channel.getMetadata();
   }
 

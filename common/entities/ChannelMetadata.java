@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 
-//TODO: finish
+
 public class ChannelMetadata implements Serializable {
   /**
    *

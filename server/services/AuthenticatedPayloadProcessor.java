@@ -5,6 +5,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import common.entities.Message;
 import common.entities.payload.ChangePassword;
 import common.entities.payload.ClientRequestStatus;
+import common.entities.payload.CreateChannel;
 import common.entities.payload.FriendRequestResponse;
 import common.entities.payload.FriendRequestToServer;
 import common.entities.payload.MessageToServer;
@@ -95,6 +96,10 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     this.running = false;
   }
 
+  private void requestAttachment(AuthenticatedClientRequest client) {
+
+  }
+
   private void changePassword(AuthenticatedClientRequest client) {
     ChangePassword payload = (ChangePassword)client.getPayload();
     boolean success = StoredData.users.changePassword(
@@ -139,19 +144,29 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void sendFriendRequest(AuthenticatedClientRequest client) {
     FriendRequestToServer friendReq = (FriendRequestToServer)client.getPayload();
+    String recipientId = StoredData.users.getUserId(friendReq.getRecipientName());
+    if (StoredData.users.isBlocked(recipientId, friendReq.getId())) {
+      PayloadSender.send(
+        client.getClientOut(),
+        new ClientRequestStatus(1, friendReq.getId(), "You have been blocked")
+      );
+      return;
+    }
+    
+    boolean success = StoredData.users.sendFriendRequest(
+      friendReq.getUserId(), 
+      recipientId,
+      friendReq.getRequestMessage()
+    );
+
     //sending request to a nonexistent user
-    if (!StoredData.users.usernameExist(friendReq.getRecipientName())) {
+    if (!success) {
       PayloadSender.send(
         client.getClientOut(),
         new ClientRequestStatus(1, friendReq.getId(), "Recipient does not exist")
       );
       return;
     }
-    StoredData.users.sendFriendRequest(
-      friendReq.getUserId(), 
-      friendReq.getRecipientName(),
-      friendReq.getRequestMessage()
-    );
 
     PayloadSender.send(
       client.getClientOut(),
@@ -187,8 +202,19 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     );
   }
 
+  //TODO: make sure the owner/invited user aren't blocked 
   private void createChannel(AuthenticatedClientRequest client) {
-    
+    CreateChannel payload = (CreateChannel)client.getPayload();
+    StoredData.channels.createGroupChannel(
+      payload.getParticipants(), 
+      payload.getName(),
+      payload.getUserId()
+    );
+
+    PayloadSender.send(
+      client.getClientOut(),
+      new ClientRequestStatus(1, payload.getId(), null)  
+    );
   }
 
   private void requestMessages(AuthenticatedClientRequest client) {

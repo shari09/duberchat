@@ -1,6 +1,6 @@
 package server.services;
 
-import common.entities.payload.ClientInfoUpdate;
+import common.entities.payload.ClientFriendsUpdate;
 import server.entities.EventType;
 import server.entities.FriendRequest;
 import server.entities.User;
@@ -15,7 +15,7 @@ import server.resources.TempData;
  * 
  * @author Shari Sun
  * @version 1.0.0
- * @since 1.0.2
+ * @since 1.0.0
  */
 public class FriendRequestHandler implements Subscribable {
   public FriendRequestHandler() {
@@ -43,14 +43,11 @@ public class FriendRequestHandler implements Subscribable {
      
       PayloadSender.send(
         TempData.clientConnections.getClient(userId), 
-        new ClientInfoUpdate(
+        new ClientFriendsUpdate(
           1, 
-          user.getStatus(),
           user.getFriends(),
           user.getIncomingFriendRequests(), 
-          user.getOutgoingFriendRequests(),
-          user.getBlocked(),
-          user.getChannels() 
+          user.getOutgoingFriendRequests()
         )
       );
     }

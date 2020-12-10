@@ -82,7 +82,7 @@ public class ClientSocket implements Runnable {
     switch (payload.getType()) {
       case CLIENT_REQUEST_STATUS:
         break;
-      case CLIENT_INFO:
+      case CLIENT_FRIENDS_UPDATE:
         //TODO: finish
         break;
       case MESSAGES_TO_CLIENT:

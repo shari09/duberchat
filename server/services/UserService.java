@@ -169,16 +169,15 @@ public class UserService {
   /**
    * 
    * @param userId
-   * @param recipientName
+   * @param recipientId
    * @param msg
    * @return               false if the recipient doesn't exist
    */
-  public boolean sendFriendRequest(String userId, String recipientName, String msg) {
-    if (!this.usernameExist(recipientName)) {
+  public boolean sendFriendRequest(String userId, String recipientId, String msg) {
+    if (!this.userIdExist(recipientId)) {
       return false;
     }    
     User user = this.users.get(userId);
-    String recipientId = this.usernameToUid.get(recipientName);
     User friend = this.users.get(recipientId);
     user.addOutgoingFriendRequest(friend.getMetdata(), msg);
     friend.addIncomingFriendRequest(user.getMetdata(), msg);
@@ -188,6 +187,17 @@ public class UserService {
       new FriendRequest(userId, recipientId)
     );
     return true;
+  }
+
+  /**
+   * 
+   * @param blockerId
+   * @param blockeeId
+   * @return            whether the blocker blocked the blockee or not
+   */
+  public boolean isBlocked(String blockerId, String blockeeId) {
+    UserMetadata blockee = this.getUserMetadata(blockeeId);
+    return this.users.get(blockerId).getBlocked().contains(blockee);
   }
 
   /**

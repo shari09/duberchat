@@ -44,7 +44,7 @@ public class ClientInfo extends Payload {
     LinkedHashSet<UserMetadata> blocked,
     LinkedHashSet<ChannelMetadata> channels
   ) {
-    super(PayloadType.CLIENT_INFO, priority);
+    super(PayloadType.CLIENT_FRIENDS_UPDATE, priority);
 
     this.userId = userId;
     this.token = token;

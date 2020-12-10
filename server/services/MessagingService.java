@@ -20,13 +20,8 @@ import server.resources.GlobalEventQueue;
  * <p>
  * Created on 2020.12.08.
  * @author Shari Sun
-<<<<<<< HEAD
- * @version 1.0.1
- * @since 1.0.2
-=======
  * @version 1.0.0
  * @since 1.0.0
->>>>>>> 7a25c22a9ed78d1284104337731193e52c18bbbe
  */
 public class MessagingService {
   private final String CHANNELS_DIR_PATH = "cliendata/data/channels/";
@@ -202,8 +197,8 @@ public class MessagingService {
     UserMetadata userTwo
   ) {
     PrivateChannel channel = new PrivateChannel(userOne, userTwo);
-    this.channels.put(channel.getChannelId(), channel);
-    this.hardSave(channel.getChannelId());
+    this.channels.put(channel.getId(), channel);
+    this.hardSave(channel.getId());
     return channel.getMetadata();
   }
 
@@ -213,8 +208,8 @@ public class MessagingService {
     String ownerId
   ) {
     GroupChannel channel = new GroupChannel(participants, channelName, ownerId);
-    this.channels.put(channel.getChannelId(), channel);
-    this.hardSave(channel.getChannelId());
+    this.channels.put(channel.getId(), channel);
+    this.hardSave(channel.getId());
     return channel.getMetadata();
   }
 

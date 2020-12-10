@@ -6,10 +6,14 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.concurrent.PriorityBlockingQueue;
+
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -27,11 +31,10 @@ import common.entities.payload.Login;
  */
 
 @SuppressWarnings("serial")
-public class LoginFrame extends JFrame implements ActionListener {
+public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener {
   public static final int WIDTH = 800;
   public static final int HEIGHT = 600;
 
-  private ClientSocketThread clientThread;
   private JTextField usernameField;
   private JPasswordField passwordField;
   private JButton loginButton;
@@ -39,12 +42,9 @@ public class LoginFrame extends JFrame implements ActionListener {
   private JLabel statusLabel;
   
 
-  public LoginFrame(String title, ClientSocketThread clientThread) {
-    super(title);
+  public LoginFrame(String title, ClientSocket clientSocket) {
+    super(title, clientSocket);
 
-    this.clientThread = clientThread;
-
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(StartFrame.WIDTH, StartFrame.HEIGHT);
     this.setResizable(true);
 
@@ -84,6 +84,7 @@ public class LoginFrame extends JFrame implements ActionListener {
     panel.add(this.loginButton);
 
     // register account button
+    panel.add(Box.createRigidArea(new Dimension(0, 10)));
     this.registerButton = new JButton("Register for an account");
     this.registerButton.setAlignmentX(CENTER_ALIGNMENT);
     this.registerButton.addActionListener(this);
@@ -101,7 +102,7 @@ public class LoginFrame extends JFrame implements ActionListener {
     this.setVisible(true);
   }
 
-  public void actionPerformed(ActionEvent e) {
+  public synchronized void actionPerformed(ActionEvent e) {
     if (e.getSource() == this.loginButton) {
       String username = this.usernameField.getText();
       String password = String.valueOf(this.passwordField.getPassword());
@@ -111,23 +112,44 @@ public class LoginFrame extends JFrame implements ActionListener {
         this.statusLabel.setText("Please fill in the required fields");
         return;
       }
-      synchronized (this.clientThread.getSocket()) {
-        this.clientThread.getSocket().sendPayload(
-          new Login(
-            1,
-            username,
-            password
-          )
-        );
-      }
+      this.getClientSocket().sendPayload(
+        new Login(
+          1,
+          username,
+          password
+        )
+      );
       
       this.statusLabel.setForeground(Color.GRAY);
       this.statusLabel.setText("Logging in...");
 
+      while (true) {
+        // user successfully logged in
+        if (GlobalClient.hasClientData(this.getClientSocket().getSocket())) {
+          this.statusLabel.setForeground(Color.GREEN);
+          this.statusLabel.setText("Successfully logged in");
+          // load user frame
+          MainUserFrame nextFrame = new MainUserFrame(
+            this.getTitle(),
+            this.getClientSocket()
+          );
+          this.dispose();
+          break;
+        }
+        // error message
+        PriorityBlockingQueue<ErrorMessage> errorMessages = this.getClientSocket().getErrorMessages();
+        if (errorMessages.size() > 0) {
+          JOptionPane.showMessageDialog(this, errorMessages.poll().getMessage());
+          this.statusLabel.setForeground(Color.RED);
+          this.statusLabel.setText("Login failed. Please try again");
+          break;
+        }
+      }
+
     } else if (e.getSource() == this.registerButton) {
-      RegistrationFrame registrationFrame = new RegistrationFrame(
+      RegistrationFrame nextFrame = new RegistrationFrame(
         this.getTitle(),
-        clientThread
+        this.getClientSocket()
       );
       this.dispose();
     }

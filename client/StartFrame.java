@@ -101,16 +101,13 @@ public class StartFrame extends JFrame implements ActionListener {
 
     int portNum = Integer.parseInt(portInput);
     try {
-      ClientSocketThread clientThread = new ClientSocketThread (
-        new ClientSocket(
-          addressInput,
-          portNum)
-      );
+      ClientSocket clientSocket = new ClientSocket(addressInput, portNum);
+      Thread clientThread = new Thread(clientSocket);
       clientThread.start();
 
-      LoginFrame loginFrame = new LoginFrame(
+      LoginFrame nextFrame = new LoginFrame(
         this.getTitle(),
-        clientThread
+        clientSocket
       );
 
       this.dispose();

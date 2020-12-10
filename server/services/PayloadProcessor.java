@@ -2,7 +2,9 @@ package server.services;
 
 import java.util.concurrent.PriorityBlockingQueue;
 
+import common.entities.ClientData;
 import common.entities.Token;
+import common.entities.UserMetadata;
 import common.entities.payload.AuthenticatablePayload;
 import common.entities.payload.ClientInfo;
 import common.entities.payload.ClientRequestStatus;
@@ -86,7 +88,7 @@ public class PayloadProcessor implements Subscribable {
     GlobalEventQueue.queue.emitEvent(
       EventType.AUTHENTICATED_CLIENT, 
       1,
-      new Client(user.getUserId(), client.getClientOut())
+      new Client(user.getId(), client.getClientOut())
     );
     PayloadSender.send(
       client.getClientOut(), 
@@ -144,7 +146,7 @@ public class PayloadProcessor implements Subscribable {
     GlobalEventQueue.queue.emitEvent(
       EventType.AUTHENTICATED_CLIENT, 
       1,
-      new Client(user.getUserId(), client.getClientOut())
+      new Client(user.getId(), client.getClientOut())
     );
     PayloadSender.send(client.getClientOut(), this.getClientInfo(user));
 
@@ -153,18 +155,21 @@ public class PayloadProcessor implements Subscribable {
 
   private ClientInfo getClientInfo(User user) {
     Token token = TokenService.generateToken();
-    TempData.tokens.put(user.getUserId(), token);
+    TempData.tokens.put(user.getId(), token);
     return new ClientInfo(
       1,
-      user.getUserId(),
-      token,
-      user.getStatus(),
-      user.getDescription(),
-      user.getFriends(),
-      user.getIncomingFriendRequests(),
-      user.getOutgoingFriendRequests(),
-      user.getBlocked(),
-      user.getChannels()
+      new ClientData(
+        user.getId(),
+        token,
+        user.getUsername(),
+        user.getDescription(),
+        user.getStatus(),
+        user.getFriends(),
+        user.getIncomingFriendRequests(),
+        user.getOutgoingFriendRequests(),
+        user.getBlocked(),
+        user.getChannels()
+      )
     );
 
   }

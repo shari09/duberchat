@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 
 import common.entities.ChannelMetadata;
+import common.entities.Identifiable;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 
@@ -20,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.0.0
  */
 
-public class User implements Serializable {
+public class User implements Serializable, Identifiable {
   /**
    *
    */
@@ -56,7 +57,8 @@ public class User implements Serializable {
     this.channels = new LinkedHashSet<>();
   }
 
-  public String getUserId() {
+  @Override
+  public String getId() {
     return this.userId;
   }
 

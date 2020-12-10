@@ -15,7 +15,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 
-public class Message implements Serializable, Comparable<Message> {
+public class Message implements Serializable, Identifiable, Comparable<Message> {
   /**
    *
    */
@@ -46,20 +46,27 @@ public class Message implements Serializable, Comparable<Message> {
     this.attachmentName = attachmentName;
   }
 
-  public String getChannelId() {
-    return channelId;
+  @Override
+  public String getId() {
+    return this.messageId;
   }
 
+  @Override
   public int compareTo(Message other) {
     return other.getCreated().compareTo(this.created);
   }
 
-  public String getMessageId() {
-    return this.messageId;
+  public void updateContent(String content) {
+    this.content = content;
+    this.edited = new Timestamp(System.currentTimeMillis());
   }
 
   public boolean hasAttachment() {
     return this.attachmentId != null;
+  }
+
+  public String getChannelId() {
+    return channelId;
   }
 
   public String getAttachmentName() {
@@ -86,9 +93,5 @@ public class Message implements Serializable, Comparable<Message> {
     return this.attachmentId;
   }
 
-  public void updateContent(String content) {
-    this.content = content;
-    this.edited = new Timestamp(System.currentTimeMillis());
-  }
-
+  
 }

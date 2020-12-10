@@ -3,6 +3,8 @@ package common.entities.payload;
 import java.io.Serializable;
 import java.util.UUID;
 
+import common.entities.Identifiable;
+
 /**
  * Represent the pack of data that is transferred between server and client.
  * <p>
@@ -12,7 +14,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 
-public abstract class Payload implements Serializable, Comparable<Payload> {
+public abstract class Payload implements Serializable, Identifiable, Comparable<Payload> {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   private PayloadType type;
@@ -26,15 +28,13 @@ public abstract class Payload implements Serializable, Comparable<Payload> {
   }
 
   @Override
+  public String getId() {
+    return this.id;
+  }
+
+  @Override
   public int compareTo(Payload otherPayload) {
-    int otherPriority = otherPayload.getPriority();
-    if (this.priority < otherPriority) {
-      return -1;
-    } else if (this.priority == otherPriority) {
-      return 0;
-    } else {
-      return 1;
-    }
+    return this.priority - otherPayload.getPriority();
   }
 
   public PayloadType getType() {
@@ -43,10 +43,6 @@ public abstract class Payload implements Serializable, Comparable<Payload> {
 
   public int getPriority() {
     return this.priority;
-  }
-
-  public String getId() {
-    return this.id;
   }
 
 }

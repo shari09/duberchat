@@ -33,7 +33,7 @@ public enum EventType {
   /** Message removed */
   REMOVE_MESSAGE,
   /** New, accepting, rejecting, or cancelling friend request */
-  FRIEND_REQUEST,
+  FRIEND_UPDATE,
 
   CHANNEL_UPDATE,
 }

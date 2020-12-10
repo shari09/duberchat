@@ -1,6 +1,7 @@
 package common.entities;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * Contains the id and profile information of a channel.
@@ -12,7 +13,7 @@ import java.io.Serializable;
  */
 
 
-public class ChannelMetadata implements Serializable {
+public class ChannelMetadata implements Serializable, Comparable<ChannelMetadata> {
   /**
    *
    */
@@ -20,10 +21,12 @@ public class ChannelMetadata implements Serializable {
 
   private String channelId;
   private String channelName;
+  private Timestamp lastModified;
 
-  public ChannelMetadata(String channelId, String channelName) {
+  public ChannelMetadata(String channelId, String channelName, Timestamp lastModified) {
     this.channelId = channelId;
     this.channelName = channelName;
+    this.lastModified = lastModified;
   }
 
 
@@ -35,4 +38,19 @@ public class ChannelMetadata implements Serializable {
     return this.channelName;
   }
 
+  public void updateChannelName(String name) {
+    this.channelName = name;
+  }
+
+  public int compareTo(ChannelMetadata other) {
+    return other.getLastModified().compareTo(this.getLastModified());
+  }
+
+  public Timestamp getLastModified() {
+    return this.lastModified;
+  }
+
+ public void updateLastModified(Timestamp now) {
+    this.lastModified = now;
+  }
 }

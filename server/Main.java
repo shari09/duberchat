@@ -3,7 +3,7 @@ package server;
 import server.services.AuthenticatedClientHandler;
 import server.services.AuthenticatedPayloadProcessor;
 import server.services.ClientQueue;
-import server.services.FriendRequestHandler;
+import server.services.FriendInfoUpdater;
 import server.services.MessageQueue;
 import server.services.ChannelUpdateHandler;
 import server.services.PayloadProcessor;
@@ -25,7 +25,7 @@ public class Main {
     AuthenticatedClientHandler authenticatedUserHandler = new AuthenticatedClientHandler();
     AuthenticatedPayloadProcessor authenticatedPayloadProcessor = new AuthenticatedPayloadProcessor();
     MessageQueue messageQueue = new MessageQueue();
-    FriendRequestHandler friendReqHandler = new FriendRequestHandler();
+    FriendInfoUpdater friendInfoUpdater = new FriendInfoUpdater();
     ChannelUpdateHandler channelUpdateHandler = new ChannelUpdateHandler();
     SocketService socket = new SocketService();
 
@@ -34,7 +34,7 @@ public class Main {
     authenticatedPayloadProcessor.activate();
     authenticatedUserHandler.activate();
     messageQueue.activate();
-    friendReqHandler.activate();
+    friendInfoUpdater.activate();
     channelUpdateHandler.activate();
     socket.run();
   }

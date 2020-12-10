@@ -16,6 +16,7 @@ import common.entities.UserMetadata;
  * A channel that allows users to send messages in.
  * <p>
  * Created on 2020.12.06.
+ * 
  * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.1.0
@@ -24,18 +25,33 @@ import common.entities.UserMetadata;
 public abstract class Channel {
   private String channelId;
   private LinkedHashSet<UserMetadata> participants;
-  //TODO: blame java I can't get elements from a set
+  private LinkedHashSet<String> blacklist;
   private ConcurrentSkipListMap<Message, Message> messages;
   private ConcurrentHashMap<String, Message> idToMsgMapping;
+  private int size;
+  private Timestamp lastModified;
+  private ChannelMetadata metadata;
 
-
-  public Channel(
-    LinkedHashSet<UserMetadata> participants
-  ) {
-    this.channelId = UUID.randomUUID().toString();;
+  public Channel(LinkedHashSet<UserMetadata> participants) {
+    this.channelId = UUID.randomUUID().toString();
+    this.size = participants.size();
     this.participants = participants;
     this.messages = new ConcurrentSkipListMap<>();
     this.idToMsgMapping = new ConcurrentHashMap<>();
+    this.lastModified = new Timestamp(System.currentTimeMillis());
+    this.getNewMetadata();
+  }
+
+  public Timestamp getLastModified() {
+    return this.lastModified;
+  }
+
+  public synchronized void blacklistUser(String userId) {
+    this.blacklist.add(userId);
+  }
+
+  public synchronized boolean isBlacklisted(String userId) {
+    return this.blacklist.contains(userId);
   }
 
   public String getChannelId() {
@@ -46,23 +62,41 @@ public abstract class Channel {
     return this.participants;
   }
 
+  public synchronized boolean hasParticipant(UserMetadata user) {
+    return this.participants.contains(user);
+  }
+
   public synchronized boolean addParticipant(UserMetadata user) {
     this.participants.add(user);
+    this.size++;
     return true;
   }
 
   public synchronized boolean removeParticipant(UserMetadata user) {
     this.participants.remove(user);
+    this.size--;
     return true;
   }
 
-  public ChannelMetadata getMetadata() {
-    return new ChannelMetadata(this.channelId, null);
+  public int getSize() {
+    return this.size;
   }
+
+  public ChannelMetadata getMetadata() {
+    return this.metadata;
+  }
+
+  /**
+   * 
+   * @return    a new metadata object
+   */
+  public abstract ChannelMetadata getNewMetadata();
 
   public Message addMessage(Message message) {
     this.messages.put(message, message);
     this.idToMsgMapping.put(message.getMessageId(), message);
+    this.lastModified = new Timestamp(System.currentTimeMillis());
+    this.metadata.updateLastModified(this.lastModified);
     return message;
   }
 
@@ -74,6 +108,8 @@ public abstract class Channel {
   public Message editMessage(String messageId, String content) {
     Message msg = this.messages.get(this.idToMsgMapping.get(messageId));
     msg.updateContent(content);
+    this.lastModified = new Timestamp(System.currentTimeMillis());
+    this.metadata.updateLastModified(this.lastModified);
     return msg;
   }
 

@@ -38,8 +38,7 @@ public class ChannelUpdateHandler implements Subscribable {
     Iterator<UserMetadata> itr = channel.getParticipants().iterator();
     while (itr.hasNext()) {
       String userId = itr.next().getUserId();
-      LinkedHashSet<ChannelMetadata> channels = 
-        StoredData.users.getUser(userId).getChannels();
+      LinkedHashSet<ChannelMetadata> channels = StoredData.users.getChannels(userId);
       PayloadSender.send(
         TempData.clientConnections.getClient(userId),
         new ClientChannelsUpdate(1, channels)

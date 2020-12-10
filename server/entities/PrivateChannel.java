@@ -2,6 +2,7 @@ package server.entities;
 
 import java.util.LinkedHashSet;
 
+import common.entities.ChannelMetadata;
 import common.entities.UserMetadata;
 
 /**
@@ -26,5 +27,12 @@ public class PrivateChannel extends Channel {
 
   public boolean removeParticipant(UserMetadata user) {
     return false;
+  }
+  public ChannelMetadata getNewMetadata() {
+    return new ChannelMetadata(
+      this.getChannelId(), 
+      null, 
+      this.getLastModified()
+    );
   }
 }

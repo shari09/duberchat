@@ -49,6 +49,7 @@ public class GroupChannel extends Channel {
   }
 
   public void updateChannelName(String name) {
+    this.getMetadata().updateChannelName(name);
     this.channelName = name;
   }
 
@@ -56,8 +57,12 @@ public class GroupChannel extends Channel {
     this.ownerId = userId;
   }
 
-  public ChannelMetadata getMetadata() {
-    return new ChannelMetadata(this.getChannelId(), this.channelName);
+  public ChannelMetadata getNewMetadata() {
+    return new ChannelMetadata(
+      this.getChannelId(), 
+      this.getChannelName(), 
+      this.getLastModified()
+    );
   }
 
 }

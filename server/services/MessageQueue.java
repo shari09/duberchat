@@ -21,7 +21,7 @@ import server.resources.TempData;
  * 
  * @author Shari Sun
  * @version 1.0.0
- * @since 1.0.2
+ * @since 1.0.0
  */
 public class MessageQueue implements Subscribable {
   private ConcurrentLinkedQueue<Message> queue;

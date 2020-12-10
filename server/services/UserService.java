@@ -1,24 +1,26 @@
 package server.services;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import common.entities.ChannelMetadata;
+import common.entities.ProfileField;
 import common.entities.Token;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 import server.entities.EventType;
-import server.entities.FriendRequest;
 import server.entities.User;
 import server.resources.GlobalEventQueue;
 import server.resources.StoredData;
 import server.resources.TempData;
 
-
 /**
  * [insert description]
  * <p>
  * Created on 2020.12.05.
+ * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
@@ -33,8 +35,8 @@ public class UserService {
   private ConcurrentHashMap<String, String> uidToUsername;
   private int numChanges = 0;
   private int bufferEntriesNum = 1;
-  
-  public UserService() {    
+
+  public UserService() {
     try {
       File usersFile = new File(this.USERS_PATH);
       if (!usersFile.exists()) {
@@ -83,6 +85,9 @@ public class UserService {
   }
 
   public String getUserId(String username) {
+    if (!this.usernameToUid.containsKey(username)) {
+      return null;
+    }
     return this.usernameToUid.get(username);
   }
 
@@ -92,10 +97,11 @@ public class UserService {
 
   /**
    * Changes a given user's password.
-   * @param userId          the user's userId
-   * @param oldPassword     the user's old password
-   * @param newPassword     the user's desired new password
-   * @return                whether the change was a success
+   * 
+   * @param userId      the user's userId
+   * @param oldPassword the user's old password
+   * @param newPassword the user's desired new password
+   * @return whether the change was a success
    */
   public boolean changePassword(String userId, String oldPassword, String newPassword) {
     if (!this.users.get(userId).hasPassword(oldPassword)) {
@@ -142,15 +148,6 @@ public class UserService {
     return this.users.get(userId).getMetdata();
   }
 
-  /**
-   * 
-   * @param userId
-   * @return           the user
-   */
-  public User getUser(String userId) {
-    return this.users.get(userId);
-  }
-
   public void changeUsername(String uid, String newUsername) {
     String oldUsername = this.uidToUsername.get(uid);
     this.usernameToUid.remove(oldUsername);
@@ -163,71 +160,66 @@ public class UserService {
   public void updateUserStatus(String userId, UserStatus status) {
     User user = this.users.get(userId);
     user.updateStatus(status);
+    this.notifyFriends(user);
   }
-
 
   /**
    * 
    * @param userId
    * @param recipientId
    * @param msg
-   * @return               false if the recipient doesn't exist
+   * @return false if the recipient doesn't exist
    */
   public boolean sendFriendRequest(String userId, String recipientId, String msg) {
     if (!this.userIdExist(recipientId)) {
       return false;
-    }    
+    }
     User user = this.users.get(userId);
     User friend = this.users.get(recipientId);
     user.addOutgoingFriendRequest(friend.getMetdata(), msg);
     friend.addIncomingFriendRequest(user.getMetdata(), msg);
-    GlobalEventQueue.queue.emitEvent(
-      EventType.FRIEND_REQUEST, 
-      1,
-      new FriendRequest(userId, recipientId)
-    );
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
     return true;
   }
 
   /**
    * 
    * @param blockerId
-   * @param blockeeId
-   * @return            whether the blocker blocked the blockee or not
+   * @param toBeBlockedId
+   * @return whether the blocker blocked the blockee or not
    */
-  public boolean isBlocked(String blockerId, String blockeeId) {
-    UserMetadata blockee = this.getUserMetadata(blockeeId);
+  public boolean isBlocked(String blockerId, String toBeBlockedId) {
+    UserMetadata blockee = this.getUserMetadata(toBeBlockedId);
     return this.users.get(blockerId).getBlocked().contains(blockee);
+  }
+
+  public LinkedHashSet<ChannelMetadata> getChannels(String userId) {
+    return this.users.get(userId).getChannels();
   }
 
   /**
    * 
    * @param userId
    * @param requesterId
-   * @return                 false if the requester id doesn't exist
+   * @return false if the requester id doesn't exist
    */
   public boolean acceptFriendRequest(String userId, String requesterId) {
     if (!this.userIdExist(requesterId)) {
       return false;
     }
-    
+
     User user = this.users.get(userId);
     User requester = this.users.get(requesterId);
     user.addFriend(requester.getMetdata());
     requester.addFriend(user.getMetdata());
     user.removeIncomingFriendRequest(requester.getMetdata());
     requester.removeOutgoingFriendRequest(user.getMetdata());
-    ChannelMetadata channel = StoredData.channels.createPrivateChannel(
-      user.getMetdata(), 
-      requester.getMetdata()
-    );
+    ChannelMetadata channel = StoredData.channels.createPrivateChannel(user.getMetdata(), requester.getMetdata());
     user.addChannel(channel);
     requester.addChannel(channel);
-    GlobalEventQueue.queue.emitEvent(
-      EventType.FRIEND_REQUEST, 
-      1,
-      new FriendRequest(userId, requesterId)
-    );
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, requester);
     return true;
   }
 
@@ -235,22 +227,19 @@ public class UserService {
    * 
    * @param userId
    * @param requesterId
-   * @return              false if the requester doesn't exist
+   * @return false if the requester doesn't exist
    */
   public boolean rejectFriendRequest(String userId, String requesterId) {
     if (!this.userIdExist(requesterId)) {
       return false;
     }
-    
+
     User user = this.users.get(userId);
     User requester = this.users.get(requesterId);
     user.removeIncomingFriendRequest(requester.getMetdata());
     requester.removeOutgoingFriendRequest(user.getMetdata());
-    GlobalEventQueue.queue.emitEvent(
-      EventType.FRIEND_REQUEST, 
-      1,
-      new FriendRequest(userId, requesterId)
-    );
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, requester);
     return true;
   }
 
@@ -258,22 +247,19 @@ public class UserService {
    * 
    * @param userId
    * @param recipientId
-   * @return              false if the recipient doesn't exist
+   * @return false if the recipient doesn't exist
    */
   public boolean cancelFriendRequest(String userId, String recipientId) {
     if (!this.userIdExist(recipientId)) {
       return false;
     }
-    
+
     User user = this.users.get(userId);
     User friend = this.users.get(recipientId);
     user.removeOutgoingFriendRequest(friend.getMetdata());
     friend.removeIncomingFriendRequest(user.getMetdata());
-    GlobalEventQueue.queue.emitEvent(
-      EventType.FRIEND_REQUEST, 
-      1,
-      new FriendRequest(userId, recipientId)
-    );
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
     return true;
   }
 
@@ -289,21 +275,67 @@ public class UserService {
     friend.removeFriend(friend.getMetdata());
   }
 
+  public boolean isFriend(String userA, String userB) {
+    //TODO: throw exception if userB doesn't exist
+    return this.users.get(userA).hasFriend(this.users.get(userB).getMetdata());
+  }
+
   /**
    * 
-   * @param userId
-   * @param blockedUsername
-   * @return                    false if the blocked user doesn't exist
+   * @param blockerId
+   * @param toBeBlockedId
+   * @return               false if the blockee doesn't exist
    */
-  public boolean blockUser(String userId, String blockedUsername) {
-    if (!this.usernameExist(blockedUsername)) {
+  public boolean blockUser(String blockerId, String toBeBlockedId) {
+    if (!this.usernameExist(toBeBlockedId)) {
       return false;
     }
-    User user = this.users.get(userId);
-    User blocked = this.users.get(this.usernameToUid.get(blockedUsername));
+    User user = this.users.get(blockerId);
+    User blocked = this.users.get(this.usernameToUid.get(toBeBlockedId));
     user.removeFriend(blocked.getMetdata());
     blocked.removeFriend(user.getMetdata());
     user.addBlocked(blocked.getMetdata());
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, blocked);
     return true;
   }
+
+  /**
+   * 
+   * @param userId
+   * @param fieldToChange
+   * @param newValue
+   */
+  public void changeProfile(
+    String userId, 
+    ProfileField fieldToChange, 
+    String newValue
+  ) {
+    User user = this.users.get(userId);
+    switch(fieldToChange) {
+      case DESCRIPTION:
+        user.updateDescription(newValue);
+        break;
+      case USERNAME:
+        user.updateUsername(newValue);
+        break;
+    }
+    notifyFriends(user);
+
+  }
+
+  /**
+   * 
+   * @param user
+   */
+  private void notifyFriends(User user) {
+    Iterator<UserMetadata> itr = user.getFriends().iterator();
+    while (itr.hasNext()) {
+      User friend = this.users.get(itr.next().getUserId());
+      GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
+    }
+  }
+
+
+
 }

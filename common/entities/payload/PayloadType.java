@@ -19,6 +19,8 @@ public enum PayloadType {
   CHANGE_PASSWORD,
   /** Change the user's profile settings (description, status, etc) */
   CHANGE_PROFILE,
+  /** Updates the user's status that is displayed to others */
+  UPDATE_STATUS,
   /** Change the channel's settings (description, profile pic, etc) */
   CHANGE_CHANNEL,
   /** Sends a new message */
@@ -40,11 +42,11 @@ public enum PayloadType {
   /** Block a certain user knowing their username */
   BLOCK_USER,
   /** Add an user to the group channel */
-  ADD_PARTICIPANTS_TO_CHANNEL,
+  ADD_PARTICIPANT,
   /** Remove an user from a group channel */
   REMOVE_PARTICIPANT,
   /** Blacklist a user from a group channel */
-  BLACKLIST_PARTICIPANT,
+  BLACKLIST_USER,
   /** Leave the group channel */
   LEAVE_CHANNEL,
   /** Transfer the ownership/admin to a different user */

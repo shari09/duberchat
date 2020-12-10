@@ -1,6 +1,7 @@
 package common.entities.payload;
 
-import common.entities.*;
+import common.entities.ChannelField;
+import common.entities.Token;
 
 /**
  * A payload from client to server that

@@ -12,13 +12,13 @@ import common.entities.Token;
  * @since 1.0.0
  */
 
-public class RequestFile extends AuthenticatablePayload {
+public class RequestAttachment extends AuthenticatablePayload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
   private final String attachmentId;
 
-  public RequestFile(
+  public RequestAttachment(
     int priority,
     String userId,
     Token token,

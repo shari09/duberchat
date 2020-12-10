@@ -31,6 +31,7 @@ public class User implements Serializable {
   private String password;
   private String description;
   private UserStatus status;
+  private UserMetadata metadata;
 
   private LinkedHashSet<UserMetadata> friends;
   /** the user requesting and their requesting message */
@@ -46,6 +47,12 @@ public class User implements Serializable {
     this.password = password;
     this.description = description;
     this.status = UserStatus.ACTIVE;
+    this.metadata = new UserMetadata(
+      this.userId, 
+      this.username, 
+      this.description, 
+      this.status
+    );
 
     this.friends = new LinkedHashSet<>();
     
@@ -66,6 +73,7 @@ public class User implements Serializable {
 
   public void updateUsername(String username) {
     this.username = username;
+    this.updateUsername(username);
   }
 
   public void updatePassword(String password) {
@@ -82,6 +90,7 @@ public class User implements Serializable {
 
   public void updateDescription(String description) {
     this.description = description;
+    this.metadata.updateDescription(description);
   }
   
   public UserStatus getStatus() {
@@ -90,10 +99,15 @@ public class User implements Serializable {
 
   public void updateStatus(UserStatus status) {
     this.status = status;
+    this.metadata.updateStatus(status);
   }  
 
   public synchronized LinkedHashSet<UserMetadata> getFriends() {
     return this.friends;
+  }
+
+  public synchronized boolean hasFriend(UserMetadata user) {
+    return this.friends.contains(user);
   }
   
   public synchronized void addFriend(UserMetadata user) {
@@ -153,7 +167,7 @@ public class User implements Serializable {
   }
 
   public UserMetadata getMetdata() {
-    return new UserMetadata(this.userId, this.username, this.description, this.status);
+    return this.metadata;
   }
 
 }

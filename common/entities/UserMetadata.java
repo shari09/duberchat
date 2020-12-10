@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 
-public class UserMetadata implements Serializable {
+public class UserMetadata implements Serializable, Comparable<UserMetadata> {
   /**
    *
    */
@@ -43,12 +43,28 @@ public class UserMetadata implements Serializable {
     return this.username;
   }
 
+  public void updateUsername(String username) {
+    this.username = username;
+  }
+
   public String getDescription() {
     return this.description;
+  }
+
+  public void updateDescription(String description) {
+    this.description = description;
   }
   
   public UserStatus getStatus() {
     return this.status;
+  }
+
+  public void updateStatus(UserStatus status) {
+    this.status = status;
+  }
+
+  public int compareTo(UserMetadata other) {
+    return other.getUsername().compareTo(this.getUsername());
   }
   
 }

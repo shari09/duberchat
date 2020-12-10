@@ -222,27 +222,6 @@ server to client:
 
   userId:   String,
   token:    Token,
-<<<<<<< HEAD
-  status:   UserStatus,
-  friends:  LinkedHashSet<userMetadata> (userId),
-  incoming_friend_requests: ArrayList<userMetadata> (userId),
-  outgoing_friend_requests: ArrayList<userMetadata> (userId),
-  channels: LinkedHashSet<channelMetadata> (channelId)
-}
-
-{
-  type:        CLIENT_INFO_UPDATE,
-  priority:    int,
-  status:      UserStatus,
-  friends:     LinkedHashSet<userMetadata> (userId),
-  channels:    LinkedHashSet<channelMetadata> (channelId),
-  incoming_friend_requests: ConcurrentHashMap<UserMetadata, String> (userId),
-  outgoing_friend_requests: ConcurrentHashMap<UserMetadata, String> (userId),
-}
-
-{
-  type: MESSAGES_TO_CLIENT,
-=======
   description: String,
   friends: LinkedHashSet<userMetadata>,
   incoming_friend_requests: LinkedHashSet<userMetadata>,
@@ -253,7 +232,6 @@ server to client:
 
 {
   type: MESSAGES_HISTORY,
->>>>>>> 7a25c22a9ed78d1284104337731193e52c18bbbe
   priority: priority,
 
   channelId: channelId,

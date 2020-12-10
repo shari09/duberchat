@@ -5,6 +5,7 @@ import server.services.AuthenticatedPayloadProcessor;
 import server.services.ClientQueue;
 import server.services.FriendRequestHandler;
 import server.services.MessageQueue;
+import server.services.ChannelUpdateHandler;
 import server.services.PayloadProcessor;
 import server.services.SocketService;
 
@@ -13,7 +14,7 @@ import server.services.SocketService;
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun
- * @version 1.1.0
+ * @version 1.0.0
  * @since 1.0.0
  */
 
@@ -25,6 +26,7 @@ public class Main {
     AuthenticatedPayloadProcessor authenticatedPayloadProcessor = new AuthenticatedPayloadProcessor();
     MessageQueue messageQueue = new MessageQueue();
     FriendRequestHandler friendReqHandler = new FriendRequestHandler();
+    ChannelUpdateHandler channelUpdateHandler = new ChannelUpdateHandler();
     SocketService socket = new SocketService();
 
     payloadProcessor.activate();
@@ -33,6 +35,7 @@ public class Main {
     authenticatedUserHandler.activate();
     messageQueue.activate();
     friendReqHandler.activate();
+    channelUpdateHandler.activate();
     socket.run();
   }
 }

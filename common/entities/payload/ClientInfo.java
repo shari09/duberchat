@@ -1,13 +1,6 @@
 package common.entities.payload;
 
-import java.util.LinkedHashSet;
-import java.util.concurrent.ConcurrentHashMap;
-
-import common.entities.ChannelMetadata;
 import common.entities.ClientData;
-import common.entities.Token;
-import common.entities.UserMetadata;
-import common.entities.UserStatus;
 
 /**
  * A payload from server to client that

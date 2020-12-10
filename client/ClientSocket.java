@@ -8,10 +8,8 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import common.entities.ClientData;
 import common.entities.payload.ClientInfo;
 import common.entities.payload.ClientRequestStatus;
-import common.entities.payload.NewUser;
 import common.entities.payload.Payload;
 
 /**

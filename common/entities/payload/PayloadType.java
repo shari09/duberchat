@@ -58,8 +58,10 @@ public enum PayloadType {
    * was an error (ex. not authorized).
    */
   CLIENT_REQUEST_STATUS,
-  /** The information of a client once logged in. */
-  CLIENT_INFO,
+  /** Updates on the user's friends info. */
+  CLIENT_FRIENDS_UPDATE,
+  /** Updates on the user's about the channel's they're in */
+  CLIENT_CHANNELS_UPDATE,
   /** the requested messages from the client */
   MESSAGES_TO_CLIENT,
   /** The requested file from the client */

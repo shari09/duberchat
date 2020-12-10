@@ -30,7 +30,7 @@ public class PrivateChannel extends Channel {
   }
   public ChannelMetadata getNewMetadata() {
     return new ChannelMetadata(
-      this.getChannelId(), 
+      this.getId(), 
       null, 
       this.getLastModified()
     );

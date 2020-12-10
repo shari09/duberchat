@@ -1,15 +1,15 @@
 package client;
 
+import java.util.concurrent.PriorityBlockingQueue;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -27,24 +27,21 @@ import common.entities.payload.NewUser;
  */
 
 @SuppressWarnings("serial")
-public class RegistrationFrame extends JFrame implements ActionListener {
+public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionListener {
   public static final int WIDTH = 800;
   public static final int HEIGHT = 600;
 
-  private ClientSocketThread clientThread;
   private JTextField usernameField;
   private JTextField descriptionField;
   private JPasswordField passwordField;
   private JPasswordField confirmPasswordField;
   private JButton registerButton;
+  private JButton backToLoginButton;
   private JLabel statusLabel;
   
-  public RegistrationFrame(String title, ClientSocketThread clientThread) {
-    super(title);
+  public RegistrationFrame(String title, ClientSocket clientSocket) {
+    super(title, clientSocket);
 
-    this.clientThread = clientThread;
-
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(StartFrame.WIDTH, StartFrame.HEIGHT);
     this.setResizable(true);
 
@@ -53,7 +50,7 @@ public class RegistrationFrame extends JFrame implements ActionListener {
     panel.setAlignmentX(CENTER_ALIGNMENT);
 
     // title
-    JLabel titleLabel = new JLabel("User Login");
+    JLabel titleLabel = new JLabel("Create an Account");
     titleLabel.setAlignmentX(CENTER_ALIGNMENT);
     titleLabel.setFont(new Font("Serif", Font.PLAIN, 30));
     
@@ -71,7 +68,7 @@ public class RegistrationFrame extends JFrame implements ActionListener {
 
     this.descriptionField = new JTextField(20);
     JLabel descriptionLabel = new JLabel("Enter a line of description of yourself: ");
-    usernameLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+    descriptionLabel.setFont(new Font("Serif", Font.PLAIN, 20));
     JPanel descriptionPanel = new JPanel();
     descriptionPanel.add(descriptionLabel);
     descriptionPanel.add(this.descriptionField);
@@ -99,6 +96,13 @@ public class RegistrationFrame extends JFrame implements ActionListener {
     this.registerButton.addActionListener(this);
     panel.add(this.registerButton);
 
+    // button to navigate back to registration page
+    panel.add(Box.createRigidArea(new Dimension(0, 10)));
+    this.backToLoginButton = new JButton("back");
+    this.backToLoginButton.setAlignmentX(CENTER_ALIGNMENT);
+    this.backToLoginButton.addActionListener(this);
+    panel.add(this.backToLoginButton);
+
     // status message
     this.statusLabel = new JLabel(" ");
     this.statusLabel.setAlignmentX(CENTER_ALIGNMENT);
@@ -111,27 +115,28 @@ public class RegistrationFrame extends JFrame implements ActionListener {
     this.setVisible(true);
   }
 
-  public void actionPerformed(ActionEvent e) {
-    String username = this.usernameField.getText();
-    String description = this.descriptionField.getText();
-    String password = String.valueOf(this.passwordField.getPassword());
-    String confirmPassword = String.valueOf(this.confirmPasswordField.getPassword());
-    
-    if ((username.length() == 0) || (password.length() == 0) || (confirmPassword.length() == 0)) {
-      this.statusLabel.setForeground(Color.RED);
-      this.statusLabel.setText("Please fill in the required fields");
-      return;
-    }
+  @Override
+  public synchronized void actionPerformed(ActionEvent e) {
+    if (e.getSource() == this.registerButton) {
+      String username = this.usernameField.getText();
+      String description = this.descriptionField.getText();
+      String password = String.valueOf(this.passwordField.getPassword());
+      String confirmPassword = String.valueOf(this.confirmPasswordField.getPassword());
+      
+      if ((username.length() == 0) || (password.length() == 0) || (confirmPassword.length() == 0)) {
+        this.statusLabel.setForeground(Color.RED);
+        this.statusLabel.setText("Please fill in the required fields");
+        return;
+      }
 
-    if (!password.equals(confirmPassword)) {
-      this.statusLabel.setForeground(Color.RED);
-      this.statusLabel.setText("Password and confirm password does not match");
-      return;
-    }
+      if (!password.equals(confirmPassword)) {
+        this.statusLabel.setForeground(Color.RED);
+        this.statusLabel.setText("Password and confirm password does not match");
+        return;
+      }
 
-    //TODO: add illegal chars/length limit
-    synchronized (this.clientThread.getSocket()) {
-      this.clientThread.getSocket().sendPayload(
+      //TODO: add illegal chars/length limit
+      this.getClientSocket().sendPayload(
         new NewUser(
           1,
           username,
@@ -139,9 +144,35 @@ public class RegistrationFrame extends JFrame implements ActionListener {
           description
         )
       );
+      this.statusLabel.setForeground(Color.GRAY);
+      this.statusLabel.setText("Creating Account...");
+
+      while (true) {
+        // user successfully created account
+        if (GlobalClient.hasClientData(this.getClientSocket().getSocket())) {
+          this.statusLabel.setForeground(Color.GREEN);
+          this.statusLabel.setText("Successfully logged in");
+          // load user frame
+          MainUserFrame nextFrame = new MainUserFrame(
+            this.getTitle(),
+            this.getClientSocket()
+          );
+          this.dispose();
+          break;
+        }
+        // error message
+        PriorityBlockingQueue<ErrorMessage> errorMessages = this.getClientSocket().getErrorMessages();
+        if (errorMessages.size() > 0) {
+          JOptionPane.showMessageDialog(this, errorMessages.poll().getMessage());
+          this.statusLabel.setForeground(Color.RED);
+          this.statusLabel.setText("Login failed. Please try again");
+          break;
+        }
+      }
+    } else if (e.getSource() == this.backToLoginButton) {
+      LoginFrame nextFrame = new LoginFrame(this.getTitle(), this.getClientSocket());
+      this.dispose();
     }
-    this.statusLabel.setForeground(Color.GRAY);
-    this.statusLabel.setText("Creating Account...");
   }
 
 }

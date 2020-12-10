@@ -218,9 +218,13 @@ public class MessagingService {
     UserMetadata userTwo
   ) {
     PrivateChannel channel = new PrivateChannel(userOne, userTwo);
-    this.channels.put(channel.getChannelId(), channel);
-    this.hardSave(channel.getChannelId());
-    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel);
+    this.channels.put(channel.getId(), channel);
+    this.hardSave(channel.getId());
+    GlobalEventQueue.queue.emitEvent(
+      EventType.CHANNEL_UPDATE, 
+      1,
+      channel
+    );
     return channel.getMetadata();
   }
 
@@ -238,8 +242,8 @@ public class MessagingService {
   ) {
     //TODO: verify that all the participants exist
     GroupChannel channel = new GroupChannel(participants, channelName, ownerId);
-    this.channels.put(channel.getChannelId(), channel);
-    this.hardSave(channel.getChannelId());
+    this.channels.put(channel.getId(), channel);
+    this.hardSave(channel.getId());
     GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel);
     return channel.getMetadata();
   }

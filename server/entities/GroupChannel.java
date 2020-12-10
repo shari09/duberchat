@@ -13,6 +13,7 @@ import common.entities.UserMetadata;
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class GroupChannel extends Channel {
   private LinkedHashSet<UserMetadata> blacklist;
   private String ownerId;
@@ -59,7 +60,7 @@ public class GroupChannel extends Channel {
 
   public ChannelMetadata getNewMetadata() {
     return new ChannelMetadata(
-      this.getChannelId(), 
+      this.getId(), 
       this.getChannelName(), 
       this.getLastModified()
     );

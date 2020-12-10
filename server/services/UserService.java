@@ -136,9 +136,9 @@ public class UserService {
       return null;
     }
     User user = new User(username, password, description);
-    this.users.put(user.getUserId(), user);
-    this.usernameToUid.put(username, user.getUserId());
-    this.uidToUsername.put(user.getUserId(), username);
+    this.users.put(user.getId(), user);
+    this.usernameToUid.put(username, user.getId());
+    this.uidToUsername.put(user.getId(), username);
     this.numChanges++;
     this.save();
     return user;

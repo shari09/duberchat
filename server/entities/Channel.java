@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import common.entities.ChannelMetadata;
+import common.entities.Identifiable;
 import common.entities.Message;
 import common.entities.UserMetadata;
 
@@ -22,7 +23,7 @@ import common.entities.UserMetadata;
  * @since 1.1.0
  */
 
-public abstract class Channel {
+public abstract class Channel implements Identifiable {
   private String channelId;
   private LinkedHashSet<UserMetadata> participants;
   private LinkedHashSet<String> blacklist;
@@ -54,7 +55,8 @@ public abstract class Channel {
     return this.blacklist.contains(userId);
   }
 
-  public String getChannelId() {
+  @Override
+  public String getId() {
     return this.channelId;
   }
 
@@ -94,7 +96,7 @@ public abstract class Channel {
 
   public Message addMessage(Message message) {
     this.messages.put(message, message);
-    this.idToMsgMapping.put(message.getMessageId(), message);
+    this.idToMsgMapping.put(message.getId(), message);
     this.lastModified = new Timestamp(System.currentTimeMillis());
     this.metadata.updateLastModified(this.lastModified);
     return message;

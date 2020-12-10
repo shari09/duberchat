@@ -29,7 +29,7 @@ public class FriendInfoUpdater implements Subscribable {
   public void onEvent(Object emitter, EventType eventType) {
     User user = (User)emitter;
     PayloadSender.send(
-      TempData.clientConnections.getClient(user.getUserId()), 
+      TempData.clientConnections.getClient(user.getId()), 
       new ClientFriendsUpdate(
         1, 
         user.getFriends(),

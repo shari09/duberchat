@@ -125,7 +125,7 @@ public class UserService {
   }
 
   public boolean authenticateToken(String userId, Token token) {
-    if (TempData.tokens.get(userId) == token) {
+    if (TempData.tokens.get(userId).getValue().equals(token.getValue())) {
       return true;
     }
     return false;

@@ -55,10 +55,10 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   @Override
   public void onEvent(Object newPayload, EventType eventType) {
     this.payloadQueue.add((AuthenticatedClientRequest) newPayload);
-    if (this.running) {
-      return;
-    }
-    this.running = true;
+    // if (this.running) {
+    //   return;
+    // }
+    // this.running = true;
     while (!this.payloadQueue.isEmpty()) {
       AuthenticatedClientRequest client = this.payloadQueue.poll();
       switch (client.getPayload().getType()) {
@@ -122,7 +122,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       }
 
     }
-    this.running = false;
+    // this.running = false;
   }
 
   private void transferOwnership(AuthenticatedClientRequest client) {

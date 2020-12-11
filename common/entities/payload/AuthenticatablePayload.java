@@ -25,6 +25,8 @@ public class AuthenticatablePayload extends Payload {
     Token token
   ) {
     super(type, priority);
+    this.userId = userId;
+    this.token = token;
   }
 
   public String getUserId() {

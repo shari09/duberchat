@@ -10,6 +10,7 @@ import common.entities.payload.ClientRequestStatus;
 import common.entities.payload.Login;
 import common.entities.payload.NewUser;
 import common.entities.payload.PayloadType;
+import server.entities.AuthenticatedClientRequest;
 import server.entities.Client;
 import server.entities.ClientRequest;
 import server.entities.EventType;
@@ -47,10 +48,10 @@ public class PayloadProcessor implements Subscribable {
   public void onEvent(Object emitter, EventType eventType) {
     ClientRequest clientReq = (ClientRequest)emitter;
     this.payloadQueue.add(clientReq);
-    if (this.running) {
-      return;
-    }
-    this.running = true;
+    // if (this.running) {
+    //   return;
+    // }
+    // this.running = true;
     //authenticate clients differently depending on whether or not
     //they are creating a new user, logging in, or sending another request
     while (!this.payloadQueue.isEmpty()) {
@@ -64,7 +65,7 @@ public class PayloadProcessor implements Subscribable {
       }
 
     }
-    this.running = false;
+    // this.running = false;
   }
 
   /**
@@ -101,6 +102,7 @@ public class PayloadProcessor implements Subscribable {
    */
   private void authenticateToken(ClientRequest client) {
     AuthenticatablePayload payload = (AuthenticatablePayload) client.getPayload();
+    
     boolean authenticated = StoredData.users.authenticateToken(
       payload.getUserId(), 
       payload.getToken()
@@ -115,7 +117,10 @@ public class PayloadProcessor implements Subscribable {
     GlobalEventQueue.queue.emitEvent(
       EventType.AUTHENTICATED_PAYLOAD, 
       1,
-      client
+      new AuthenticatedClientRequest(
+        (AuthenticatablePayload)client.getPayload(), 
+        client.getClientOut()
+      )
     );
   }
 

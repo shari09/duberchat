@@ -29,15 +29,15 @@ public class ClientQueue implements Subscribable {
   @Override
   public void onEvent(Object newClient, EventType eventType) {
     this.queue.add((ClientHandler)newClient);
-    if (this.running) {
-      return;
-    }
-    this.running = true;
+    // if (this.running) {
+    //   return;
+    // }
+    // this.running = true;
     while (!this.queue.isEmpty()) {
       Thread thread = new Thread(queue.poll());
       thread.start();
     }
     
-    this.running = false;
+    // this.running = false;
   }
 }

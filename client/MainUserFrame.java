@@ -130,6 +130,13 @@ public class MainUserFrame extends DisconnectOnCloseFrame implements ActionListe
       }
       synchronized (GlobalClient.clientData) {
         ClientData data = GlobalClient.clientData;
+        System.out.println(new CreateChannel(
+          1,
+          data.getToken(),
+          data.getUserId(),
+          new LinkedHashSet<UserMetadata>(),
+          channelName
+        ).getUserId());
         this.clientSocket.sendPayload(
           new CreateChannel(
             1,

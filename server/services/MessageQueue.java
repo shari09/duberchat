@@ -43,15 +43,15 @@ public class MessageQueue implements Subscribable {
   public void onEvent(Object emitter, EventType eventType) {
     Message message = (Message)emitter;
     this.queue.add(message);
-    if (this.running) {
-      return;
-    }
-    this.running = true;
+    // if (this.running) {
+    //   return;
+    // }
+    // this.running = true;
     while (!this.queue.isEmpty()) {
       Message msg = this.queue.poll();
       this.sendMessage(msg, eventType);
     }
-    this.running = false;
+    // this.running = false;
   }
 
   private void sendMessage(Message message, EventType eventType) {

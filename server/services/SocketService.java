@@ -44,7 +44,7 @@ public class SocketService {
     } catch (Exception e) {
       System.out.println("Error accepting connection");
       e.printStackTrace();
-      // this.running = false;
+      this.running = false;
     }
   }
 }

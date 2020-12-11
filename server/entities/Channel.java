@@ -115,6 +115,12 @@ public abstract class Channel implements Identifiable {
     return msg;
   }
 
+  public boolean isMessageSender(String userId, String messageId) {
+    return this.messages.get(this.idToMsgMapping.get(messageId))
+                        .getSenderId()
+                        .equals(userId);
+  }
+
   //TODO: improve time complexity???? but java only gives me itr from head/tail
   /**
    * Gets the specified number of messages before a certain time.

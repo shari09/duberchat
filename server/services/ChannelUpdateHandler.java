@@ -10,7 +10,6 @@ import server.entities.EventType;
 import server.entities.GroupChannel;
 import server.resources.GlobalEventQueue;
 import server.resources.StoredData;
-import server.resources.TempData;
 
 /**
  * [insert description]
@@ -34,13 +33,13 @@ public class ChannelUpdateHandler implements Subscribable {
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
-    GroupChannel channel = (GroupChannel)emitter;
+    ChannelMetadata channel = (ChannelMetadata)emitter;
     Iterator<UserMetadata> itr = channel.getParticipants().iterator();
     while (itr.hasNext()) {
       String userId = itr.next().getUserId();
       LinkedHashSet<ChannelMetadata> channels = StoredData.users.getChannels(userId);
       PayloadSender.send(
-        TempData.clientConnections.getClient(userId),
+        userId,
         new ClientChannelsUpdate(1, channels)
       );
     }

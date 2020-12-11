@@ -2,6 +2,7 @@ package common.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.LinkedHashSet;
 
 /**
  * Contains the id and profile information of a channel.
@@ -13,33 +14,36 @@ import java.sql.Timestamp;
  */
 
 
-public class ChannelMetadata implements Serializable, Comparable<ChannelMetadata> {
+public abstract class ChannelMetadata implements Serializable, Comparable<ChannelMetadata> {
   /**
    *
    */
   private static final long serialVersionUID = 1L;
 
   private String channelId;
-  private String channelName;
   private Timestamp lastModified;
+  private LinkedHashSet<UserMetadata> participants;
 
-  public ChannelMetadata(String channelId, String channelName, Timestamp lastModified) {
+  public ChannelMetadata(
+    String channelId, 
+    Timestamp lastModified, 
+    LinkedHashSet<UserMetadata> participants
+  ) {
     this.channelId = channelId;
-    this.channelName = channelName;
     this.lastModified = lastModified;
+    this.participants = participants;
   }
-
 
   public String getChannelId() {
     return this.channelId;
   }
 
-  public String getChannelName() {
-    return this.channelName;
+  public LinkedHashSet<UserMetadata> getParticipants() {
+    return this.participants;
   }
 
-  public void updateChannelName(String name) {
-    this.channelName = name;
+  public void updateParticipants(LinkedHashSet<UserMetadata> participants) {
+    this.participants = participants;
   }
 
   public int compareTo(ChannelMetadata other) {

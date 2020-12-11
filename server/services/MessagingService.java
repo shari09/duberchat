@@ -1,7 +1,6 @@
 package server.services;
 
 import java.io.File;
-import java.security.acl.Group;
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -209,6 +208,21 @@ public class MessagingService {
 
   /**
    * 
+   * @param userId
+   * @param channelId
+   * @param messageId
+   * @return
+   */
+  public boolean isMessageSender(String userId, String channelId, String messageId) {
+    Channel channel = this.channels.get(channelId);
+    if (channel.isMessageSender(userId, messageId)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 
    * @param userOne
    * @param userTwo
    * @return
@@ -244,7 +258,7 @@ public class MessagingService {
     GroupChannel channel = new GroupChannel(participants, channelName, ownerId);
     this.channels.put(channel.getId(), channel);
     this.hardSave(channel.getId());
-    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel);
+    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel.getMetadata());
     return channel.getMetadata();
   }
 
@@ -270,7 +284,7 @@ public class MessagingService {
       return false;
     }
     channel.addParticipant(StoredData.users.getUserMetadata(userId));
-    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel);
+    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel.getMetadata());
     return true;
   }
 
@@ -278,29 +292,50 @@ public class MessagingService {
    * 
    * @param userId
    * @param channelId
+   * @return            if the participant is removed or not
    */
-  public void removeParticipant(String userId, String channelId) {
-    if (!this.channels.containsKey(channelId)) {
-      return;
+  public boolean removeParticipant(String userId, String channelId) {
+    if (!this.hasAdminPermission(userId, channelId)) {
+      return false;
     }
-    Channel channel = this.channels.get(channelId);
-    channel.removeParticipant(StoredData.users.getUserMetadata(userId));
-    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel);
+    GroupChannel gc = (GroupChannel)this.channels.get(channelId);
+    gc.removeParticipant(StoredData.users.getUserMetadata(userId));
+    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
+    return true;
   }
 
   /**
    * 
    * @param userId
    * @param channelId
+   * @return             whether the user/channel has admin permission
    */
-  public void blacklistUser(String userId, String channelId) {
-    if (!this.channels.containsKey(channelId) || !StoredData.users.userIdExist(userId)) {
-      return;
+  public boolean hasAdminPermission(String userId, String channelId) {
+    Channel channel = this.channels.get(channelId);
+    if (!this.channels.containsKey(channelId) || channel instanceof PrivateChannel) {
+      return false;
     }
+    GroupChannel gc = (GroupChannel)channel;
+    if (!gc.getOwnerId().equals(userId)) {
+      return false;
+    }
+    return true;
+  }
 
+  /**
+   * 
+   * @param userId
+   * @param channelId
+   * @return               whether the user is blacklisted or not
+   */
+  public boolean blacklistUser(String userId, String channelId) {
+    if (!this.hasAdminPermission(userId, channelId)) {
+      return false;
+    }
     Channel channel = this.channels.get(channelId);
     channel.blacklistUser(userId);
-    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel);
+    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel.getMetadata());
+    return true;
   }
 
   /**
@@ -341,17 +376,13 @@ public class MessagingService {
    * @return           true if successfully transferred
    */
   public boolean transferOwnership(String userId, String channelId) {
-    Channel channel = this.channels.get(channelId);
-    if (channel instanceof PrivateChannel) {
-      return false;
-    }
-    if (!channel.hasParticipant(StoredData.users.getUserMetadata(userId))) {
+    if (!this.hasAdminPermission(userId, channelId)) {
       return false;
     }
 
-    GroupChannel gc = (GroupChannel)channel;
+    GroupChannel gc = (GroupChannel)this.channels.get(channelId);
     gc.updateOwner(userId);
-    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc);
+    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
     return true;
   }
 
@@ -377,7 +408,7 @@ public class MessagingService {
         gc.updateChannelName(newValue);
         break;
     }
-    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc);
+    GlobalEventQueue.queue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
     return true;
   }
 }

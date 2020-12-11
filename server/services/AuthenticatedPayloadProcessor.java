@@ -244,10 +244,18 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void removeParticipant(AuthenticatedClientRequest client) {
     RemoveParticipant payload = (RemoveParticipant)client.getPayload();
-    StoredData.channels.removeParticipant(
+    boolean success = StoredData.channels.removeParticipant(
       payload.getParticipantId(), 
       payload.getChannelId()
     );
+
+    if (!success) {
+      PayloadSender.send(
+        client.getClientOut(), 
+        new ClientRequestStatus(1, payload.getId(), "Cannot remove participant")
+      );
+      return;
+    }
 
     PayloadSender.send(
       client.getClientOut(), 
@@ -257,10 +265,18 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void blacklistUser(AuthenticatedClientRequest client) {
     BlacklistUser payload = (BlacklistUser)client.getPayload();
-    StoredData.channels.blacklistUser(
+    boolean success = StoredData.channels.blacklistUser(
       payload.getParticipantId(), 
       payload.getChannelId()
     );
+
+    if (!success) {
+      PayloadSender.send(
+        client.getClientOut(), 
+        new ClientRequestStatus(1, payload.getId(), "Cannot remove participant")
+      );
+      return;
+    }
 
     PayloadSender.send(
       client.getClientOut(), 
@@ -326,6 +342,18 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void editMessage(AuthenticatedClientRequest client) {
     EditMessage payload = (EditMessage) client.getPayload();
+    if (!StoredData.channels.isMessageSender(
+          payload.getUserId(), 
+          payload.getChannelId(), 
+          payload.getMessageId()
+        )
+      ) {
+      PayloadSender.send(
+        client.getClientOut(), 
+        new ClientRequestStatus(1, payload.getId(), "Cannot edit message")
+      );
+      return;
+    }
     StoredData.channels.editMessage(
       payload.getChannelId(), 
       payload.getMessageId(), 
@@ -340,6 +368,18 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void removeMessage(AuthenticatedClientRequest client) {
     RemoveMessage payload = (RemoveMessage) client.getPayload();
+    if (!StoredData.channels.isMessageSender(
+          payload.getUserId(), 
+          payload.getChannelId(), 
+          payload.getMessageId()
+        )
+      ) {
+      PayloadSender.send(
+        client.getClientOut(), 
+        new ClientRequestStatus(1, payload.getId(), "Cannot remove message")
+      );
+      return;
+    }
     StoredData.channels.removeMessage(
       payload.getChannelId(), 
       payload.getMessageId()

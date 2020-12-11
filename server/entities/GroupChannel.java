@@ -3,6 +3,7 @@ package server.entities;
 import java.util.LinkedHashSet;
 
 import common.entities.ChannelMetadata;
+import common.entities.GroupChannelMetadata;
 import common.entities.UserMetadata;
 
 /**
@@ -50,7 +51,6 @@ public class GroupChannel extends Channel {
   }
 
   public void updateChannelName(String name) {
-    this.getMetadata().updateChannelName(name);
     this.channelName = name;
   }
 
@@ -59,10 +59,11 @@ public class GroupChannel extends Channel {
   }
 
   public ChannelMetadata getNewMetadata() {
-    return new ChannelMetadata(
+    return new GroupChannelMetadata(
       this.getId(), 
-      this.getChannelName(), 
-      this.getLastModified()
+      this.getLastModified(),
+      this.getParticipants(),
+      this.channelName
     );
   }
 

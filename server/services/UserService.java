@@ -160,7 +160,7 @@ public class UserService {
   public void updateUserStatus(String userId, UserStatus status) {
     User user = this.users.get(userId);
     user.updateStatus(status);
-    this.notifyFriends(user);
+    this.broadcastChanges(user);
   }
 
   /**
@@ -320,7 +320,7 @@ public class UserService {
         user.updateUsername(newValue);
         break;
     }
-    notifyFriends(user);
+    broadcastChanges(user);
 
   }
 
@@ -328,7 +328,17 @@ public class UserService {
    * 
    * @param user
    */
-  private void notifyFriends(User user) {
+  private void broadcastChanges(User user) {
+    Iterator<ChannelMetadata> channelsItr = user.getChannels().iterator();
+    while (channelsItr.hasNext()) {
+      GlobalEventQueue.queue.emitEvent(
+        EventType.CHANNEL_UPDATE, 
+        1, 
+        channelsItr.next()
+      );
+    }
+
+
     Iterator<UserMetadata> itr = user.getFriends().iterator();
     while (itr.hasNext()) {
       User friend = this.users.get(itr.next().getUserId());

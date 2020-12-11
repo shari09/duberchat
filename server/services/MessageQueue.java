@@ -80,6 +80,7 @@ public class MessageQueue implements Subscribable {
     while (itr.hasNext()) {
       UserMetadata user = itr.next();
       String userId = user.getUserId();
+      //TODO: fix the consistency of where to check client existence
       if (TempData.clientConnections.hasClient(userId)) {
         PayloadSender.send(
           TempData.clientConnections.getClient(userId), 

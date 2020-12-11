@@ -91,12 +91,20 @@ public class ClientData implements Serializable {
     this.status = status;
   }
 
-  public LinkedHashSet<UserMetadata> getFriends() {
+  public synchronized LinkedHashSet<UserMetadata> getFriends() {
     return this.friends;
   }
 
-  public void setFriends(LinkedHashSet<UserMetadata> friends) {
+  public synchronized void setFriends(LinkedHashSet<UserMetadata> friends) {
     this.friends = friends;
+  }
+
+  public synchronized void addFriend(UserMetadata friendToAdd) {
+    this.friends.add(friendToAdd);
+  }
+
+  public synchronized void removeFriend(UserMetadata friendToRemove) {
+    this.friends.remove(friendToRemove);
   }
 
   public ConcurrentHashMap<UserMetadata, String> getIncomingFriendRequests() {
@@ -107,6 +115,14 @@ public class ClientData implements Serializable {
     this.incomingFriendRequests = incomingFriendRequests;
   }
 
+  public void addIncomingFriendRequest(UserMetadata userMetadata, String requestMessage) {
+    this.incomingFriendRequests.put(userMetadata, requestMessage);
+  }
+
+  public void removeIncomingFriendRequest(UserMetadata userMetadata) {
+    this.incomingFriendRequests.remove(userMetadata);
+  }
+
   public ConcurrentHashMap<UserMetadata, String> getOutgoingFriendRequests() {
     return this.outgoingFriendRequests;
   }
@@ -115,20 +131,44 @@ public class ClientData implements Serializable {
     this.outgoingFriendRequests = outgoingFriendRequests;
   }
 
-  public LinkedHashSet<UserMetadata> getBlocked() {
+  public void addOutgoingFriendRequest(UserMetadata userMetadata, String requestMessage) {
+    this.outgoingFriendRequests.put(userMetadata, requestMessage);
+  }
+
+  public void removeOutgoingFriendRequest(UserMetadata userMetadata) {
+    this.outgoingFriendRequests.remove(userMetadata);
+  }
+
+  public synchronized LinkedHashSet<UserMetadata> getBlocked() {
     return this.blocked;
   }
 
-  public void setBlocked(LinkedHashSet<UserMetadata> blocked) {
+  public synchronized void setBlocked(LinkedHashSet<UserMetadata> blocked) {
     this.blocked = blocked;
   }
 
-  public LinkedHashSet<ChannelMetadata> getChannels() {
+  public synchronized void addBlocked(UserMetadata userToBeBlocked) {
+    this.blocked.add(userToBeBlocked);
+  }
+
+  public synchronized void removeBlocked(UserMetadata blocked) {
+    this.blocked.remove(blocked);
+  }
+
+  public synchronized LinkedHashSet<ChannelMetadata> getChannels() {
     return this.channels;
   }
 
-  public void setChannels(LinkedHashSet<ChannelMetadata> channels) {
+  public synchronized void setChannels(LinkedHashSet<ChannelMetadata> channels) {
     this.channels = channels;
+  }
+
+  public synchronized void addChannel(ChannelMetadata channel) {
+    this.channels.add(channel);
+  }
+
+  public synchronized void removeChannel(ChannelMetadata channel) {
+    this.channels.remove(channel);
   }
 
 }

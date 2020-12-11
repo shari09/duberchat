@@ -42,8 +42,8 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   public LoginFrame(String title, ClientSocket clientSocket) {
     super(title, clientSocket);
 
-    this.setSize(StartFrame.WIDTH, StartFrame.HEIGHT);
-    this.setResizable(true);
+    this.setSize(LoginFrame.WIDTH, LoginFrame.HEIGHT);
+    this.setResizable(false);
 
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -61,6 +61,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     this.usernameField = new JTextField(20);
     JLabel usernameLabel = new JLabel("Username: ");
     usernameLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+    usernameLabel.setLabelFor(this.usernameField);
     JPanel usernamePanel = new JPanel();
     usernamePanel.add(usernameLabel);
     usernamePanel.add(this.usernameField);
@@ -69,6 +70,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     this.passwordField = new JPasswordField(20);
     JLabel passwordLabel = new JLabel("Password: ");
     passwordLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+    passwordLabel.setLabelFor(this.passwordField);
     JPanel passwordPanel = new JPanel();
     passwordPanel.add(passwordLabel);
     passwordPanel.add(this.passwordField);
@@ -122,9 +124,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
 
       while (true) {
         // user successfully logged in
-        if (GlobalClient.hasClientData(this.getClientSocket().getSocket())) {
-          this.statusLabel.setForeground(Color.GREEN);
-          this.statusLabel.setText("Successfully logged in");
+        if (GlobalClient.hasData()) {
           // load user frame
           MainUserFrame nextFrame = new MainUserFrame(
             this.getTitle(),

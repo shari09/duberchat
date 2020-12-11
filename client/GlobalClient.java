@@ -1,15 +1,21 @@
 package client;
 
-import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
-
 import common.entities.ClientData;
+
+/**
+ * [description]
+ * <p>
+ * Created on 2020.12.08.
+ * @author Candice Zhang
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 
 public class GlobalClient {
 
-  public static ConcurrentHashMap<Socket, ClientData> clientsInfo = new ConcurrentHashMap<Socket, ClientData>();
+  public static ClientData clientData = null;
   
-  public static boolean hasClientData(Socket socket) {
-    return GlobalClient.clientsInfo.containsKey(socket);
+  public static boolean hasData() {
+    return GlobalClient.clientData != null;
   }
 }

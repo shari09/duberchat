@@ -42,8 +42,8 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
   public RegistrationFrame(String title, ClientSocket clientSocket) {
     super(title, clientSocket);
 
-    this.setSize(StartFrame.WIDTH, StartFrame.HEIGHT);
-    this.setResizable(true);
+    this.setSize(RegistrationFrame.WIDTH, RegistrationFrame.HEIGHT);
+    this.setResizable(false);
 
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -61,14 +61,16 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     this.usernameField = new JTextField(20);
     JLabel usernameLabel = new JLabel("Username: ");
     usernameLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+    usernameLabel.setLabelFor(this.usernameField);
     JPanel usernamePanel = new JPanel();
     usernamePanel.add(usernameLabel);
     usernamePanel.add(this.usernameField);
     panel.add(usernamePanel);
 
     this.descriptionField = new JTextField(20);
-    JLabel descriptionLabel = new JLabel("Enter a line of description of yourself: ");
+    JLabel descriptionLabel = new JLabel("Enter a line of description of yourself (optional): ");
     descriptionLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+    descriptionLabel.setLabelFor(this.descriptionField);
     JPanel descriptionPanel = new JPanel();
     descriptionPanel.add(descriptionLabel);
     descriptionPanel.add(this.descriptionField);
@@ -77,6 +79,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     this.passwordField = new JPasswordField(20);
     JLabel passwordLabel = new JLabel("Password: ");
     passwordLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+    passwordLabel.setLabelFor(this.passwordField);
     JPanel passwordPanel = new JPanel();
     passwordPanel.add(passwordLabel);
     passwordPanel.add(this.passwordField);
@@ -85,6 +88,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     this.confirmPasswordField = new JPasswordField(20);
     JLabel confirmPasswordLabel = new JLabel("Confirm password: ");
     confirmPasswordLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+    confirmPasswordLabel.setLabelFor(this.confirmPasswordField);
     JPanel confirmPasswordPanel = new JPanel();
     confirmPasswordPanel.add(confirmPasswordLabel);
     confirmPasswordPanel.add(this.confirmPasswordField);
@@ -149,9 +153,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
 
       while (true) {
         // user successfully created account
-        if (GlobalClient.hasClientData(this.getClientSocket().getSocket())) {
-          this.statusLabel.setForeground(Color.GREEN);
-          this.statusLabel.setText("Successfully logged in");
+        if (GlobalClient.hasData()) {
           // load user frame
           MainUserFrame nextFrame = new MainUserFrame(
             this.getTitle(),

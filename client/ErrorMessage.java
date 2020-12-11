@@ -1,5 +1,14 @@
 package client;
 
+/**
+ * Represents an error message with a string of the error and a priority.
+ * <p>
+ * Created on 2020.12.08.
+ * @author Candice Zhang
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
 public class ErrorMessage implements Comparable<ErrorMessage> {
 
   private final int priority;

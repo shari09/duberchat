@@ -8,8 +8,10 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import common.entities.ChannelMetadata;
 import common.entities.payload.ClientInfo;
 import common.entities.payload.ClientRequestStatus;
+import common.entities.payload.CreateChannel;
 import common.entities.payload.Payload;
 
 /**
@@ -80,10 +82,7 @@ public class ClientSocket implements Runnable {
         break;
 
       case CLIENT_INFO:
-        GlobalClient.clientsInfo.put(
-          this.socket,
-          ((ClientInfo)payload).getClientData()
-        );
+        GlobalClient.clientData = ((ClientInfo)payload).getClientData();
         break;
 
       case MESSAGES_TO_CLIENT:
@@ -121,8 +120,9 @@ public class ClientSocket implements Runnable {
         break;
       case CHANGE_PASSWORD:
         break;
-      //case :
-      //  break;
+
+      case CREATE_CHANNEL:
+        break;
       default:
         System.out.println("unknown payload type");
         break;
@@ -130,9 +130,9 @@ public class ClientSocket implements Runnable {
   }
 
   public synchronized void close() throws IOException {
-    this.socket.close();
     this.input.close();
     this.output.close();
+    this.socket.close();
   }
 
   public synchronized void sendPayload(Payload payloadToSend) {

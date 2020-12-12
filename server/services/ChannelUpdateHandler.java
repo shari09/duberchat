@@ -32,11 +32,13 @@ public class ChannelUpdateHandler implements Subscribable {
   @Override
   public void onEvent(Object emitter, EventType eventType) {
     ChannelMetadata channel = (ChannelMetadata) emitter;
+    System.out.println(channel);
     Iterator<UserMetadata> itr = channel.getParticipants().iterator();
     while (itr.hasNext()) {
       String userId = itr.next().getUserId();
       LinkedHashSet<ChannelMetadata> channels = GlobalServerServices.users.getChannels(userId);
       PayloadSender.send(userId, new ClientChannelsUpdate(1, channels));
+      System.out.println("Sent payload of type " + EventType.CHANNEL_UPDATE);
     }
   }
 

@@ -16,6 +16,11 @@ import common.entities.UserMetadata;
  */
 public class PrivateChannel extends Channel {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+
   public PrivateChannel(UserMetadata userOne, UserMetadata userTwo) {
     super(new LinkedHashSet<UserMetadata>());
     super.addParticipant(userOne);

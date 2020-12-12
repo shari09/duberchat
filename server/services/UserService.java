@@ -55,6 +55,7 @@ public class UserService {
   }
 
   public void save() {
+    this.numChanges++;
     if (this.numChanges >= this.bufferEntriesNum) {
       this.hardSave();
     }
@@ -105,7 +106,6 @@ public class UserService {
       return false;
     }
     this.users.get(userId).updatePassword(newPassword);
-    this.numChanges++;
     this.save();
     return true;
   }
@@ -128,7 +128,7 @@ public class UserService {
     return false;
   }
 
-  public User add(String username, String password, String description) {
+  public User newUser(String username, String password, String description) {
     if (this.usernameExist(username)) {
       return null;
     }
@@ -136,12 +136,14 @@ public class UserService {
     this.users.put(user.getId(), user);
     this.usernameToUid.put(username, user.getId());
     this.uidToUsername.put(user.getId(), username);
-    this.numChanges++;
     this.save();
     return user;
   }
 
   public UserMetadata getUserMetadata(String userId) {
+    if (!this.userIdExist(userId)) {
+      return null;
+    }
     return this.users.get(userId).getMetdata();
   }
 
@@ -150,7 +152,6 @@ public class UserService {
     this.usernameToUid.remove(oldUsername);
     this.uidToUsername.put(uid, newUsername);
     this.usernameToUid.put(newUsername, uid);
-    this.numChanges++;
     this.save();
   }
 
@@ -168,15 +169,17 @@ public class UserService {
    * @return false if the recipient doesn't exist
    */
   public boolean sendFriendRequest(String userId, String recipientId, String msg) {
-    if (!this.userIdExist(recipientId)) {
+    if (recipientId == null || !this.userIdExist(recipientId) || this.isBlocked(recipientId, userId)) {
       return false;
     }
+
     User user = this.users.get(userId);
     User friend = this.users.get(recipientId);
     user.addOutgoingFriendRequest(friend.getMetdata(), msg);
     friend.addIncomingFriendRequest(user.getMetdata(), msg);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
+    this.save();
     return true;
   }
 
@@ -218,6 +221,7 @@ public class UserService {
     requester.addChannel(channel);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, requester);
+    this.save();
     return true;
   }
 
@@ -238,6 +242,7 @@ public class UserService {
     requester.removeOutgoingFriendRequest(user.getMetdata());
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, requester);
+    this.save();
     return true;
   }
 
@@ -258,12 +263,14 @@ public class UserService {
     friend.removeIncomingFriendRequest(user.getMetdata());
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
+    this.save();
     return true;
   }
 
   public void updateDescription(String userId, String description) {
     User user = this.users.get(userId);
     user.updateDescription(description);
+    this.save();
   }
 
   public void removeFriend(String userId, UserMetadata friendMetatdata) {
@@ -271,6 +278,7 @@ public class UserService {
     User friend = this.users.get(friendMetatdata.getUserId());
     user.removeFriend(friendMetatdata);
     friend.removeFriend(friend.getMetdata());
+    this.save();
   }
 
   public boolean isFriend(String userA, String userB) {
@@ -295,6 +303,7 @@ public class UserService {
     user.addBlocked(blocked.getMetdata());
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, blocked);
+    this.save();
     return true;
   }
 
@@ -315,7 +324,7 @@ public class UserService {
         break;
     }
     broadcastChanges(user);
-
+    this.save();
   }
 
   /**

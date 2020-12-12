@@ -11,10 +11,10 @@ import java.awt.Dimension;
 
 public class Style {
   public final static Color BLUE = Style.getColour("4C69C7");
-  public final static Color OVERLAY = Style.getColour("FFFFFF", 8);
+  public final static Color OVERLAY = Style.getColour("666666");
   public final static Color STRONGER_OVERLAY = Style.getColour("7F7F7F");
-  public final static Color GRAY1 = Style.getColour("000000", 65);
-  public final static Color GRAY2 = Style.getColour("333333", 60);
+  public final static Color GRAY1 = Style.getColour("595959");
+  public final static Color GRAY2 = Style.getColour("5A5A5A");
   public final static Color GRAY3 = Style.getColour("333333");
   public final static Color GRAY4 = Style.getColour("1F1F1F");
   public final static Color TEXT = Style.getColour("000000", 90);
@@ -33,7 +33,7 @@ public class Style {
       color.getRed(),
       color.getGreen(),
       color.getBlue(),
-      (int)(alpha/100.0*255)
+      (int)((100-alpha)/100.0*255)
     );
   }
 
@@ -42,7 +42,7 @@ public class Style {
       color.getRed(),
       color.getGreen(),
       color.getBlue(),
-      (int)(alpha/100.0*255)
+      (int)((100-alpha)/100.0*255)
     );
   }
 

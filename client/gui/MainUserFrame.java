@@ -45,7 +45,7 @@ import client.resources.GlobalClient;
  * The frame to display the GUI for the client.
  * <p>
  * Created on 2020.12.09.
- * @author Candice Zhang
+ * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -136,14 +136,23 @@ public class MainUserFrame extends DisconnectOnCloseFrame implements ActionListe
       if ((channelName == null) || (channelName.length() == 0)) {
         return;
       }
+
+      
       synchronized (GlobalClient.clientData) {
         ClientData data = GlobalClient.clientData;
+        LinkedHashSet<UserMetadata> participants = new LinkedHashSet<UserMetadata>();
+        participants.add(new UserMetadata(
+          data.getUserId(),
+          data.getUsername(), 
+          data.getDescription(), 
+          data.getStatus()
+        ));
         this.clientSocket.sendPayload(
           new CreateChannel(
             1,
             data.getToken(),
             data.getUserId(),
-            new LinkedHashSet<UserMetadata>(),
+            participants,
             channelName
           )
         );

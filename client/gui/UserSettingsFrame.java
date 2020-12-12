@@ -3,7 +3,6 @@ package client.gui;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.io.IOException;
-import java.security.acl.Group;
 import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,7 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextField;
-import javax.jws.soap.SOAPBinding.Use;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 

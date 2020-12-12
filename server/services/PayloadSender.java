@@ -36,6 +36,7 @@ public class PayloadSender {
       return;
     }
     ObjectOutputStream client = GlobalServerServices.clientConnections.getClient(userId);
+    System.out.println(client);
     synchronized (client) {
       try {
         client.writeObject(payload);

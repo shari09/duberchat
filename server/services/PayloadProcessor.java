@@ -77,8 +77,11 @@ public class PayloadProcessor implements Subscribable {
           new ClientRequestStatus(1, payload.getId(), "Incorrect username or password"));
       return;
     }
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.AUTHENTICATED_CLIENT, 1,
-        new Client(user.getId(), client.getClientOut()));
+    GlobalServerServices.serverEventQueue.emitEvent(
+      EventType.AUTHENTICATED_CLIENT, 
+      1,
+      new Client(user.getId(), client.getClientOut())
+    );
     PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
     PayloadSender.send(client.getClientOut(), this.getClientInfo(user));
   }
@@ -103,7 +106,7 @@ public class PayloadProcessor implements Subscribable {
    */
   private void newUser(ClientRequest client) {
     NewUser payload = (NewUser) client.getPayload();
-    User user = GlobalServerServices.users.add(payload.getUsername(), payload.getPassword(), payload.getDescription());
+    User user = GlobalServerServices.users.newUser(payload.getUsername(), payload.getPassword(), payload.getDescription());
     if (user == null) { // username taken
       PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Username taken"));
       return;

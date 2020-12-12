@@ -40,7 +40,7 @@ public class ClientConnections {
   }
 
   public boolean hasClient(String userId) {
-    return this.idToSocket.contains(userId);
+    return this.idToSocket.containsKey(userId);
   }
 
   public ObjectOutputStream getClient(String userId) {

@@ -147,16 +147,16 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
       }
 
       if (
-        (!Constants.NAME_FILTER.matches(username))
-        || (!Constants.PASSWORD_FILTER.matches(password))
-        || (!Constants.DESCRIPTION_FILTER.matches(description))
+        (!Constants.NAME_VALIDATOR.matches(username))
+        || (!Constants.PASSWORD_VALIDATOR.matches(password))
+        || (!Constants.DESCRIPTION_VALIDATOR.matches(description))
       ) {
         JOptionPane.showMessageDialog(
           this,
           "Username, password, or description does not meet requirements:"
-          + "\nUsername: " + Constants.NAME_FILTER.getDescription()
-          + "\nPassword: " + Constants.PASSWORD_FILTER.getDescription()
-          + "\nDescription: " + Constants.DESCRIPTION_FILTER.getDescription(),
+          + "\nUsername: " + Constants.NAME_VALIDATOR.getDescription()
+          + "\nPassword: " + Constants.PASSWORD_VALIDATOR.getDescription()
+          + "\nDescription: " + Constants.DESCRIPTION_VALIDATOR.getDescription(),
           "Submission failed",
           JOptionPane.INFORMATION_MESSAGE
         );

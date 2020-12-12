@@ -68,7 +68,6 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   public UserSettingsFrame(String title, ClientSocket clientSocket) {
     super(title, clientSocket);
 
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(UserSettingsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserSettingsFrame.PREFERRED_DIMENSION);
     this.setResizable(true);
@@ -199,11 +198,11 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
       return;
     }
 
-    if ((!Constants.NAME_FILTER.matches(newUsername))) {
+    if ((!Constants.NAME_VALIDATOR.matches(newUsername))) {
       JOptionPane.showMessageDialog(
         this,
         "New username does not meet requirements:"
-        + "\n" + Constants.NAME_FILTER.getDescription(),
+        + "\n" + Constants.NAME_VALIDATOR.getDescription(),
         "Submission failed",
         JOptionPane.INFORMATION_MESSAGE
       );
@@ -274,11 +273,11 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
       return;
     }
 
-    if ((!Constants.PASSWORD_FILTER.matches(newPassStr))) {
+    if ((!Constants.PASSWORD_VALIDATOR.matches(newPassStr))) {
       JOptionPane.showMessageDialog(
         this,
         "New password does not meet requirements:"
-        + "\n" + Constants.PASSWORD_FILTER.getDescription(),
+        + "\n" + Constants.PASSWORD_VALIDATOR.getDescription(),
         "Submission failed",
         JOptionPane.INFORMATION_MESSAGE
       );
@@ -325,11 +324,11 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
       return;
     }
 
-    if ((!Constants.DESCRIPTION_FILTER.matches(newDescription))) {
+    if ((!Constants.DESCRIPTION_VALIDATOR.matches(newDescription))) {
       JOptionPane.showMessageDialog(
         this,
         "New description does not meet requirements:"
-        + "\n" + Constants.DESCRIPTION_FILTER.getDescription(),
+        + "\n" + Constants.DESCRIPTION_VALIDATOR.getDescription(),
         "Submission failed",
         JOptionPane.INFORMATION_MESSAGE
       );

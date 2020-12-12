@@ -38,6 +38,8 @@ public abstract class UserFrame extends JFrame implements MouseMotionListener,
 
   public UserFrame(String title, ClientSocket clientSocket) {
     super(title);
+    
+    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     this.clientSocket = clientSocket;
     this.clientSocket.addListener(this);

@@ -62,7 +62,6 @@ public class UserFriendsFrame extends UserFrame implements ActionListener {
     
     this.setSize(UserFriendsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserFriendsFrame.PREFERRED_DIMENSION);
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setResizable(true);
 
     this.updateJLists(GlobalClient.clientData);

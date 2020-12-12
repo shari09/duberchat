@@ -15,23 +15,24 @@ public class Constants {
   
   public static final int SOCKET_TIMEOUT = 1000*30;
 
-  public static final RegexFilter NAME_FILTER = new RegexFilter(
+  public static final RegexValidator NAME_VALIDATOR = new RegexValidator(
     new String[] {
       "^.{1,20}$"
     },
-    "Between 1 to 20 characters"
+    "Between 1 to 20 characters."
   );
 
-  public static final RegexFilter PASSWORD_FILTER = new RegexFilter(
+  public static final RegexValidator PASSWORD_VALIDATOR = new RegexValidator(
     new String[] {
       "^.{8,20}$",
-      "^\\d$",
-      "^[A-Za-z]$"
+      "^.*(?=.*\\d).*$",
+      "^.*(?=.*[a-z]).*$",
+      "^.*(?=.*[A-Z]).*$"
     },
-    "Between 8 to 20 characters, containing at least 1 number and 1 letter"
+    "Between 8 to 20 characters, containing at least 1 number, 1 uppercase letter and 1 lowercase letter."
   );
 
-  public static final RegexFilter DESCRIPTION_FILTER = new RegexFilter(
+  public static final RegexValidator DESCRIPTION_VALIDATOR = new RegexValidator(
     new String[] {
       "^.{0,50}$"
     },

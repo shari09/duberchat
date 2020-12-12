@@ -43,7 +43,6 @@ public class UserChatFrame extends UserFrame {
     super(title, clientSocket);
 
     this.channels = new ConcurrentSkipListSet<ChannelMetadata>();
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setPreferredSize(
       new Dimension(
         UserChatFrame.PREFERRED_WIDTH,

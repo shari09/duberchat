@@ -22,6 +22,7 @@ import common.entities.Constants;
 import common.entities.Attachment;
 import common.entities.Message;
 import common.entities.PrivateChannelMetadata;
+import common.entities.UserStatus;
 import common.entities.ChannelMetadata;
 import common.entities.GroupChannelMetadata;
 import common.entities.payload.Login;
@@ -133,10 +134,12 @@ public class ClientSocket implements Runnable {
       this.socket.close();
       this.input.close();
       this.output.close();
-    } catch (Exception e) {
-      System.out.println("Failed to close sockets");
+    } catch (SocketException socketException) {
+      this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "You have been timed out");
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "An error has occurred");
     }
-
   }
 
   public synchronized void close() throws IOException {
@@ -152,6 +155,10 @@ public class ClientSocket implements Runnable {
 
   public synchronized void addListener(ClientSocketListener listener) {
     this.listeners.add(listener);
+  }
+
+  public synchronized void removeListener(ClientSocketListener listener) {
+    this.listeners.remove(listener);
   }
 
   public void updateLastActiveTime() {

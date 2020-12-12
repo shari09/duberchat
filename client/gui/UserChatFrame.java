@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
+import common.entities.payload.PayloadType;
 import common.entities.ChannelMetadata;
 import common.entities.ClientData;
 
@@ -31,20 +32,18 @@ import common.entities.ClientData;
  */
 
 @SuppressWarnings("serial")
-public class UserChatFrame extends JFrame {
+public class UserChatFrame extends UserFrame {
   private static final int PREFERRED_WIDTH = 800;
   private static final int PREFERRED_HEIGHT = 600;
 
-  private ClientSocket clientSocket;
   private ConcurrentSkipListSet<ChannelMetadata> channels;
   private ChannelMetadata currentChannel;
 
   public UserChatFrame(String title, ClientSocket clientSocket) {
-    super(title);
-    
-    this.clientSocket = clientSocket;
-    this.channels = new ConcurrentSkipListSet<ChannelMetadata>();
+    super(title, clientSocket);
 
+    this.channels = new ConcurrentSkipListSet<ChannelMetadata>();
+    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setPreferredSize(
       new Dimension(
         UserChatFrame.PREFERRED_WIDTH,
@@ -55,5 +54,20 @@ public class UserChatFrame extends JFrame {
 
     this.setVisible(true);
   }
+
+  @Override
+  public void clientDataUpdated(ClientData updatedClientData) {
+
+  }
+
+  @Override
+  public void clientRequestStatusReceived(
+    PayloadType payloadType, 
+    boolean successful,
+    String notifMessage
+  ) {
+
+  }
+
 
 }

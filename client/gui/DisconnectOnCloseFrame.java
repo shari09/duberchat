@@ -19,74 +19,67 @@ import client.resources.GlobalClient;
  */
 
 @SuppressWarnings("serial")
-public abstract class DisconnectOnCloseFrame extends JFrame implements WindowListener {
-  private ClientSocket clientSocket;
+public abstract class DisconnectOnCloseFrame extends UserFrame implements WindowListener {
 
   public DisconnectOnCloseFrame(String title, ClientSocket clientSocket) {
-    super(title);
-    this.clientSocket = clientSocket;
+    super(title, clientSocket);
     this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     this.addWindowListener(this);
   }
 
-  public ClientSocket getClientSocket() {
-    return this.clientSocket;
+  @Override
+  public void windowOpened(WindowEvent e) {
   }
 
-
-    @Override
-    public void windowOpened(WindowEvent e) {
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-      String[] options = {
-        "Yes, disconnect",
-        "Cancel"
-      };
-      int choice = JOptionPane.showOptionDialog(
-        this,
-        "Would you like to close all windows and disconnect?",
-        "Confirm Action",
-        JOptionPane.OK_CANCEL_OPTION,
-        JOptionPane.QUESTION_MESSAGE,
-        null,
-        options,
-        null);
-      
-      if (choice == JOptionPane.OK_OPTION) {
-        try {
-          this.clientSocket.close();
-          System.exit(0);
-        } catch (IOException ioException) {
-          JOptionPane.showMessageDialog(
-            this,
-            "failed to disconnect",
-            "Error",
-            JOptionPane.ERROR_MESSAGE
-          );
-        }
+  @Override
+  public void windowClosing(WindowEvent e) {
+    String[] options = {
+      "Yes, disconnect",
+      "Cancel"
+    };
+    int choice = JOptionPane.showOptionDialog(
+      this,
+      "Would you like to close all windows and disconnect?",
+      "Confirm Action",
+      JOptionPane.OK_CANCEL_OPTION,
+      JOptionPane.QUESTION_MESSAGE,
+      null,
+      options,
+      null);
+    
+    if (choice == JOptionPane.OK_OPTION) {
+      try {
+        this.getClientSocket().close();
+        System.exit(0);
+      } catch (IOException ioException) {
+        JOptionPane.showMessageDialog(
+          this,
+          "failed to disconnect",
+          "Error",
+          JOptionPane.ERROR_MESSAGE
+        );
       }
     }
+  }
 
-    @Override
-    public void windowIconified(WindowEvent e) {
-    }
-              
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-    }
-    
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-    }
-    
-    @Override
-    public void windowActivated(WindowEvent e) {
-    }
-    
-    @Override
-    public void windowClosed(WindowEvent e) {
-    }
+  @Override
+  public void windowIconified(WindowEvent e) {
+  }
+            
+  @Override
+  public void windowDeiconified(WindowEvent e) {
+  }
+  
+  @Override
+  public void windowDeactivated(WindowEvent e) {
+  }
+  
+  @Override
+  public void windowActivated(WindowEvent e) {
+  }
+  
+  @Override
+  public void windowClosed(WindowEvent e) {
+  }
 
 }

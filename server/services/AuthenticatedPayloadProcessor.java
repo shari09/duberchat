@@ -275,8 +275,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void changePassword(AuthenticatedClientRequest client) {
     ChangePassword payload = (ChangePassword) client.getPayload();
-    boolean success = GlobalServerServices.users.changePassword(payload.getUserId(), payload.getOriginalPassword(),
-        payload.getNewPassword());
+    boolean success = GlobalServerServices.users.changePassword(payload.getUserId(), payload.getOriginalPassword(), payload.getNewPassword());
     if (!success) {
       PayloadSender.send(client.getClientOut(),
           new ClientRequestStatus(1, payload.getId(), "Incorrect original password"));

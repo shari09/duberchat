@@ -45,11 +45,8 @@ import client.entities.ClientSocketListener;
 import client.resources.GlobalClient;
 
 @SuppressWarnings("serial")
-public class UserFriendsFrame extends JFrame implements ActionListener,
-                                                        ClientSocketListener {
-  private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);                                                
-
-  private ClientSocket clientSocket;
+public class UserFriendsFrame extends UserFrame implements ActionListener {
+  private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
 
   private JList<UserMetadata> friends;
   private JList<UserMetadata> onlineFriends;
@@ -61,14 +58,11 @@ public class UserFriendsFrame extends JFrame implements ActionListener,
   private JButton sendFriendRequestButton;
 
   public UserFriendsFrame(String title, ClientSocket clientSocket) {
-    
-    super(title);
-
-    this.clientSocket = clientSocket;
-    this.clientSocket.addListener(this);
+    super(title, clientSocket);
     
     this.setSize(UserFriendsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserFriendsFrame.PREFERRED_DIMENSION);
+    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setResizable(true);
 
     this.updateJLists(GlobalClient.clientData);
@@ -142,7 +136,7 @@ public class UserFriendsFrame extends JFrame implements ActionListener,
           JOptionPane.INFORMATION_MESSAGE
         );
       } else {
-        this.clientSocket.sendPayload(
+        this.getClientSocket().sendPayload(
           new FriendRequestToServer(
             1,
             GlobalClient.clientData.getUserId(),

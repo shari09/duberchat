@@ -11,10 +11,12 @@ import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 
+import common.entities.Constants;
 import common.entities.payload.PayloadType;
 import common.entities.ClientData;
 import client.entities.ClientSocket;
@@ -32,9 +34,7 @@ import common.entities.payload.Login;
  */
 
 @SuppressWarnings("serial")
-public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener,
-                                                                  ClientSocketListener,
-                                                                  MouseMotionListener {
+public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener {
   public static final int WIDTH = 800;
   public static final int HEIGHT = 600;
 
@@ -42,13 +42,9 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   private JPasswordField passwordField;
   private JButton loginButton;
   private JButton registerButton;
-  private JLabel statusLabel;
                               
   public LoginFrame(String title, ClientSocket clientSocket) {
     super(title, clientSocket);
-
-    this.getClientSocket().addListener(this);
-    this.addMouseMotionListener(this);
 
     this.setSize(LoginFrame.WIDTH, LoginFrame.HEIGHT);
     this.setResizable(false);
@@ -97,14 +93,6 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     this.registerButton.addActionListener(this);
     panel.add(this.registerButton);
 
-    // status message
-    this.statusLabel = new JLabel(" ");
-    this.statusLabel.setAlignmentX(CENTER_ALIGNMENT);
-    this.statusLabel.setFont(new Font("Serif", Font.PLAIN, 20));
-    panel.add(Box.createRigidArea(new Dimension(0, 10)));
-    panel.add(this.statusLabel);
-    panel.add(Box.createRigidArea(new Dimension(0, 20)));
-
     this.getContentPane().add(panel);
     this.setVisible(true);
   }
@@ -116,8 +104,12 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
       String password = String.valueOf(this.passwordField.getPassword());
 
       if ((username.length() == 0) || (password.length() == 0)) {
-        this.statusLabel.setForeground(Color.RED);
-        this.statusLabel.setText("Please fill in the required fields");
+        JOptionPane.showMessageDialog(
+          this,
+          "Please fill in the required fields",
+          "Submission failed",
+          JOptionPane.INFORMATION_MESSAGE
+        );
         return;
       }
 
@@ -128,16 +120,13 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
           password
         )
       );
-      
-      this.statusLabel.setForeground(Color.GRAY);
-      this.statusLabel.setText("Logging in...");
 
     } else if (e.getSource() == this.registerButton) {
+      this.dispose();
       RegistrationFrame nextFrame = new RegistrationFrame(
         this.getTitle(),
         this.getClientSocket()
       );
-      this.dispose();
     }
   }
 
@@ -145,12 +134,11 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   public void clientDataUpdated(ClientData updatedClientData) {
     // user successfully logged in
     if (GlobalClient.hasData()) {
-      // load user frame
-      MainUserFrame nextFrame = new MainUserFrame(
+      this.dispose();
+      UserMainFrame nextFrame = new UserMainFrame(
         this.getTitle(),
         this.getClientSocket()
       );
-      this.dispose();
     }
   }
 
@@ -160,22 +148,16 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     boolean successful,
     String notifMessage
   ) {
-    if (payloadType == PayloadType.LOGIN) {
-      // error message
-      if (!successful) {
-        this.statusLabel.setForeground(Color.RED);
-        this.statusLabel.setText(notifMessage);
-      }
+    if (successful) {
+      return;
     }
-  }
-
-  @Override
-  public void mouseDragged(MouseEvent e) {
-    this.getClientSocket().updateLastActiveTime();
-  }
-
-  @Override
-  public void mouseMoved(MouseEvent e) {
-    this.getClientSocket().updateLastActiveTime();
+    if (payloadType == PayloadType.LOGIN) {
+      JOptionPane.showMessageDialog(
+        this,
+        notifMessage,
+        "Error",
+        JOptionPane.ERROR_MESSAGE
+      );
+    }
   }
 }

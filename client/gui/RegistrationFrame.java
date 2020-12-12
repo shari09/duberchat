@@ -20,6 +20,7 @@ import javax.swing.JPasswordField;
 import common.entities.payload.NewUser;
 import common.entities.payload.PayloadType;
 import common.entities.ClientData;
+import common.entities.Constants;
 import client.entities.ClientSocket;
 import client.entities.ClientSocketListener;
 import client.resources.GlobalClient;
@@ -34,9 +35,7 @@ import client.resources.GlobalClient;
  */
 
 @SuppressWarnings("serial")
-public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionListener,
-                                                                         ClientSocketListener,
-                                                                         MouseMotionListener {
+public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionListener {
   public static final int WIDTH = 800;
   public static final int HEIGHT = 600;
 
@@ -46,13 +45,9 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
   private JPasswordField confirmPasswordField;
   private JButton registerButton;
   private JButton backToLoginButton;
-  private JLabel statusLabel;
   
   public RegistrationFrame(String title, ClientSocket clientSocket) {
     super(title, clientSocket);
-
-    this.getClientSocket().addListener(this);
-    this.addMouseMotionListener(this);
 
     this.setSize(RegistrationFrame.WIDTH, RegistrationFrame.HEIGHT);
     this.setResizable(false);
@@ -119,14 +114,6 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     this.backToLoginButton.addActionListener(this);
     panel.add(this.backToLoginButton);
 
-    // status message
-    this.statusLabel = new JLabel(" ");
-    this.statusLabel.setAlignmentX(CENTER_ALIGNMENT);
-    this.statusLabel.setFont(new Font("Serif", Font.PLAIN, 20));
-    panel.add(Box.createRigidArea(new Dimension(0, 10)));
-    panel.add(this.statusLabel);
-    panel.add(Box.createRigidArea(new Dimension(0, 20)));
-
     this.getContentPane().add(panel);
     this.setVisible(true);
   }
@@ -140,18 +127,42 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
       String confirmPassword = String.valueOf(this.confirmPasswordField.getPassword());
       
       if ((username.length() == 0) || (password.length() == 0) || (confirmPassword.length() == 0)) {
-        this.statusLabel.setForeground(Color.RED);
-        this.statusLabel.setText("Please fill in the required fields");
+        JOptionPane.showMessageDialog(
+          this,
+          "Please fill in the required fields",
+          "Submission failed",
+          JOptionPane.INFORMATION_MESSAGE
+        );
         return;
       }
 
       if (!password.equals(confirmPassword)) {
-        this.statusLabel.setForeground(Color.RED);
-        this.statusLabel.setText("Password and confirm password does not match");
+        JOptionPane.showMessageDialog(
+          this,
+          "Password and confirm password does not match",
+          "Submission failed",
+          JOptionPane.INFORMATION_MESSAGE
+        );
         return;
       }
 
-      //TODO: add illegal chars/length limit
+      if (
+        (!Constants.NAME_FILTER.matches(username))
+        || (!Constants.PASSWORD_FILTER.matches(password))
+        || (!Constants.DESCRIPTION_FILTER.matches(description))
+      ) {
+        JOptionPane.showMessageDialog(
+          this,
+          "Username, password, or description does not meet requirements:"
+          + "\nUsername: " + Constants.NAME_FILTER.getDescription()
+          + "\nPassword: " + Constants.PASSWORD_FILTER.getDescription()
+          + "\nDescription: " + Constants.DESCRIPTION_FILTER.getDescription(),
+          "Submission failed",
+          JOptionPane.INFORMATION_MESSAGE
+        );
+        return;
+      }
+
       this.getClientSocket().sendPayload(
         new NewUser(
           1,
@@ -160,12 +171,10 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
           description
         )
       );
-      this.statusLabel.setForeground(Color.GRAY);
-      this.statusLabel.setText("Creating Account...");
 
     } else if (e.getSource() == this.backToLoginButton) {
-      LoginFrame nextFrame = new LoginFrame(this.getTitle(), this.getClientSocket());
       this.dispose();
+      LoginFrame nextFrame = new LoginFrame(this.getTitle(), this.getClientSocket());
     }
   }
 
@@ -173,12 +182,11 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
   public void clientDataUpdated(ClientData updatedClientData) {
     // user successfully logged in
     if (GlobalClient.hasData()) {
-      // load user frame
-      MainUserFrame nextFrame = new MainUserFrame(
+      this.dispose();
+      UserMainFrame nextFrame = new UserMainFrame(
         this.getTitle(),
         this.getClientSocket()
       );
-      this.dispose();
     }
   }
 
@@ -188,22 +196,16 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     boolean successful,
     String notifMessage
   ) {
-    if (payloadType == PayloadType.NEW_USER) {
-      // error message
-      if (!successful) {
-        this.statusLabel.setForeground(Color.RED);
-        this.statusLabel.setText(notifMessage);
-      }
+    if (successful) {
+      return;
     }
-  }
-
-  @Override
-  public void mouseDragged(MouseEvent e) {
-    this.getClientSocket().updateLastActiveTime();
-  }
-
-  @Override
-  public void mouseMoved(MouseEvent e) {
-    this.getClientSocket().updateLastActiveTime();
+    if (payloadType == PayloadType.NEW_USER) {
+      JOptionPane.showMessageDialog(
+        this,
+        notifMessage,
+        "Error",
+        JOptionPane.ERROR_MESSAGE
+      );
+    }
   }
 }

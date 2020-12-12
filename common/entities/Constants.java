@@ -10,6 +10,7 @@ package common.entities;
  */
 
 public class Constants {
-  public static final int SOCKET_TIMEOUT = 1000*60;
+  public static final int HEARTBEAT_FREQUENCY = 1000*5;
+  public static final int SOCKET_TIMEOUT = 1000*30;
   //TODO: add regex filters for password, username, description
 }

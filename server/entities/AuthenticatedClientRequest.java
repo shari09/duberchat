@@ -24,6 +24,6 @@ public class AuthenticatedClientRequest extends ClientRequest {
   }
 
   public AuthenticatablePayload getPayload() {
-    return (AuthenticatablePayload)this.getPayload();
+    return (AuthenticatablePayload)super.getPayload();
   }
 }

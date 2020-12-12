@@ -1,4 +1,5 @@
 *.class
 *.ser
 *.sai2
-clientdata/
+database/
+downloads/

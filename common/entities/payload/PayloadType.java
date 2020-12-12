@@ -17,7 +17,7 @@ public enum PayloadType {
   LOGIN,
   /** Change password */
   CHANGE_PASSWORD,
-  /** Change the user's profile settings (description, status, etc) */
+  /** Change the user's profile fields that are stored as strings (username, description, etc) */
   CHANGE_PROFILE,
   /** Updates the user's status that is displayed to others */
   UPDATE_STATUS,
@@ -70,18 +70,5 @@ public enum PayloadType {
   MESSAGES_TO_CLIENT,
   /** The requested file from the client */
   ATTACHMENT_TO_CLIENT,
-  /** 
-   * An update on the user's friends.
-   * <ul>
-   * <li> sent new friend request
-   * <li> cancelled friend request
-   * <li> accepted friend request
-   * <li> rejected friend request
-   * <li> blocked (removed as friends) 
-   * <li> new channel
-   * <li> removed from channel
-   * </ul>
-   */
-  CLIENT_INFO_UPDATE,
 
 }

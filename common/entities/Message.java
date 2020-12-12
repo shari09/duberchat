@@ -21,7 +21,7 @@ public class Message implements Serializable, Identifiable, Comparable<Message> 
    */
   private static final long serialVersionUID = 1L;
 
-  private String messageId;
+  private String id;
   private String content;
   private String senderId;
   private String channelId;
@@ -37,7 +37,7 @@ public class Message implements Serializable, Identifiable, Comparable<Message> 
     String attachmentId, 
     String attachmentName
   ) {
-    this.messageId = UUID.randomUUID().toString();
+    this.id = UUID.randomUUID().toString();
     this.content = content;
     this.senderId = senderId;
     this.created = new Timestamp(System.currentTimeMillis());
@@ -48,7 +48,7 @@ public class Message implements Serializable, Identifiable, Comparable<Message> 
 
   @Override
   public String getId() {
-    return this.messageId;
+    return this.id;
   }
 
   @Override

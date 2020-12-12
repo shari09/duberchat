@@ -51,6 +51,24 @@ public class ClientData implements Serializable {
     this.channels = channels;
   }
 
+  public synchronized UserMetadata getBlockedByUserId(String userId) {
+    for (UserMetadata blockedMetadata: this.blocked) {
+      if (blockedMetadata.getUserId().equals(userId)) {
+        return blockedMetadata;
+      }
+    }
+    return null;
+  }
+
+  public synchronized ChannelMetadata getChannelByChannelId(String channelId) {
+    for (ChannelMetadata channelMetadata: this.channels) {
+      if (channelMetadata.getChannelId().equals(channelId)) {
+        return channelMetadata;
+      }
+    }
+    return null;
+  }
+
   public String getUserId() {
     return this.userId;
   }
@@ -99,28 +117,12 @@ public class ClientData implements Serializable {
     this.friends = friends;
   }
 
-  public synchronized void addFriend(UserMetadata friendToAdd) {
-    this.friends.add(friendToAdd);
-  }
-
-  public synchronized void removeFriend(UserMetadata friendToRemove) {
-    this.friends.remove(friendToRemove);
-  }
-
   public ConcurrentHashMap<UserMetadata, String> getIncomingFriendRequests() {
     return this.incomingFriendRequests;
   }
 
   public void setIncomingFriendRequests(ConcurrentHashMap<UserMetadata, String> incomingFriendRequests) {
     this.incomingFriendRequests = incomingFriendRequests;
-  }
-
-  public void addIncomingFriendRequest(UserMetadata userMetadata, String requestMessage) {
-    this.incomingFriendRequests.put(userMetadata, requestMessage);
-  }
-
-  public void removeIncomingFriendRequest(UserMetadata userMetadata) {
-    this.incomingFriendRequests.remove(userMetadata);
   }
 
   public ConcurrentHashMap<UserMetadata, String> getOutgoingFriendRequests() {
@@ -131,14 +133,6 @@ public class ClientData implements Serializable {
     this.outgoingFriendRequests = outgoingFriendRequests;
   }
 
-  public void addOutgoingFriendRequest(UserMetadata userMetadata, String requestMessage) {
-    this.outgoingFriendRequests.put(userMetadata, requestMessage);
-  }
-
-  public void removeOutgoingFriendRequest(UserMetadata userMetadata) {
-    this.outgoingFriendRequests.remove(userMetadata);
-  }
-
   public synchronized LinkedHashSet<UserMetadata> getBlocked() {
     return this.blocked;
   }
@@ -147,28 +141,12 @@ public class ClientData implements Serializable {
     this.blocked = blocked;
   }
 
-  public synchronized void addBlocked(UserMetadata userToBeBlocked) {
-    this.blocked.add(userToBeBlocked);
-  }
-
-  public synchronized void removeBlocked(UserMetadata blocked) {
-    this.blocked.remove(blocked);
-  }
-
   public synchronized LinkedHashSet<ChannelMetadata> getChannels() {
     return this.channels;
   }
 
   public synchronized void setChannels(LinkedHashSet<ChannelMetadata> channels) {
     this.channels = channels;
-  }
-
-  public synchronized void addChannel(ChannelMetadata channel) {
-    this.channels.add(channel);
-  }
-
-  public synchronized void removeChannel(ChannelMetadata channel) {
-    this.channels.remove(channel);
   }
 
 }

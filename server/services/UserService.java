@@ -27,9 +27,9 @@ import server.resources.TempData;
  */
 
 public class UserService {
-  private final String USERS_PATH = "clientdata/data/users.ser";
-  private final String USERNAME_MAPPING_PATH = "clientdata/data/username-to-uid-mapping.ser";
-  private final String USER_ID_MAPPING_PATH = "clientdata/data/uid-to-username-mapping.ser";
+  private final String USERS_PATH = "database/data/users.ser";
+  private final String USERNAME_MAPPING_PATH = "database/data/username-to-uid-mapping.ser";
+  private final String USER_ID_MAPPING_PATH = "database/data/uid-to-username-mapping.ser";
   private ConcurrentHashMap<String, User> users;
   private ConcurrentHashMap<String, String> usernameToUid;
   private ConcurrentHashMap<String, String> uidToUsername;

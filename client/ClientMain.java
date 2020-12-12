@@ -2,6 +2,8 @@ package client;
 
 import javax.swing.JFrame;
 
+import client.gui.ClientStartFrame;
+
 /**
  * The client side of the chat program.
  * <p>

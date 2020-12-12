@@ -1,8 +1,6 @@
 package server.gui;
 
-import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,16 +9,11 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
+import server.entities.EventType;
 import server.services.GlobalServerServices;
 
 /**
@@ -38,7 +31,7 @@ public class SidePanel extends JPanel implements ActionListener {
    */
   private static final long serialVersionUID = 1L;
   private static final int iconSize = 35;
-  private JButton log;
+  private JButton logs;
   private JButton users;
 
   public SidePanel() {
@@ -46,10 +39,10 @@ public class SidePanel extends JPanel implements ActionListener {
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     this.setAlignmentX(CENTER_ALIGNMENT);
     this.add(Style.getEmptyHeight(SidePanel.iconSize));
-    this.log = this.getMenuItem("log-format");
+    this.logs = this.getMenuItem("log-format");
     this.users = this.getMenuItem("user");
     this.add(this.users);
-    this.add(this.log);
+    this.add(this.logs);  
     this.setBackground(Style.GRAY3);
   }
 
@@ -81,9 +74,13 @@ public class SidePanel extends JPanel implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == this.users) {
-      System.out.println("users go brrr");
-    } else if (e.getSource() == this.log) {
-      System.out.println("log go brrr");
+      GlobalServerServices.guiEventQueue.emitEvent(
+        EventType.USERS_TAB, 1, this.users
+      );
+    } else if (e.getSource() == this.logs) {
+      GlobalServerServices.guiEventQueue.emitEvent(
+        EventType.LOGS_TAB, 1, this.logs
+      );
     }
   }
   

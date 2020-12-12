@@ -1,5 +1,6 @@
 package server.entities;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -23,7 +24,11 @@ import common.entities.UserMetadata;
  * @since 1.1.0
  */
 
-public abstract class Channel implements Identifiable {
+public abstract class Channel implements Identifiable, Serializable {
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
   private String channelId;
   private LinkedHashSet<UserMetadata> participants;
   private LinkedHashSet<String> blacklist;
@@ -40,7 +45,7 @@ public abstract class Channel implements Identifiable {
     this.messages = new ConcurrentSkipListMap<>();
     this.idToMsgMapping = new ConcurrentHashMap<>();
     this.lastModified = new Timestamp(System.currentTimeMillis());
-    this.getNewMetadata();
+    this.metadata = this.getNewMetadata();
   }
 
   public Timestamp getLastModified() {

@@ -296,24 +296,24 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   }
 
   private void sendFriendRequest(AuthenticatedClientRequest client) {
-    FriendRequestToServer friendReq = (FriendRequestToServer) client.getPayload();
-    String recipientId = GlobalServerServices.users.getUserId(friendReq.getRecipientName());
-    if (GlobalServerServices.users.isBlocked(recipientId, friendReq.getId())) {
-      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, friendReq.getId(), "You have been blocked"));
-      return;
-    }
-
-    boolean success = GlobalServerServices.users.sendFriendRequest(friendReq.getUserId(), recipientId,
-        friendReq.getRequestMessage());
+    FriendRequestToServer payload = (FriendRequestToServer) client.getPayload();
+    String recipientId = GlobalServerServices.users.getUserId(payload.getRecipientName());
+    boolean success = GlobalServerServices.users.sendFriendRequest(
+      payload.getUserId(), 
+      recipientId,
+      payload.getRequestMessage()
+    );
 
     // sending request to a nonexistent user
     if (!success) {
-      PayloadSender.send(client.getClientOut(),
-          new ClientRequestStatus(1, friendReq.getId(), "Recipient does not exist"));
+      PayloadSender.send(
+        client.getClientOut(),
+        new ClientRequestStatus(1, payload.getId(), "Recipient does not exist")
+      );
       return;
     }
 
-    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, friendReq.getId(), null));
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
   private void respondFriendRequest(AuthenticatedClientRequest client) {

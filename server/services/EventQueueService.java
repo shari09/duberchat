@@ -55,7 +55,10 @@ public class EventQueueService {
       while (true) {
         while (!EventQueueService.this.queue.isEmpty()) {
           Event event = EventQueueService.this.queue.poll();
-          ArrayList<Subscribable> subscribers = EventQueueService.this.eventSubscribers.get(event.getType());
+          ArrayList<Subscribable> subscribers = EventQueueService
+                                                .this
+                                                .eventSubscribers
+                                                .get(event.getType());
           if (subscribers != null) {
             for (int i = 0; i < subscribers.size(); i++) {
               pool.execute(new OnEvent(event.getEmitter(), subscribers.get(i), event.getType()));
@@ -86,6 +89,7 @@ public class EventQueueService {
     public OnEvent(Object emitter, Subscribable subscriber, EventType type) {
       this.emitter = emitter;
       this.subscriber = subscriber;
+      this.type = type;
     }
 
     public void run() {

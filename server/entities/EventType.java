@@ -36,4 +36,15 @@ public enum EventType {
   FRIEND_UPDATE,
   /** Any updates relating to channels (updating, removing users, etc) */
   CHANNEL_UPDATE,
+
+
+  //gui events
+  /** Active/connected users tab */
+  USERS_TAB,
+  /** Server logs */
+  LOGS_TAB,
+  /** Select an user to view details about */
+  SELECT_USER,
+  /** Select a log entry to view details about */
+  SELECT_ENTRY,
 }

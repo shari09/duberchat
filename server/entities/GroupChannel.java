@@ -16,6 +16,10 @@ import common.entities.UserMetadata;
  */
 
 public class GroupChannel extends Channel {
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
   private LinkedHashSet<UserMetadata> blacklist;
   private String ownerId;
   private String channelName;

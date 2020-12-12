@@ -43,7 +43,7 @@ public class Server {
     friendInfoUpdater.activate();
     channelUpdateHandler.activate();
     socket.start();
-    new MainFrame(); 
+    (new MainFrame()).activate();; 
   }
 
   public static void main(String[] args) {

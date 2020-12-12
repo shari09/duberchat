@@ -32,6 +32,7 @@ public class MessagingService {
   private final int bufferEntriesNum = 2;
 
   public MessagingService() {
+    this.channels = new ConcurrentHashMap<>();
     this.numChanges = new ConcurrentHashMap<>();
   }
 
@@ -84,12 +85,9 @@ public class MessagingService {
       return this.channels.get(channelId);
     }
     String filePath = this.CHANNELS_DIR_PATH + channelId + ".ser";
-    return DataService.loadData(filePath);
-  }
-
-  private void updateChannel(String channelId, Channel channel) {
+    Channel channel = DataService.loadData(filePath);
     this.channels.put(channelId, channel);
-    this.save(channelId);
+    return channel;    
   }
 
   private void updateChannel(String channelId) {
@@ -97,13 +95,13 @@ public class MessagingService {
   }
 
   private void addMsgToChannel(String channelId, Message message) {
-    Channel channel = getChannel(channelId);
+    Channel channel = this.getChannel(channelId);
     if (channel == null) {
       System.out.println(channelId + " channel doesn't exist");
       return;
     }
     channel.addMessage(message);
-    this.updateChannel(channelId, channel);
+    this.updateChannel(channelId);
   }
 
   /**
@@ -221,9 +219,14 @@ public class MessagingService {
    * @param ownerId
    * @return the channel's metadata
    */
-  public ChannelMetadata createGroupChannel(LinkedHashSet<UserMetadata> participants, String channelName,
-      String ownerId) {
+  public ChannelMetadata createGroupChannel(
+    LinkedHashSet<UserMetadata> participants, 
+    String channelName,
+    String ownerId
+  ) {
     // TODO: verify that all the participants exist
+    System.out.println(participants);
+    
     GroupChannel channel = new GroupChannel(participants, channelName, ownerId);
     this.channels.put(channel.getId(), channel);
     this.hardSave(channel.getId());
@@ -254,6 +257,7 @@ public class MessagingService {
     }
     channel.addParticipant(GlobalServerServices.users.getUserMetadata(userId));
     GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel.getMetadata());
+    this.updateChannel(channelId);
     return true;
   }
 
@@ -270,6 +274,7 @@ public class MessagingService {
     GroupChannel gc = (GroupChannel) this.getChannel(channelId);
     gc.removeParticipant(GlobalServerServices.users.getUserMetadata(userId));
     GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
+    this.updateChannel(channelId);
     return true;
   }
 
@@ -304,6 +309,7 @@ public class MessagingService {
     Channel channel = this.getChannel(channelId);
     channel.blacklistUser(userId);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel.getMetadata());
+    this.updateChannel(channelId);
     return true;
   }
 
@@ -330,6 +336,7 @@ public class MessagingService {
 
     // assign random owner
     channel.updateOwner(channel.getParticipants().iterator().next().getUserId());
+    this.updateChannel(channelId);
     return true;
   }
 
@@ -347,6 +354,7 @@ public class MessagingService {
     GroupChannel gc = (GroupChannel) this.getChannel(channelId);
     gc.updateOwner(userId);
     GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
+    this.updateChannel(channelId);
     return true;
   }
 
@@ -369,6 +377,7 @@ public class MessagingService {
         break;
     }
     GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
+    this.updateChannel(channelId);
     return true;
   }
 }

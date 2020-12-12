@@ -9,10 +9,6 @@ import common.entities.UserMetadata;
 import common.entities.payload.MessageUpdateToClient;
 import common.entities.payload.MessageUpdateType;
 import server.entities.EventType;
-import server.resources.GlobalEventQueue;
-import server.resources.StoredData;
-import server.resources.TempData;
-
 
 /**
  * A queue that handles message changes and updates connected relevant clients.
@@ -34,17 +30,17 @@ public class MessageQueue implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalEventQueue.queue.subscribe(EventType.NEW_MESSAGE, this);
-    GlobalEventQueue.queue.subscribe(EventType.EDIT_MESSAGE, this);
-    GlobalEventQueue.queue.subscribe(EventType.REMOVE_MESSAGE, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.NEW_MESSAGE, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.EDIT_MESSAGE, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.REMOVE_MESSAGE, this);
   }
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
-    Message message = (Message)emitter;
+    Message message = (Message) emitter;
     this.queue.add(message);
     // if (this.running) {
-    //   return;
+    // return;
     // }
     // this.running = true;
     while (!this.queue.isEmpty()) {
@@ -58,7 +54,7 @@ public class MessageQueue implements Subscribable {
     String channelId = message.getChannelId();
     MessageUpdateType type = null;
 
-    switch(eventType) {
+    switch (eventType) {
       case NEW_MESSAGE:
         type = MessageUpdateType.NEW;
         break;
@@ -73,19 +69,15 @@ public class MessageQueue implements Subscribable {
         return;
     }
 
-    LinkedHashSet<UserMetadata> users = StoredData
-                                        .channels
-                                        .getParticipants(channelId);
+    LinkedHashSet<UserMetadata> users = GlobalServerServices.channels.getParticipants(channelId);
     Iterator<UserMetadata> itr = users.iterator();
     while (itr.hasNext()) {
       UserMetadata user = itr.next();
       String userId = user.getUserId();
-      //TODO: fix the consistency of where to check client existence
-      if (TempData.clientConnections.hasClient(userId)) {
-        PayloadSender.send(
-          TempData.clientConnections.getClient(userId), 
-          new MessageUpdateToClient(1, channelId, message, type)
-        );
+      // TODO: fix the consistency of where to check client existence
+      if (GlobalServerServices.clientConnections.hasClient(userId)) {
+        PayloadSender.send(GlobalServerServices.clientConnections.getClient(userId),
+            new MessageUpdateToClient(1, channelId, message, type));
       }
     }
   }

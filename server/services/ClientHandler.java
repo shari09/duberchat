@@ -10,9 +10,6 @@ import java.net.SocketTimeoutException;
 import common.entities.payload.Payload;
 import server.entities.ClientRequest;
 import server.entities.EventType;
-import server.resources.GlobalEventQueue;
-import server.resources.StoredData;
-import server.resources.TempData;
 
 /**
  * [insert description]
@@ -35,7 +32,7 @@ public class ClientHandler implements Runnable {
       this.output = new ObjectOutputStream(client.getOutputStream());
       this.input = new ObjectInputStream(client.getInputStream());
       this.running = true;
-      
+
       System.out.println("Client connected: " + client.toString());
     } catch (Exception e) {
       System.out.println("Client connection error");
@@ -45,19 +42,15 @@ public class ClientHandler implements Runnable {
 
   public void run() {
     try {
-      //accepts payload from clients
+      // accepts payload from clients
       while (this.running) {
         Object obj = this.input.readObject();
         if (!(obj instanceof Payload)) {
           throw new Exception("Unrecognized payload: " + obj);
         }
-        Payload payload = (Payload)obj;
+        Payload payload = (Payload) obj;
         System.out.println("Payload received of type " + payload.getType().toString());
-        GlobalEventQueue.queue.emitEvent(
-          EventType.PAYLOAD, 
-          1, 
-          new ClientRequest(payload, this.output)
-        );
+        GlobalServerServices.serverEventQueue.emitEvent(EventType.PAYLOAD, 1, new ClientRequest(payload, this.output));
       }
     } catch (SocketTimeoutException e) { // inactive client timing out
       this.handleDisconnection("has timed out");
@@ -74,29 +67,19 @@ public class ClientHandler implements Runnable {
   }
 
   private void handleDisconnection(String disconnectMsg) {
-    String userId = TempData.clientConnections.getUserId(this.output);
+    String userId = GlobalServerServices.clientConnections.getUserId(this.output);
     if (userId == null) {
       System.out.printf("%s %s\n", this.socket, disconnectMsg);
       return;
     }
-    String username = StoredData.users.getUsername(userId);
-    System.out.printf(
-      "User %s:%s at %s %s\n", 
-      userId,
-      username,
-      this.socket,
-      disconnectMsg
-    );
-    GlobalEventQueue.queue.emitEvent(
-      EventType.CLIENT_DISCONNECTED, 
-      2, 
-      this.output
-    );
+    String username = GlobalServerServices.users.getUsername(userId);
+    System.out.printf("User %s:%s at %s %s\n", userId, username, this.socket, disconnectMsg);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.CLIENT_DISCONNECTED, 2, this.output);
     this.running = false;
-  } 
+  }
 
   private void close() {
-    //closing after client is no longer running
+    // closing after client is no longer running
     try {
       this.input.close();
       this.output.close();
@@ -109,6 +92,3 @@ public class ClientHandler implements Runnable {
     }
   }
 }
-
-
-

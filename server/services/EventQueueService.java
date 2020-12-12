@@ -65,7 +65,9 @@ public class EventQueueService {
         //inactive until a new event comes
         synchronized(EventQueueService.this.thread) {
           try {
-            EventQueueService.this.thread.wait();
+            if (EventQueueService.this.queue.isEmpty()) {
+              EventQueueService.this.thread.wait();
+            }
           } catch (Exception e) {
             System.out.println("Unable to pause event queue");
             e.printStackTrace();

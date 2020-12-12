@@ -69,9 +69,9 @@
 ./server/entities/User.java
 ./server/gui/StartFrame.java
 ./server/Main.java
-./server/resources/GlobalEventQueue.java
-./server/resources/StoredData.java
-./server/resources/TempData.java
+./server/resources/GlobalServerServices.java
+./server/resources/GlobalServerServices.java
+./server/resources/GlobalServerServices.java
 ./server/services/AuthenticatedClientHandler.java
 ./server/services/AuthenticatedPayloadProcessor.java
 ./server/services/ChannelUpdateHandler.java

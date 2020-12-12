@@ -2,8 +2,6 @@ package server.services;
 
 import server.entities.Client;
 import server.entities.EventType;
-import server.resources.GlobalEventQueue;
-import server.resources.TempData;
 
 /**
  * [insert description]
@@ -20,12 +18,12 @@ public class AuthenticatedClientHandler implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalEventQueue.queue.subscribe(EventType.AUTHENTICATED_CLIENT, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.AUTHENTICATED_CLIENT, this);
   }
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
     Client client = (Client)emitter;
-    TempData.clientConnections.add(client.getUserId(), client.getClient());
+    GlobalServerServices.clientConnections.add(client.getUserId(), client.getClient());
   }
 }

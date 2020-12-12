@@ -5,7 +5,7 @@ Shari - server
 - client/server connection
 - communications protocol
 - data storing
-- event queue
+- made event queue
 - message/channel creation/interaction on server side
 - updating clients on messages updates
 

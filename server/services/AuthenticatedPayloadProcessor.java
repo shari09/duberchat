@@ -27,8 +27,6 @@ import common.entities.payload.TransferOwnership;
 import common.entities.payload.UpdateStatus;
 import server.entities.AuthenticatedClientRequest;
 import server.entities.EventType;
-import server.resources.GlobalEventQueue;
-import server.resources.StoredData;
 
 /**
  * [insert description]
@@ -49,14 +47,14 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   }
 
   public void activate() {
-    GlobalEventQueue.queue.subscribe(EventType.AUTHENTICATED_PAYLOAD, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.AUTHENTICATED_PAYLOAD, this);
   }
 
   @Override
   public void onEvent(Object newPayload, EventType eventType) {
     this.payloadQueue.add((AuthenticatedClientRequest) newPayload);
     // if (this.running) {
-    //   return;
+    // return;
     // }
     // this.running = true;
     while (!this.payloadQueue.isEmpty()) {
@@ -126,283 +124,162 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   }
 
   private void transferOwnership(AuthenticatedClientRequest client) {
-    TransferOwnership payload = (TransferOwnership)client.getPayload();
-    boolean success = StoredData.channels.transferOwnership(
-      payload.getRecipientId(), 
-      payload.getChannelId()
-    );
+    TransferOwnership payload = (TransferOwnership) client.getPayload();
+    boolean success = GlobalServerServices.channels.transferOwnership(payload.getRecipientId(), payload.getChannelId());
 
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Transfer failed")
-      );
+      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Transfer failed"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(),
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
 
   }
 
   private void leaveChannel(AuthenticatedClientRequest client) {
-    LeaveChannel payload = (LeaveChannel)client.getPayload();
-    boolean success = StoredData.channels.leaveChannel(
-      payload.getUserId(), 
-      payload.getChannelId()
-    );
+    LeaveChannel payload = (LeaveChannel) client.getPayload();
+    boolean success = GlobalServerServices.channels.leaveChannel(payload.getUserId(), payload.getChannelId());
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Error leaving channel")
-      );
+      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Error leaving channel"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(),
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
 
   }
 
   private void changeChannel(AuthenticatedClientRequest client) {
-    ChangeChannel payload = (ChangeChannel)client.getPayload();
-    boolean success = StoredData.channels.changeChannelSettings(
-      payload.getChannelId(),
-      payload.getFieldToChange(),
-      payload.getNewValue()
-    );
+    ChangeChannel payload = (ChangeChannel) client.getPayload();
+    boolean success = GlobalServerServices.channels.changeChannelSettings(payload.getChannelId(),
+        payload.getFieldToChange(), payload.getNewValue());
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Error changing channel settings")
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, payload.getId(), "Error changing channel settings"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(),
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
-
   private void changeProfile(AuthenticatedClientRequest client) {
-    ChangeProfile payload = (ChangeProfile)client.getPayload();
-    StoredData.users.changeProfile(
-      payload.getUserId(), 
-      payload.getFieldToChange(), 
-      payload.getNewValue()
-    );
+    ChangeProfile payload = (ChangeProfile) client.getPayload();
+    GlobalServerServices.users.changeProfile(payload.getUserId(), payload.getFieldToChange(), payload.getNewValue());
 
-    PayloadSender.send(
-      client.getClientOut(),
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
 
   }
 
   private void updateStatus(AuthenticatedClientRequest client) {
-    UpdateStatus payload = (UpdateStatus)client.getPayload();
-    StoredData.users.updateUserStatus(
-      payload.getUserId(), 
-      payload.getStatus()
-    );
-    PayloadSender.send(
-      client.getClientOut(),
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    UpdateStatus payload = (UpdateStatus) client.getPayload();
+    GlobalServerServices.users.updateUserStatus(payload.getUserId(), payload.getStatus());
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
 
   }
 
-
-
   private void requestAttachment(AuthenticatedClientRequest client) {
-    RequestAttachment payload = (RequestAttachment)client.getPayload();
-    Attachment attachment = StoredData.channels.getAttachment(payload.getAttachmentId());
+    RequestAttachment payload = (RequestAttachment) client.getPayload();
+    Attachment attachment = GlobalServerServices.channels.getAttachment(payload.getAttachmentId());
     if (attachment == null) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Unable to download attachment")
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, payload.getId(), "Unable to download attachment"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(),
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new AttachmentToClient(1, attachment)
-    );
+    PayloadSender.send(client.getClientOut(), new AttachmentToClient(1, attachment));
   }
 
   private void removeParticipant(AuthenticatedClientRequest client) {
-    RemoveParticipant payload = (RemoveParticipant)client.getPayload();
-    boolean success = StoredData.channels.removeParticipant(
-      payload.getParticipantId(), 
-      payload.getChannelId()
-    );
+    RemoveParticipant payload = (RemoveParticipant) client.getPayload();
+    boolean success = GlobalServerServices.channels.removeParticipant(payload.getParticipantId(),
+        payload.getChannelId());
 
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Cannot remove participant")
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, payload.getId(), "Cannot remove participant"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
   private void blacklistUser(AuthenticatedClientRequest client) {
-    BlacklistUser payload = (BlacklistUser)client.getPayload();
-    boolean success = StoredData.channels.blacklistUser(
-      payload.getParticipantId(), 
-      payload.getChannelId()
-    );
+    BlacklistUser payload = (BlacklistUser) client.getPayload();
+    boolean success = GlobalServerServices.channels.blacklistUser(payload.getParticipantId(), payload.getChannelId());
 
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Cannot remove participant")
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, payload.getId(), "Cannot remove participant"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
   private void addParticipant(AuthenticatedClientRequest client) {
-    AddParticipant payload = (AddParticipant)client.getPayload();
-    if (StoredData.users.isFriend(payload.getUserId(), payload.getParticipantId())) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(
-          1, 
-          payload.getId(), 
-          "The user you are trying to add is not your friend"
-        )
-      );
+    AddParticipant payload = (AddParticipant) client.getPayload();
+    if (GlobalServerServices.users.isFriend(payload.getUserId(), payload.getParticipantId())) {
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, payload.getId(), "The user you are trying to add is not your friend"));
       return;
     }
-    boolean success = StoredData.channels.addParticipant(
-      payload.getParticipantId(), 
-      payload.getChannelId()
-    );
+    boolean success = GlobalServerServices.channels.addParticipant(payload.getParticipantId(), payload.getChannelId());
 
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Participant blacklisted")
-      );
+      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Participant blacklisted"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
   private void blockUser(AuthenticatedClientRequest client) {
     BlockUser payload = (BlockUser) client.getPayload();
-    String toBeBlockedId = StoredData.users.getUserId(payload.getBlockUsername());
+    String toBeBlockedId = GlobalServerServices.users.getUserId(payload.getBlockUsername());
 
-    boolean success = StoredData.users.blockUser(payload.getUserId(), toBeBlockedId);
+    boolean success = GlobalServerServices.users.blockUser(payload.getUserId(), toBeBlockedId);
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(
-          1, 
-          payload.getId(), 
-          "The user you are trying to block does not exist"
-        )
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, payload.getId(), "The user you are trying to block does not exist"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
 
   }
 
   private void editMessage(AuthenticatedClientRequest client) {
     EditMessage payload = (EditMessage) client.getPayload();
-    if (!StoredData.channels.isMessageSender(
-          payload.getUserId(), 
-          payload.getChannelId(), 
-          payload.getMessageId()
-        )
-      ) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Cannot edit message")
-      );
+    if (!GlobalServerServices.channels.isMessageSender(payload.getUserId(), payload.getChannelId(),
+        payload.getMessageId())) {
+      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Cannot edit message"));
       return;
     }
-    StoredData.channels.editMessage(
-      payload.getChannelId(), 
-      payload.getMessageId(), 
-      payload.getNewContent()
-    );
+    GlobalServerServices.channels.editMessage(payload.getChannelId(), payload.getMessageId(), payload.getNewContent());
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
   private void removeMessage(AuthenticatedClientRequest client) {
     RemoveMessage payload = (RemoveMessage) client.getPayload();
-    if (!StoredData.channels.isMessageSender(
-          payload.getUserId(), 
-          payload.getChannelId(), 
-          payload.getMessageId()
-        )
-      ) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Cannot remove message")
-      );
+    if (!GlobalServerServices.channels.isMessageSender(payload.getUserId(), payload.getChannelId(),
+        payload.getMessageId())) {
+      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Cannot remove message"));
       return;
     }
-    StoredData.channels.removeMessage(
-      payload.getChannelId(), 
-      payload.getMessageId()
-    );
+    GlobalServerServices.channels.removeMessage(payload.getChannelId(), payload.getMessageId());
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
   private void changePassword(AuthenticatedClientRequest client) {
     ChangePassword payload = (ChangePassword) client.getPayload();
-    boolean success = StoredData.users.changePassword(
-      payload.getUserId(), 
-      payload.getOriginalPassword(),
-      payload.getNewPassword()
-      );
+    boolean success = GlobalServerServices.users.changePassword(payload.getUserId(), payload.getOriginalPassword(),
+        payload.getNewPassword());
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Incorrect original password")
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, payload.getId(), "Incorrect original password"));
       return;
     }
     PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
@@ -410,124 +287,73 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void sendMessage(AuthenticatedClientRequest client) {
     MessageToServer payload = (MessageToServer) client.getPayload();
-    boolean success = StoredData.channels.addMessage(
-      payload.getUserId(), 
-      payload.getChannelId(), 
-      payload.getContent(),
-      payload.getAttachment(), 
-      payload.getAttachmentName()
-    );
+    boolean success = GlobalServerServices.channels.addMessage(payload.getUserId(), payload.getChannelId(),
+        payload.getContent(), payload.getAttachment(), payload.getAttachmentName());
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Message sending failure")
-      );
+      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Message sending failure"));
       return;
     }
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
   private void sendFriendRequest(AuthenticatedClientRequest client) {
     FriendRequestToServer friendReq = (FriendRequestToServer) client.getPayload();
-    String recipientId = StoredData.users.getUserId(friendReq.getRecipientName());
-    if (StoredData.users.isBlocked(recipientId, friendReq.getId())) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, friendReq.getId(), "You have been blocked")
-      );
+    String recipientId = GlobalServerServices.users.getUserId(friendReq.getRecipientName());
+    if (GlobalServerServices.users.isBlocked(recipientId, friendReq.getId())) {
+      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, friendReq.getId(), "You have been blocked"));
       return;
     }
 
-    boolean success = StoredData.users.sendFriendRequest(
-      friendReq.getUserId(), 
-      recipientId,
-      friendReq.getRequestMessage()
-    );
+    boolean success = GlobalServerServices.users.sendFriendRequest(friendReq.getUserId(), recipientId,
+        friendReq.getRequestMessage());
 
     // sending request to a nonexistent user
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, friendReq.getId(), "Recipient does not exist")
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, friendReq.getId(), "Recipient does not exist"));
       return;
     }
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, friendReq.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, friendReq.getId(), null));
   }
 
   private void respondFriendRequest(AuthenticatedClientRequest client) {
     FriendRequestResponse response = (FriendRequestResponse) client.getPayload();
     boolean success;
     if (response.isAccepted()) {
-      success = StoredData.users.acceptFriendRequest(
-        response.getUserId(), 
-        response.getRequesterId()
-      );
+      success = GlobalServerServices.users.acceptFriendRequest(response.getUserId(), response.getRequesterId());
     } else {
-      success = StoredData.users.rejectFriendRequest(
-        response.getUserId(), 
-        response.getRequesterId()
-      );
+      success = GlobalServerServices.users.rejectFriendRequest(response.getUserId(), response.getRequesterId());
     }
     if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, response.getId(), "Error responding to friend request")
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, response.getId(), "Error responding to friend request"));
     }
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, response.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, response.getId(), null));
   }
 
   // TODO: make sure the owner/invited user aren't blocked
   private void createChannel(AuthenticatedClientRequest client) {
     CreateChannel payload = (CreateChannel) client.getPayload();
-    StoredData.channels.createGroupChannel(
-      payload.getParticipants(), 
-      payload.getName(), 
-      payload.getUserId()
-    );
+    GlobalServerServices.channels.createGroupChannel(payload.getParticipants(), payload.getName(), payload.getUserId());
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
   }
 
   private void requestMessages(AuthenticatedClientRequest client) {
     RequestMessages payload = (RequestMessages) client.getPayload();
-    Message[] msgs = StoredData.channels.getMessages(
-      payload.getChannelId(), 
-      payload.getCreated(), 
-      payload.getQuantity()
-    );
+    Message[] msgs = GlobalServerServices.channels.getMessages(payload.getChannelId(), payload.getCreated(),
+        payload.getQuantity());
 
     if (msgs == null) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Error retrieving messages")
-      );
+      PayloadSender.send(client.getClientOut(),
+          new ClientRequestStatus(1, payload.getId(), "Error retrieving messages"));
       return;
     }
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new MessagesToClient(1, payload.getChannelId(), msgs)
-    );
+    PayloadSender.send(client.getClientOut(), new MessagesToClient(1, payload.getChannelId(), msgs));
 
   }
 

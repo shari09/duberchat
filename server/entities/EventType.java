@@ -34,6 +34,6 @@ public enum EventType {
   REMOVE_MESSAGE,
   /** New, accepting, rejecting, or cancelling friend request */
   FRIEND_UPDATE,
-
+  /** Any updates relating to channels (updating, removing users, etc) */
   CHANNEL_UPDATE,
 }

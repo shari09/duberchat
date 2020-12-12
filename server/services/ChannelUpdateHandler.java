@@ -8,8 +8,6 @@ import common.entities.UserMetadata;
 import common.entities.payload.ClientChannelsUpdate;
 import server.entities.EventType;
 import server.entities.GroupChannel;
-import server.resources.GlobalEventQueue;
-import server.resources.StoredData;
 
 /**
  * [insert description]
@@ -28,21 +26,18 @@ public class ChannelUpdateHandler implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalEventQueue.queue.subscribe(EventType.CHANNEL_UPDATE, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.CHANNEL_UPDATE, this);
   }
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
-    ChannelMetadata channel = (ChannelMetadata)emitter;
+    ChannelMetadata channel = (ChannelMetadata) emitter;
     Iterator<UserMetadata> itr = channel.getParticipants().iterator();
     while (itr.hasNext()) {
       String userId = itr.next().getUserId();
-      LinkedHashSet<ChannelMetadata> channels = StoredData.users.getChannels(userId);
-      PayloadSender.send(
-        userId,
-        new ClientChannelsUpdate(1, channels)
-      );
+      LinkedHashSet<ChannelMetadata> channels = GlobalServerServices.users.getChannels(userId);
+      PayloadSender.send(userId, new ClientChannelsUpdate(1, channels));
     }
   }
-  
+
 }

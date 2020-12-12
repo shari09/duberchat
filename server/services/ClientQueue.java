@@ -3,7 +3,6 @@ package server.services;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import server.entities.EventType;
-import server.resources.GlobalEventQueue;
 
 /**
  * [insert description]
@@ -23,21 +22,21 @@ public class ClientQueue implements Subscribable {
   }
 
   public void activate() {
-    GlobalEventQueue.queue.subscribe(EventType.NEW_CLIENT, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.NEW_CLIENT, this);
   }
 
   @Override
   public void onEvent(Object newClient, EventType eventType) {
-    this.queue.add((ClientHandler)newClient);
+    this.queue.add((ClientHandler) newClient);
     // if (this.running) {
-    //   return;
+    // return;
     // }
     // this.running = true;
     while (!this.queue.isEmpty()) {
       Thread thread = new Thread(queue.poll());
       thread.start();
     }
-    
+
     // this.running = false;
   }
 }

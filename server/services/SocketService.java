@@ -5,25 +5,29 @@ import java.net.Socket;
 
 import common.entities.Constants;
 import server.entities.EventType;
-import server.resources.GlobalEventQueue;
 
 /**
- * The main server socket for handling client socket connections 
- * and receiving payloads.
+ * The main server socket for handling client socket connections and receiving
+ * payloads.
  * <p>
  * Created on 2020.12.05.
+ * 
  * @author Shari Sun
  * @version 1.3.1
  * @since 1.0.0
  */
 
-public class SocketService {
+public class SocketService implements Runnable {
   private ServerSocket server;
   private boolean running = true;
-  
 
   public SocketService() {
 
+  }
+
+  public void start() {
+    Thread thread = new Thread(this);
+    thread.start();
   }
 
   public void run() {
@@ -35,11 +39,7 @@ public class SocketService {
         Socket client = server.accept();
         client.setSoTimeout(Constants.SOCKET_TIMEOUT);
         System.out.println("Client accepted: " + client.toString());
-        GlobalEventQueue.queue.emitEvent(
-          EventType.NEW_CLIENT, 
-          1, 
-          new ClientHandler(client)
-        );
+        GlobalServerServices.serverEventQueue.emitEvent(EventType.NEW_CLIENT, 1, new ClientHandler(client));
       }
     } catch (Exception e) {
       System.out.println("Error accepting connection");

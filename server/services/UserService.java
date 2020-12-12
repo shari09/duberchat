@@ -12,9 +12,6 @@ import common.entities.UserMetadata;
 import common.entities.UserStatus;
 import server.entities.EventType;
 import server.entities.User;
-import server.resources.GlobalEventQueue;
-import server.resources.StoredData;
-import server.resources.TempData;
 
 /**
  * [insert description]
@@ -125,7 +122,7 @@ public class UserService {
   }
 
   public boolean authenticateToken(String userId, Token token) {
-    if (TempData.tokens.get(userId).getValue().equals(token.getValue())) {
+    if (GlobalServerServices.tokens.get(userId).getValue().equals(token.getValue())) {
       return true;
     }
     return false;
@@ -178,8 +175,8 @@ public class UserService {
     User friend = this.users.get(recipientId);
     user.addOutgoingFriendRequest(friend.getMetdata(), msg);
     friend.addIncomingFriendRequest(user.getMetdata(), msg);
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
     return true;
   }
 
@@ -215,11 +212,12 @@ public class UserService {
     requester.addFriend(user.getMetdata());
     user.removeIncomingFriendRequest(requester.getMetdata());
     requester.removeOutgoingFriendRequest(user.getMetdata());
-    ChannelMetadata channel = StoredData.channels.createPrivateChannel(user.getMetdata(), requester.getMetdata());
+    ChannelMetadata channel = GlobalServerServices.channels.createPrivateChannel(user.getMetdata(),
+        requester.getMetdata());
     user.addChannel(channel);
     requester.addChannel(channel);
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, requester);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, requester);
     return true;
   }
 
@@ -238,8 +236,8 @@ public class UserService {
     User requester = this.users.get(requesterId);
     user.removeIncomingFriendRequest(requester.getMetdata());
     requester.removeOutgoingFriendRequest(user.getMetdata());
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, requester);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, requester);
     return true;
   }
 
@@ -258,8 +256,8 @@ public class UserService {
     User friend = this.users.get(recipientId);
     user.removeOutgoingFriendRequest(friend.getMetdata());
     friend.removeIncomingFriendRequest(user.getMetdata());
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
     return true;
   }
 
@@ -276,7 +274,7 @@ public class UserService {
   }
 
   public boolean isFriend(String userA, String userB) {
-    //TODO: throw exception if userB doesn't exist
+    // TODO: throw exception if userB doesn't exist
     return this.users.get(userA).hasFriend(this.users.get(userB).getMetdata());
   }
 
@@ -284,7 +282,7 @@ public class UserService {
    * 
    * @param blockerId
    * @param toBeBlockedId
-   * @return               false if the blockee doesn't exist
+   * @return false if the blockee doesn't exist
    */
   public boolean blockUser(String blockerId, String toBeBlockedId) {
     if (!this.usernameExist(toBeBlockedId)) {
@@ -295,8 +293,8 @@ public class UserService {
     user.removeFriend(blocked.getMetdata());
     blocked.removeFriend(user.getMetdata());
     user.addBlocked(blocked.getMetdata());
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
-    GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, blocked);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
+    GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, blocked);
     return true;
   }
 
@@ -306,13 +304,9 @@ public class UserService {
    * @param fieldToChange
    * @param newValue
    */
-  public void changeProfile(
-    String userId, 
-    ProfileField fieldToChange, 
-    String newValue
-  ) {
+  public void changeProfile(String userId, ProfileField fieldToChange, String newValue) {
     User user = this.users.get(userId);
-    switch(fieldToChange) {
+    switch (fieldToChange) {
       case DESCRIPTION:
         user.updateDescription(newValue);
         break;
@@ -331,21 +325,14 @@ public class UserService {
   private void broadcastChanges(User user) {
     Iterator<ChannelMetadata> channelsItr = user.getChannels().iterator();
     while (channelsItr.hasNext()) {
-      GlobalEventQueue.queue.emitEvent(
-        EventType.CHANNEL_UPDATE, 
-        1, 
-        channelsItr.next()
-      );
+      GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, channelsItr.next());
     }
-
 
     Iterator<UserMetadata> itr = user.getFriends().iterator();
     while (itr.hasNext()) {
       User friend = this.users.get(itr.next().getUserId());
-      GlobalEventQueue.queue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
+      GlobalServerServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, friend);
     }
   }
-
-
 
 }

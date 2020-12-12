@@ -3,8 +3,6 @@ package server.services;
 import common.entities.payload.ClientFriendsUpdate;
 import server.entities.EventType;
 import server.entities.User;
-import server.resources.GlobalEventQueue;
-import server.resources.TempData;
 
 /**
  * [insert description]
@@ -22,21 +20,14 @@ public class FriendInfoUpdater implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalEventQueue.queue.subscribe(EventType.FRIEND_UPDATE, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.FRIEND_UPDATE, this);
   }
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
-    User user = (User)emitter;
-    PayloadSender.send(
-      user.getId(), 
-      new ClientFriendsUpdate(
-        1, 
-        user.getFriends(),
-        user.getIncomingFriendRequests(), 
-        user.getOutgoingFriendRequests()
-      )
-    );
+    User user = (User) emitter;
+    PayloadSender.send(user.getId(), new ClientFriendsUpdate(1, user.getFriends(), user.getIncomingFriendRequests(),
+        user.getOutgoingFriendRequests()));
 
   }
 }

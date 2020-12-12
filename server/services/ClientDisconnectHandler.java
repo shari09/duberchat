@@ -3,8 +3,6 @@ package server.services;
 import java.io.ObjectOutputStream;
 
 import server.entities.EventType;
-import server.resources.GlobalEventQueue;
-import server.resources.TempData;
 
 /**
  * [insert description]
@@ -17,24 +15,24 @@ import server.resources.TempData;
  */
 public class ClientDisconnectHandler implements Subscribable {
   public ClientDisconnectHandler() {
-    
+
   }
 
   public void activate() {
-    GlobalEventQueue.queue.subscribe(EventType.CLIENT_DISCONNECTED, this);
+    GlobalServerServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
   }
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
     if (emitter instanceof ObjectOutputStream) {
-      ObjectOutputStream toClient = (ObjectOutputStream)emitter;
-      String userId = TempData.clientConnections.getUserId(toClient);
-      TempData.clientConnections.remove(toClient);
-      TempData.tokens.remove(userId);
+      ObjectOutputStream toClient = (ObjectOutputStream) emitter;
+      String userId = GlobalServerServices.clientConnections.getUserId(toClient);
+      GlobalServerServices.clientConnections.remove(toClient);
+      GlobalServerServices.tokens.remove(userId);
       return;
     }
-    String userId = (String)emitter;
-    TempData.clientConnections.remove(userId);
-    TempData.tokens.remove(userId);
+    String userId = (String) emitter;
+    GlobalServerServices.clientConnections.remove(userId);
+    GlobalServerServices.tokens.remove(userId);
   }
 }

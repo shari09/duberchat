@@ -1,5 +1,7 @@
 package server;
 
+import server.gui.MainFrame;
+import server.gui.StartFrame;
 import server.services.AuthenticatedClientHandler;
 import server.services.AuthenticatedPayloadProcessor;
 import server.services.ClientQueue;
@@ -18,8 +20,12 @@ import server.services.SocketService;
  * @since 1.0.0
  */
 
-public class ServerMain {
-  public static void main(String[] args) {
+public class Server {
+  public Server() {
+
+  }
+
+  public void start() {
     PayloadProcessor payloadProcessor = new PayloadProcessor();
     ClientQueue clientQueue = new ClientQueue();
     AuthenticatedClientHandler authenticatedUserHandler = new AuthenticatedClientHandler();
@@ -36,6 +42,14 @@ public class ServerMain {
     messageQueue.activate();
     friendInfoUpdater.activate();
     channelUpdateHandler.activate();
-    socket.run();
+    socket.start();
+    new MainFrame(); 
+  }
+
+  public static void main(String[] args) {
+
+    Server server = new Server();
+    
+    StartFrame start = new StartFrame(server);
   }
 }

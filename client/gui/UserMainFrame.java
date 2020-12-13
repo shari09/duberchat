@@ -32,7 +32,6 @@ import common.entities.PrivateChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.payload.CreateChannel;
 import common.entities.payload.UpdateStatus;
-import jdk.nashorn.internal.objects.Global;
 import common.entities.UserStatus;
 import common.entities.GroupChannelMetadata;
 import common.entities.payload.PayloadType;

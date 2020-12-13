@@ -33,12 +33,10 @@ public class ChannelUpdateHandler implements Subscribable {
   @Override
   public void onEvent(Object emitter, EventType eventType) {
     ChannelMetadata channel = (ChannelMetadata) emitter;
-    System.out.println(channel);
     Iterator<UserMetadata> itr = channel.getParticipants().iterator();
     while (itr.hasNext()) {
       String userId = itr.next().getUserId();
       LinkedHashSet<ChannelMetadata> channels = GlobalServices.users.getChannels(userId);
-      System.out.println(channels);
       PayloadSender.send(userId, new ClientChannelsUpdate(1, channels));
       //log
       GlobalServices.serverEventQueue.emitEvent(
@@ -51,7 +49,7 @@ public class ChannelUpdateHandler implements Subscribable {
         )
       );
 
-      
+
     }
   }
 

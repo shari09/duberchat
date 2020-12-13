@@ -1,5 +1,6 @@
 package server.services;
 
+import common.entities.UserStatus;
 import server.entities.Client;
 import server.entities.EventType;
 
@@ -25,5 +26,6 @@ public class AuthenticatedClientHandler implements Subscribable {
   public void onEvent(Object emitter, EventType eventType) {
     Client client = (Client)emitter;
     GlobalServices.clientConnections.add(client.getUserId(), client.getClient());
+    GlobalServices.users.updateUserStatus(client.getUserId(), UserStatus.ACTIVE);
   }
 }

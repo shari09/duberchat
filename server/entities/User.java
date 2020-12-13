@@ -124,6 +124,14 @@ public class User implements Serializable, Identifiable {
     return this.incomingFriendRequests;
   }
 
+  public boolean hasIncomingFriendRequest(UserMetadata user) {
+    return this.incomingFriendRequests.containsKey(user);
+  }
+
+  public boolean hasOutgoingFriendRequest(UserMetadata user) {
+    return this.outgoingFriendRequests.containsKey(user);
+  }
+
   public void addIncomingFriendRequest(UserMetadata user, String msg) {
     this.incomingFriendRequests.put(user, msg);
   }

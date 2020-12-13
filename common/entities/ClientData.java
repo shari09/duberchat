@@ -158,7 +158,6 @@ public class ClientData implements Serializable {
 
   public synchronized void setChannels(LinkedHashSet<ChannelMetadata> channels) {
     this.channels = channels;
-    System.out.println(channels);
   }
 
 }

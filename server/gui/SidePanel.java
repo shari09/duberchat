@@ -33,6 +33,7 @@ public class SidePanel extends JPanel implements ActionListener {
   private static final int iconSize = 35;
   private JButton logs;
   private JButton users;
+  private JButton admin;
 
   public SidePanel() {
     super();
@@ -41,8 +42,10 @@ public class SidePanel extends JPanel implements ActionListener {
     this.add(Style.getEmptyHeight(SidePanel.iconSize));
     this.logs = this.getMenuItem("log-format");
     this.users = this.getMenuItem("user");
+    this.admin = this.getMenuItem("gear");
     this.add(this.users);
     this.add(this.logs);  
+    this.add(this.admin);
     this.setBackground(Style.GRAY3);
   }
 
@@ -80,6 +83,10 @@ public class SidePanel extends JPanel implements ActionListener {
     } else if (e.getSource() == this.logs) {
       GlobalServices.guiEventQueue.emitEvent(
         EventType.LOGS_TAB, 1, this.logs
+      );
+    } else if (e.getSource() == this.admin) {
+      GlobalServices.guiEventQueue.emitEvent(
+        EventType.ADMIN_TAB, 1, this.logs
       );
     }
   }

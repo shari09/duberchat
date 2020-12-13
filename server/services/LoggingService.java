@@ -100,10 +100,8 @@ public class LoggingService {
   public CopyOnWriteArrayList<LogEntrySet> getEntries(int start, int num) {
     CopyOnWriteArrayList<LogEntrySet> entries = new CopyOnWriteArrayList<>();
     int idx = this.logEntriesId.size()-start-1;
-    System.out.println(this.logEntriesId.size());
     for (int i = idx; i >= Math.max(idx-num, 0); i--) {
       entries.add(this.getEntrySet(this.logEntriesId.get(i)));
-      // this.getEntrySet(entrySetId)
     }
 
     return entries;
@@ -111,7 +109,6 @@ public class LoggingService {
 
   public CopyOnWriteArrayList<LogEntrySet> getAllEntries() {
     CopyOnWriteArrayList<LogEntrySet> entries = new CopyOnWriteArrayList<>();
-    System.out.println(this.logEntriesId);
     for (int i = this.logEntriesId.size()-1; i >= 0; i--) {
       entries.add(this.getEntrySet(this.logEntriesId.get(i)));
     }

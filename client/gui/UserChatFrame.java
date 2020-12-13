@@ -20,7 +20,6 @@ import javax.swing.JTabbedPane;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import common.entities.payload.PayloadType;
-import jdk.nashorn.internal.objects.Global;
 import common.entities.ChannelMetadata;
 import common.entities.ClientData;
 import common.entities.GroupChannelMetadata;

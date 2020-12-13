@@ -32,7 +32,6 @@ import javax.swing.JLabel;
 import javax.swing.ListSelectionModel;
 import javax.swing.JList;
 import javax.swing.JTextField;
-import javax.jws.soap.SOAPBinding.Use;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 

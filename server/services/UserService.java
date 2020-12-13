@@ -190,6 +190,10 @@ public class UserService {
 
     User user = this.users.get(userId);
     User friend = this.users.get(recipientId);
+    if (user.hasOutgoingFriendRequest(friend.getMetdata())
+       || user.hasIncomingFriendRequest(friend.getMetdata())) {
+      return false;
+    }
     user.addOutgoingFriendRequest(friend.getMetdata(), msg);
     friend.addIncomingFriendRequest(user.getMetdata(), msg);
     GlobalServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
@@ -230,8 +234,10 @@ public class UserService {
     requester.addFriend(user.getMetdata());
     user.removeIncomingFriendRequest(requester.getMetdata());
     requester.removeOutgoingFriendRequest(user.getMetdata());
-    ChannelMetadata channel = GlobalServices.channels.createPrivateChannel(user.getMetdata(),
-        requester.getMetdata());
+    ChannelMetadata channel = GlobalServices.channels.createPrivateChannel(
+      user.getMetdata(),
+      requester.getMetdata()
+    );
     user.addChannel(channel);
     requester.addChannel(channel);
     GlobalServices.serverEventQueue.emitEvent(EventType.FRIEND_UPDATE, 1, user);
@@ -242,7 +248,6 @@ public class UserService {
   public void addChannel(String userId, ChannelMetadata channel) {
     User user = this.users.get(userId);
     user.addChannel(channel);
-    System.out.println(this.users.get(userId).getChannels());
     this.save();
   }
 

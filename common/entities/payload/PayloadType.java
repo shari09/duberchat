@@ -71,4 +71,8 @@ public enum PayloadType {
   /** The requested file from the client */
   ATTACHMENT_TO_CLIENT,
 
+
+
+  SERVER_BROADCAST,
+
 }

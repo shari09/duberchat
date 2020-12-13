@@ -43,14 +43,10 @@ public class LogsPanel extends JPanel {
     super();
     this.setLayout(new BorderLayout());
 
-    JLabel titleLabel = new JLabel(title);
-    titleLabel.setFont(Style.getFont(15));
-    titleLabel.setForeground(Style.LIGHT_TEXT);
-    JPanel titlePanel = new JPanel();
-    titlePanel.add(titleLabel);
-    titlePanel.setBackground(Style.GRAY2);
-    titlePanel.setPreferredSize(titlePanel.getPreferredSize());
-    this.add(titlePanel, BorderLayout.PAGE_START);
+    this.add(
+      ComponentsFactory.getHeader(title, Style.GRAY2), 
+      BorderLayout.PAGE_START
+    );
 
     this.logPane = new JPanel();
     this.logPane.setLayout(new GridBagLayout());
@@ -58,12 +54,7 @@ public class LogsPanel extends JPanel {
     this.logPane.setAlignmentX(LEFT_ALIGNMENT);
     this.logPane.setBackground(Color.WHITE);
 
-    this.c = new GridBagConstraints();
-    this.c.fill = GridBagConstraints.HORIZONTAL;
-    this.c.anchor = GridBagConstraints.NORTH;
-    this.c.weightx = 1;
-    this.c.weighty = 1;
-    this.c.gridx = 0;
+    this.c = ComponentsFactory.getScrollConstraints();
     this.logPane.add(Box.createVerticalGlue(), this.c);
 
     this.c.weighty = 0;
@@ -77,6 +68,7 @@ public class LogsPanel extends JPanel {
     this.scrollPane.setHorizontalScrollBarPolicy(
       JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
     );
+    // this.scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
     this.add(this.scrollPane);

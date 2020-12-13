@@ -8,36 +8,28 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.Container;
 import javax.swing.JTabbedPane;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JOptionPane;
-import javax.swing.ButtonGroup;
 import javax.swing.JScrollPane;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingUtilities;
-import javax.swing.JTextField;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 
 import common.entities.ChannelMetadata;
 import common.entities.Constants;
+import common.entities.payload.ServerBroadcast;
 import common.entities.ClientData;
 import common.entities.PrivateChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.payload.CreateChannel;
-import common.entities.payload.UpdateStatus;
-import common.entities.UserStatus;
 import common.entities.GroupChannelMetadata;
 import common.entities.payload.PayloadType;
 
 import client.entities.ClientSocket;
-import client.entities.ClientSocketListener;
 import client.resources.GlobalClient;
 
 /**
@@ -53,8 +45,15 @@ import client.resources.GlobalClient;
 public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListener,
                                                                      MouseListener {
 
-  public static final int WIDTH = 400;
-  public static final int HEIGHT = 800;
+  public static final Dimension DIMENSION = new Dimension(400, 800);
+  
+  private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
+    PayloadType.CREATE_CHANNEL
+  };
+  private static final PayloadType[] ERROR_NOTIF_TYPES = new PayloadType[] {
+    PayloadType.KEEP_ALIVE,
+    PayloadType.CREATE_CHANNEL
+  };
 
   private UserChatFrame chatFrame;
   private UserFriendsFrame friendsFrame;
@@ -72,7 +71,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   public UserMainFrame(String title, ClientSocket clientSocket) {
     super(title, clientSocket);
 
-    this.setSize(UserMainFrame.WIDTH, UserMainFrame.HEIGHT);
+    this.setSize(UserMainFrame.DIMENSION);
     this.setResizable(false);
 
     this.chatFrame = new UserChatFrame("Chat Window", clientSocket);
@@ -126,7 +125,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     contentPane.add(tabbedPane, BorderLayout.CENTER);
 
     // buttons, at the bottom
-    // TODO: replace text with icon, add listener
+    // TODO: replace text with icon
     this.settingsButton = new JButton("settings");
     this.settingsButton.addActionListener(this);
 
@@ -145,10 +144,18 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     buttonPanel.add(test);
 
     contentPane.add(buttonPanel, BorderLayout.PAGE_END);
-    
-    //this.getClientSocket().sendPayload(new UpdateStatus(1, GlobalClient.clientData.getUserId(), GlobalClient.clientData.getToken(), UserStatus.ACTIVE));
-
+  
     this.setVisible(true);
+  }
+
+  @Override
+  public PayloadType[] getSuccessNotifTypes() {
+    return UserMainFrame.SUCCESS_NOTIF_TYPES;
+  }
+
+  @Override
+  public PayloadType[] getErrorNotifTypes() {
+    return UserMainFrame.ERROR_NOTIF_TYPES;
   }
 
   @Override
@@ -212,55 +219,48 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
 
   @Override
-  public void clientRequestStatusReceived(
-    PayloadType payloadType, 
-    boolean successful,
-    String notifMessage
-  ) {
-    
-    if ((payloadType == PayloadType.KEEP_ALIVE) && (!successful)) {
-      JOptionPane.showMessageDialog(this, notifMessage, "Timeout", JOptionPane.INFORMATION_MESSAGE);
-      this.dispose();
+  public void serverBroadcastReceived(ServerBroadcast broadcast) {
+    this.requestFocus();
+    synchronized (broadcast) {
+      JOptionPane.showMessageDialog(
+        this,
+        broadcast.getMessage(),
+        "!Important Message From Server!",
+        JOptionPane.WARNING_MESSAGE
+      );
     }
-
-    if (payloadType == PayloadType.CREATE_CHANNEL) {
-      if (successful) {
-        JOptionPane.showMessageDialog(
-          this,
-          notifMessage,
-          "Success",
-          JOptionPane.PLAIN_MESSAGE
-        );
-
-      } else {
-        JOptionPane.showMessageDialog(
-          this,
-          notifMessage,
-          "Error",
-          JOptionPane.ERROR_MESSAGE
-        );
-      }
-    }
-
   }
 
   @Override
   public void mouseReleased(MouseEvent e) {
     if (e.getSource() == this.groupChannelsList) {
+      GroupChannelMetadata metadata = this.groupChannelsList.getSelectedValue();
+      if (metadata == null) {
+        return;
+      }
       if (SwingUtilities.isLeftMouseButton(e)) {
-        GroupChannelMetadata metadata = this.groupChannelsList.getSelectedValue();
-        if (metadata != null) {
+        if (!this.chatFrame.hasChannelTab(metadata.getChannelId())) {
           this.chatFrame.addChannel(metadata.getChannelId());
+          this.chatFrame.setVisible(true);
+          this.chatFrame.requestFocus();
+          this.privateChannelsList.setSelectedValue(null, false);
         }
       } else if (SwingUtilities.isRightMouseButton(e)) {
         //TODO: if owner, show option dialog
+        //if (metadata.get) {
       }
 
     } else if (e.getSource() == this.privateChannelsList) {
+      PrivateChannelMetadata metadata = this.privateChannelsList.getSelectedValue();
+      if (metadata == null) {
+        return;
+      }
       if (SwingUtilities.isLeftMouseButton(e)) {
-        PrivateChannelMetadata metadata = this.privateChannelsList.getSelectedValue();
-        if (metadata != null) {
+        if ((metadata != null) && (!this.chatFrame.hasChannelTab(metadata.getChannelId()))) {
           this.chatFrame.addChannel(metadata.getChannelId());
+          this.chatFrame.setVisible(true);
+          this.chatFrame.requestFocus();
+          this.privateChannelsList.setSelectedValue(null, false);
         }
       }
     }
@@ -287,7 +287,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
 
   private synchronized void updateChannelsJLists() {
-    System.out.println("updating channel");
     DefaultListModel<GroupChannelMetadata> groupChannelsListModel = new DefaultListModel<>();
     DefaultListModel<PrivateChannelMetadata> privateChannelsListModel = new DefaultListModel<>();
     synchronized (GlobalClient.clientData) {
@@ -300,13 +299,10 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
         }
       }
     }
-    System.out.println("dm " + privateChannelsListModel.size());
-    System.out.println("gc " + groupChannelsListModel.size());
     this.groupChannelsList.setModel(groupChannelsListModel);
     this.groupChannelsList.revalidate();
     this.privateChannelsList.setModel(privateChannelsListModel);
     this.privateChannelsList.revalidate();
-    System.out.println("channels updated");
     
   }
 }

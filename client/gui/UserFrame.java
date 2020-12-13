@@ -1,23 +1,14 @@
 package client.gui;
 
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
 
-import common.entities.ChannelMetadata;
 import common.entities.ClientData;
-import common.entities.PrivateChannelMetadata;
-import common.entities.UserMetadata;
-import common.entities.UserStatus;
-import common.entities.payload.FriendRequestToServer;
-import common.entities.GroupChannelMetadata;
 import common.entities.payload.PayloadType;
+import common.entities.payload.ServerBroadcast;
 
 import client.entities.ClientSocket;
 import client.entities.ClientSocketListener;
-import client.resources.GlobalClient;
 
 /**
  * The frame to display the GUI for the client.
@@ -47,17 +38,50 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
   public abstract void clientDataUpdated(ClientData updatedClientData);
 
   @Override
-  public abstract void clientRequestStatusReceived(
+  public abstract void serverBroadcastReceived(ServerBroadcast broadcast);
+
+  @Override
+  public synchronized void clientRequestStatusReceived(
     PayloadType payloadType, 
     boolean successful,
     String notifMessage
-  );
+  ) {
+    if (successful) {
+      for (int i = 0; i < this.getSuccessNotifTypes().length; i++) {
+        if (this.getSuccessNotifTypes()[i] == payloadType) {
+          JOptionPane.showMessageDialog(
+            this,
+            notifMessage,
+            "Success",
+            JOptionPane.PLAIN_MESSAGE
+          );
+          return;
+        }
+      }
+    } else {
+      for (int i = 0; i < this.getErrorNotifTypes().length; i++) {
+        if (this.getErrorNotifTypes()[i] == payloadType) {
+          JOptionPane.showMessageDialog(
+            this,
+            notifMessage,
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+          );
+          return;
+        }
+      }
+    }
+  }
 
   @Override
   public void dispose() {
     this.clientSocket.removeListener(this);
     super.dispose();
   }
+
+  public abstract PayloadType[] getSuccessNotifTypes();
+
+  public abstract PayloadType[] getErrorNotifTypes();
 
   public ClientSocket getClientSocket() {
     return this.clientSocket;

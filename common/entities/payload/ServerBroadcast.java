@@ -14,14 +14,16 @@ public class ServerBroadcast extends Payload {
    *
    */
   private static final long serialVersionUID = 1L;
-  private String msg;
-  public ServerBroadcast(String msg) {
+
+  private String message;
+
+  public ServerBroadcast(String message) {
     super(PayloadType.SERVER_BROADCAST, 5);
-    this.msg = msg;
+    this.message = message;
 
   }
 
-  public String getMsg() {
-    return this.msg;
+  public String getMessage() {
+    return this.message;
   }
 }

@@ -14,7 +14,7 @@ import client.gui.ClientStartFrame;
  */
 
 public class ClientMain {
-  public static void main(String[] args) {    
-    JFrame window = new ClientStartFrame("duberchat");
+  public static void main(String[] args) {
+    JFrame window = new ClientStartFrame("DuberChat");
   }
 }

@@ -47,7 +47,7 @@ public class Server {
     channelUpdateHandler.activate();
     log.activate();
     socket.start();
-    (new MainFrame()).activate();; 
+    (new MainFrame()).activate();
   }
 
   public static void main(String[] args) {

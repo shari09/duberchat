@@ -1,10 +1,7 @@
 package client.gui;
 
 import java.awt.Font;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
@@ -16,11 +13,10 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 
-import common.entities.Constants;
 import common.entities.payload.PayloadType;
+import common.entities.payload.ServerBroadcast;
 import common.entities.ClientData;
 import client.entities.ClientSocket;
-import client.entities.ClientSocketListener;
 import client.resources.GlobalClient;
 import common.entities.payload.Login;
 
@@ -37,6 +33,13 @@ import common.entities.payload.Login;
 public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener {
   public static final int WIDTH = 800;
   public static final int HEIGHT = 600;
+
+  private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
+    PayloadType.LOGIN
+  };
+  private static final PayloadType[] ERROR_NOTIF_TYPES = new PayloadType[] {
+    PayloadType.LOGIN
+  };
 
   private JTextField usernameField;
   private JPasswordField passwordField;
@@ -98,6 +101,16 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   }
 
   @Override
+  public PayloadType[] getSuccessNotifTypes() {
+    return LoginFrame.SUCCESS_NOTIF_TYPES;
+  }
+
+  @Override
+  public PayloadType[] getErrorNotifTypes() {
+    return LoginFrame.ERROR_NOTIF_TYPES;
+  }
+
+  @Override
   public synchronized void actionPerformed(ActionEvent e) {
     if (e.getSource() == this.loginButton) {
       String username = this.usernameField.getText();
@@ -134,39 +147,17 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   public void clientDataUpdated(ClientData updatedClientData) {
     // user successfully logged in
     if (GlobalClient.hasData()) {
-      this.dispose();
       UserMainFrame nextFrame = new UserMainFrame(
         this.getTitle(),
         this.getClientSocket()
       );
+    } else {
+      System.out.println("failed to initialize client data");
     }
+    this.dispose();
   }
 
   @Override
-  public void clientRequestStatusReceived(
-    PayloadType payloadType, 
-    boolean successful,
-    String notifMessage
-  ) {
-    if (payloadType == PayloadType.LOGIN) {
-
-      if (successful) {
-        JOptionPane.showMessageDialog(
-          this,
-          notifMessage,
-          "Success",
-          JOptionPane.PLAIN_MESSAGE
-        );
-
-      } else {
-        JOptionPane.showMessageDialog(
-          this,
-          notifMessage,
-          "Error",
-          JOptionPane.ERROR_MESSAGE
-        );
-      }
-    }
+  public void serverBroadcastReceived(ServerBroadcast broadcast) {
   }
-
 }

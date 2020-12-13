@@ -1,6 +1,5 @@
 package common.entities.payload;
 
-import common.entities.ProfileField;
 import common.entities.Token;
 import common.entities.UserStatus;
 

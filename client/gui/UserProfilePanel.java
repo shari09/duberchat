@@ -3,9 +3,7 @@ package client.gui;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import java.awt.Color;
 
-import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import common.entities.UserMetadata;
 
@@ -20,7 +18,6 @@ import common.entities.UserMetadata;
 
 @SuppressWarnings("serial")
 public class UserProfilePanel extends JPanel {
-  private ImageIcon userIcon;
   // for the client
   public UserProfilePanel() {
     //this.userIcon = new ImageIcon("images/default_icon_user.png");

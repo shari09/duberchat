@@ -3,11 +3,9 @@ package client.gui;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import client.entities.ClientSocket;
-import client.resources.GlobalClient;
 
 /**
  * [description]

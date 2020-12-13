@@ -1,44 +1,23 @@
 package client.gui;
 
-import java.util.LinkedHashSet;
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-import java.io.IOException;
-import java.security.acl.Group;
-import java.awt.Font;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.Container;
-import java.awt.CardLayout;
 import javax.swing.BoxLayout;
-import javax.swing.Box;
-import javax.swing.JTabbedPane;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JOptionPane;
 import javax.swing.ButtonGroup;
 import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JTextField;
-import javax.jws.soap.SOAPBinding.Use;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 
 import client.entities.ClientSocket;
-import client.entities.ClientSocketListener;
 import client.resources.GlobalClient;
 import common.entities.Constants;
 import common.entities.ProfileField;
-import common.entities.ChannelMetadata;
 import common.entities.Token;
 import common.entities.ClientData;
 import common.entities.UserStatus;
@@ -51,6 +30,17 @@ import common.entities.payload.UpdateStatus;
 public class UserSettingsFrame extends UserFrame implements ActionListener {
 
   private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
+
+  private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
+    PayloadType.CHANGE_PROFILE,
+    PayloadType.CHANGE_PASSWORD,
+    PayloadType.UPDATE_STATUS
+  };
+  private static final PayloadType[] ERROR_NOTIF_TYPES = new PayloadType[] {
+    PayloadType.CHANGE_PROFILE,
+    PayloadType.CHANGE_PASSWORD,
+    PayloadType.UPDATE_STATUS
+  };
 
   private JLabel usernameLabel;
   private JButton updateUsernameButton;
@@ -131,8 +121,16 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
     statusPanel.add(this.doNotDisturbButton);
     contentPane.add(statusPanel);
     this.updateUserStatus(status);
+  }
 
-    this.setVisible(true);
+  @Override
+  public PayloadType[] getSuccessNotifTypes() {
+    return UserSettingsFrame.SUCCESS_NOTIF_TYPES;
+  }
+
+  @Override
+  public PayloadType[] getErrorNotifTypes() {
+    return UserSettingsFrame.ERROR_NOTIF_TYPES;
   }
 
   @Override

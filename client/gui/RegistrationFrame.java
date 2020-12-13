@@ -1,11 +1,7 @@
 package client.gui;
 
-import java.util.concurrent.PriorityBlockingQueue;
 import java.awt.Font;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
@@ -22,7 +18,6 @@ import common.entities.payload.PayloadType;
 import common.entities.ClientData;
 import common.entities.Constants;
 import client.entities.ClientSocket;
-import client.entities.ClientSocketListener;
 import client.resources.GlobalClient;
 
 /**
@@ -38,6 +33,13 @@ import client.resources.GlobalClient;
 public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionListener {
   public static final int WIDTH = 800;
   public static final int HEIGHT = 600;
+
+  private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
+    PayloadType.NEW_USER
+  };
+  private static final PayloadType[] ERROR_NOTIF_TYPES = new PayloadType[] {
+    PayloadType.NEW_USER
+  };
 
   private JTextField usernameField;
   private JTextField descriptionField;
@@ -119,6 +121,16 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
   }
 
   @Override
+  public PayloadType[] getSuccessNotifTypes() {
+    return RegistrationFrame.SUCCESS_NOTIF_TYPES;
+  }
+
+  @Override
+  public PayloadType[] getErrorNotifTypes() {
+    return RegistrationFrame.ERROR_NOTIF_TYPES;
+  }
+
+  @Override
   public synchronized void actionPerformed(ActionEvent e) {
     if (e.getSource() == this.registerButton) {
       String username = this.usernameField.getText();
@@ -187,33 +199,6 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
         this.getTitle(),
         this.getClientSocket()
       );
-    }
-  }
-
-  @Override
-  public void clientRequestStatusReceived(
-    PayloadType payloadType, 
-    boolean successful,
-    String notifMessage
-  ) {
-    if (payloadType == PayloadType.NEW_USER) {
-
-      if (successful) {
-        JOptionPane.showMessageDialog(
-          this,
-          notifMessage,
-          "Success",
-          JOptionPane.PLAIN_MESSAGE
-        );
-
-      } else {
-        JOptionPane.showMessageDialog(
-          this,
-          notifMessage,
-          "Error",
-          JOptionPane.ERROR_MESSAGE
-        );
-      }
     }
   }
 

@@ -224,7 +224,7 @@ public class MessagingService {
       channel.getMetadata()
     );
     GlobalServices.serverEventQueue.emitEvent(
-      EventType.CHANNEL_UPDATE, 1, channel
+      EventType.CHANNEL_UPDATE, 1, channel.getMetadata()
     );
     return channel.getMetadata();
   }

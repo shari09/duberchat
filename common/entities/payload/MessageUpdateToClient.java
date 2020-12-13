@@ -25,7 +25,7 @@ public class MessageUpdateToClient extends Payload {
     Message message,
     MessageUpdateType updateType
   ) {
-    super(PayloadType.MESSAGES_TO_CLIENT, priority);
+    super(PayloadType.MESSAGE_UPDATE_TO_CLIENT, priority);
     this.message = message;
     this.channelId = channelId;
     this.updateType = updateType;

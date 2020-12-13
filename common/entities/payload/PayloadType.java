@@ -64,11 +64,12 @@ public enum PayloadType {
   CLIENT_INFO,
   /** Updates on the user's friends info. */
   CLIENT_FRIENDS_UPDATE,
-  /** Updates on the user's about the channel's they're in */
+  /** Updates on the users about the channels they're in */
   CLIENT_CHANNELS_UPDATE,
-  /** the requested messages from the client */
+  /** The requested messages from the client */
   MESSAGES_TO_CLIENT,
   /** The requested file from the client */
   ATTACHMENT_TO_CLIENT,
-
+  /** Update on a message in a channel the user is in */
+  MESSAGE_UPDATE_TO_CLIENT
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -27,24 +28,7 @@ import common.entities.PrivateChannelMetadata;
 import common.entities.UserStatus;
 import common.entities.ChannelMetadata;
 import common.entities.GroupChannelMetadata;
-import common.entities.payload.Login;
-import common.entities.payload.MessageToServer;
-import common.entities.payload.ClientInfo;
-import common.entities.payload.KeepAlive;
-import common.entities.payload.MessagesToClient;
-import common.entities.payload.NewUser;
-import common.entities.payload.AddParticipant;
-import common.entities.payload.AttachmentToClient;
-import common.entities.payload.BlockUser;
-import common.entities.payload.ChangeChannel;
-import common.entities.payload.ChangeProfile;
-import common.entities.payload.ClientFriendsUpdate;
-import common.entities.payload.ClientChannelsUpdate;
-import common.entities.payload.ClientRequestStatus;
-import common.entities.payload.CreateChannel;
-import common.entities.payload.Payload;
-import common.entities.payload.PayloadType;
-import common.entities.payload.UpdateStatus;
+import common.entities.payload.*;
 
 /**
  * The client socket for handling socket connection and payloads.
@@ -147,6 +131,7 @@ public class ClientSocket implements Runnable {
       exception.printStackTrace();
       this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "An error has occurred");
     }
+    System.exit(0);
   }
 
   public synchronized void close() throws IOException {
@@ -209,8 +194,53 @@ public class ClientSocket implements Runnable {
         this.saveAttachment(attachment);
         break;
 
+      case MESSAGE_UPDATE_TO_CLIENT:
+        this.processMessageUpdate((MessageUpdateToClient)payload);
+        this.notifyClientDataUpdate();
+        break;
+
       default:
         System.out.println("unknown payload type");
+        break;
+    }
+  }
+
+  private synchronized void processMessageUpdate(MessageUpdateToClient messageUpdate) {
+    String channelId = messageUpdate.getChannelId();
+    Message updatedMessage = messageUpdate.getMessage();
+
+    ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(channelId);
+    if (messages == null) {
+      GlobalClient.messagesData.put(channelId, new ConcurrentSkipListSet<Message>());
+      messages = GlobalClient.messagesData.get(channelId);
+    }
+   
+    switch (messageUpdate.getUpdateType()) {
+      case NEW:
+        messages.add(updatedMessage);
+        break;
+
+      case EDIT:
+        Iterator<Message> editIterator = messages.iterator();
+        while (editIterator.hasNext()) {
+          Message msg = editIterator.next();
+          if (msg.getId().equals(updatedMessage.getId())) {
+            editIterator.remove();
+            break;
+          }
+        }
+        messages.add(updatedMessage);
+        break;
+
+      case REMOVE:
+        Iterator<Message> removeIterator = messages.iterator();
+        while (removeIterator.hasNext()) {
+          Message msg = removeIterator.next();
+          if (msg.getId().equals(updatedMessage.getId())) {
+            removeIterator.remove();
+            break;
+          }
+        }
         break;
     }
   }

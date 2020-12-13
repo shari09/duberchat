@@ -1,6 +1,7 @@
 package server.entities;
 
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import common.entities.payload.AuthenticatablePayload;
 
@@ -18,9 +19,10 @@ public class AuthenticatedClientRequest extends ClientRequest {
 
   public AuthenticatedClientRequest(
     AuthenticatablePayload payload, 
-    ObjectOutputStream clientOut
+    ObjectOutputStream clientOut,
+    Socket socket
   ) {
-    super(payload, clientOut);
+    super(payload, clientOut, socket);
   }
 
   public AuthenticatablePayload getPayload() {

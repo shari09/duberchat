@@ -859,7 +859,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "%s:%s: Error responding to friend req from %s:%s", 
+          "%s:%s: Error responding to friend req from user:%s", 
           this.getUsername(payload),
           payload.getUserId(),
           payload.getRequesterId()
@@ -872,7 +872,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "%s:%s: Responded to friend req from %s:%s", 
+        "%s:%s: Responded to friend req from user:%s", 
         this.getUsername(payload),
         payload.getUserId(),
         payload.getRequesterId()

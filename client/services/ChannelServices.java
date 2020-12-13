@@ -74,6 +74,8 @@ public class ChannelServices {
   public static Timestamp getEarliestStoredMessageTime(String channelId) {
     synchronized (GlobalClient.clientData) {
       ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(channelId);
+      System.out.println(messages);
+      System.out.println(messages.size());
       if ((messages == null) || (messages.size() == 0)) {
         return null;
       } else {

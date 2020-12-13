@@ -3,6 +3,7 @@ package client.gui;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.awt.Font;
@@ -219,7 +220,8 @@ public class ChannelPanel extends JPanel implements ActionListener {
           GlobalClient.clientData.getUserId(),
           GlobalClient.clientData.getToken(),
           this.channelId,
-          ChannelServices.getEarliestStoredMessageTime(this.channelId),
+          // ChannelServices.getEarliestStoredMessageTime(this.channelId),
+          new Timestamp(System.currentTimeMillis()),
           ChannelPanel.MESSAGE_REQUEST_QUANTITY
         )
       );

@@ -171,6 +171,9 @@ public class ClientSocket implements Runnable {
 
       case CLIENT_FRIENDS_UPDATE:
         ClientFriendsUpdate friendsUpdate = (ClientFriendsUpdate)payload;
+        System.out.println(friendsUpdate.getFriends());
+        System.out.println(friendsUpdate.getIncomingFriendRequests());
+        System.out.println(friendsUpdate.getOutgoingFriendRequests());
         GlobalClient.clientData.setFriends(friendsUpdate.getFriends());
         GlobalClient.clientData.setIncomingFriendRequests(friendsUpdate.getIncomingFriendRequests());
         GlobalClient.clientData.setOutgoingFriendRequests(friendsUpdate.getOutgoingFriendRequests());

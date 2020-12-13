@@ -138,7 +138,8 @@ public class PayloadProcessor implements Subscribable {
       1,
       new AuthenticatedClientRequest(
         (AuthenticatablePayload) client.getPayload(), 
-        client.getClientOut()
+        client.getClientOut(), 
+        client.getSocket()
       )
     );
   }

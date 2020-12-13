@@ -34,6 +34,7 @@ public class ClientFriendsUpdate extends Payload {
    * @param incomingFriendRequests
    * @param outgoingFriendRequests
    */
+  @SuppressWarnings("unchecked")
   public ClientFriendsUpdate(
     int priority,
     LinkedHashSet<UserMetadata> friends,
@@ -42,11 +43,15 @@ public class ClientFriendsUpdate extends Payload {
   ) {
     super(PayloadType.CLIENT_FRIENDS_UPDATE, priority);
 
-    this.friends = friends;
-    this.incomingFriendRequests = incomingFriendRequests;
-    this.outgoingFriendRequests = outgoingFriendRequests;
-    System.out.println(this.incomingFriendRequests);
-    System.out.println(this.outgoingFriendRequests);
+    this.friends = (LinkedHashSet<UserMetadata>)friends.clone();
+    this.incomingFriendRequests = new ConcurrentHashMap<UserMetadata, String>();
+    this.outgoingFriendRequests = new ConcurrentHashMap<UserMetadata, String>();
+    for (UserMetadata user: incomingFriendRequests.keySet()) {
+      this.incomingFriendRequests.put(user, incomingFriendRequests.get(user));
+    }
+    for (UserMetadata user: outgoingFriendRequests.keySet()) {
+      this.outgoingFriendRequests.put(user, outgoingFriendRequests.get(user));
+    }
   }
 
   public LinkedHashSet<UserMetadata> getFriends() {

@@ -44,6 +44,7 @@ public class ClientData implements Serializable {
     this.token = token;
     this.username = username;
     this.description = description;
+    this.status = status;
     this.friends = friends;
     this.incomingFriendRequests = incomingFriendRequests;
     this.outgoingFriendRequests = outgoingFriendRequests;
@@ -64,6 +65,16 @@ public class ClientData implements Serializable {
     for (ChannelMetadata channelMetadata: this.channels) {
       if (channelMetadata.getChannelId().equals(channelId)) {
         return channelMetadata;
+      }
+    }
+    return null;
+  }
+
+  public synchronized UserMetadata getOtherUserInPrivateChannel(PrivateChannelMetadata privateChannelMetadata) {
+    LinkedHashSet<UserMetadata> participants = privateChannelMetadata.getParticipants();
+    for (UserMetadata userMetadata: participants) {
+      if (!userMetadata.getUserId().equals(this.userId)) {
+        return userMetadata;
       }
     }
     return null;

@@ -30,22 +30,17 @@ import client.resources.GlobalClient;
  */
 
 @SuppressWarnings("serial")
-public abstract class UserFrame extends JFrame implements MouseMotionListener,
-                                                          KeyListener,
-                                                          ClientSocketListener {
+public abstract class UserFrame extends JFrame implements ClientSocketListener {
 
   private ClientSocket clientSocket;
 
   public UserFrame(String title, ClientSocket clientSocket) {
     super(title);
     
-    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
     this.clientSocket = clientSocket;
     this.clientSocket.addListener(this);
-    
-    this.addMouseMotionListener(this);
-    this.addKeyListener(this);
   }
 
   @Override
@@ -57,31 +52,6 @@ public abstract class UserFrame extends JFrame implements MouseMotionListener,
     boolean successful,
     String notifMessage
   );
-
-  @Override
-  public void mouseDragged(MouseEvent e) {
-    this.clientSocket.updateLastActiveTime();
-  }
-
-  @Override
-  public void mouseMoved(MouseEvent e) {
-    this.clientSocket.updateLastActiveTime();
-  }
-
-  @Override
-  public void keyPressed(KeyEvent e) {
-    this.clientSocket.updateLastActiveTime(); 
-  }
-
-  @Override
-  public void keyTyped(KeyEvent e) {
-    this.clientSocket.updateLastActiveTime(); 
-  }
-
-  @Override
-  public void keyReleased(KeyEvent e) {
-    this.clientSocket.updateLastActiveTime(); 
-  }
 
   @Override
   public void dispose() {

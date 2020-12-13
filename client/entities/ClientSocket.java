@@ -1,5 +1,7 @@
 package client.entities;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.io.InputStream;
 import java.io.File;
 import java.nio.file.Paths;
@@ -69,6 +71,7 @@ public class ClientSocket implements Runnable {
   private boolean running;
   private long lastActiveTimeMills;
   private long lastHeartBeatTimeMills;
+  private Point latestMousePoint;
 
   public ClientSocket(String host, int port) throws IOException {
     this.socket = new Socket(host, port);    
@@ -80,22 +83,26 @@ public class ClientSocket implements Runnable {
     this.listeners = new LinkedHashSet<ClientSocketListener>();
     this.running = true;
     this.lastActiveTimeMills = System.currentTimeMillis();
+    this.latestMousePoint = MouseInfo.getPointerInfo().getLocation();
     this.sendHeartbeat();
   }
 
   public void run() {
     while (this.running) {
+      this.updateMouseMovement();
+
       // send heartbeat
       if (this.lastActiveTimeMills - this.lastHeartBeatTimeMills >= ClientSocket.heartbeatFrequency) {
         this.sendHeartbeat();
-        System.out.println("beep");
       }
 
       synchronized (this.payloadQueue) {
         if (this.payloadQueue.size() > 0) {
           try {
               Payload payloadToSend = this.payloadQueue.poll();
-              System.out.println(payloadToSend.toString());
+              if (payloadToSend.getType() != PayloadType.KEEP_ALIVE){
+                System.out.println(payloadToSend.toString());
+              }
               this.output.writeObject(payloadToSend);
               this.pendingRequests.put(payloadToSend.getId(), payloadToSend);
 
@@ -135,7 +142,7 @@ public class ClientSocket implements Runnable {
       this.input.close();
       this.output.close();
     } catch (SocketException socketException) {
-      this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "You have been timed out");
+      this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "You have been disconnected");
     } catch (Exception exception) {
       exception.printStackTrace();
       this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "An error has occurred");
@@ -502,4 +509,14 @@ public class ClientSocket implements Runnable {
     }
   }
   
+  private void updateMouseMovement() {
+    Point curPoint = MouseInfo.getPointerInfo().getLocation();
+    if (
+      (curPoint.getX() != this.latestMousePoint.getX())
+      || (curPoint.getY() != this.latestMousePoint.getY())
+    ) {
+      this.updateLastActiveTime();
+      this.latestMousePoint = curPoint;
+    }
+  }
 }

@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.Container;
@@ -19,6 +20,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.SwingUtilities;
 import javax.swing.JTextField;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -30,6 +32,7 @@ import common.entities.PrivateChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.payload.CreateChannel;
 import common.entities.payload.UpdateStatus;
+import jdk.nashorn.internal.objects.Global;
 import common.entities.UserStatus;
 import common.entities.GroupChannelMetadata;
 import common.entities.payload.PayloadType;
@@ -48,7 +51,8 @@ import client.resources.GlobalClient;
  */
 
 @SuppressWarnings("serial")
-public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListener {
+public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListener,
+                                                                     MouseListener {
 
   public static final int WIDTH = 400;
   public static final int HEIGHT = 800;
@@ -72,6 +76,15 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     this.setSize(UserMainFrame.WIDTH, UserMainFrame.HEIGHT);
     this.setResizable(false);
 
+    this.chatFrame = new UserChatFrame("Chat Window", clientSocket);
+    this.chatFrame.setVisible(false);
+
+    this.friendsFrame = new UserFriendsFrame("Friends", clientSocket);
+    this.friendsFrame.setVisible(false);
+
+    this.settingsFrame = new UserSettingsFrame("Settings", clientSocket);
+    this.settingsFrame.setVisible(false);
+
     Container contentPane = this.getContentPane();
     contentPane.setLayout(new BorderLayout());
     
@@ -80,6 +93,10 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     contentPane.add(this.userProfilePanel, BorderLayout.NORTH);
     
     // card layout for private / group chats display
+    this.privateChannelsList = new JList<PrivateChannelMetadata>();
+    this.privateChannelsList.addMouseListener(this);
+    this.groupChannelsList = new JList<GroupChannelMetadata>();
+    this.groupChannelsList.addMouseListener(this);
     this.updateChannelsJLists();
 
     JPanel privateChannelPanel = new JPanel(new BorderLayout());
@@ -116,6 +133,18 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(this.settingsButton);
+
+    JButton test = new JButton("test");
+    test.addActionListener(
+      new ActionListener() {
+        @Override
+        public synchronized void actionPerformed(ActionEvent e) {
+          GlobalClient.displayClientData();
+        }
+      }
+    );
+    buttonPanel.add(test);
+
     contentPane.add(buttonPanel, BorderLayout.PAGE_END);
     
     //this.getClientSocket().sendPayload(new UpdateStatus(1, GlobalClient.clientData.getUserId(), GlobalClient.clientData.getToken(), UserStatus.ACTIVE));
@@ -127,7 +156,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   public void actionPerformed(ActionEvent e) { 
     if (e.getSource() == this.createGroupChannelButton) {
       // TODO: also ask for participants
-      String channelName = JOptionPane.showInputDialog("Channel Name: ");
+      String channelName = JOptionPane.showInputDialog(this, "Channel Name: ");
       
       if ((channelName == null) || (channelName.length() == 0)) {
         return;
@@ -167,24 +196,20 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
       }
 
     } else if (e.getSource() == this.friendsFrameButton) {
-      if (isOpen(this.friendsFrame)) {
-        this.friendsFrame.requestFocus();
-      } else {
-        this.friendsFrame = new UserFriendsFrame("Friends", this.getClientSocket());
-      }
+      this.friendsFrame.setVisible(true);
+      this.friendsFrame.requestFocus();
 
     } else if (e.getSource() == this.settingsButton) {
-      if (isOpen(this.settingsFrame)) {
-        this.settingsFrame.requestFocus();
-      } else {
-        this.settingsFrame = new UserSettingsFrame("Settings", this.getClientSocket());
-      }
+      this.settingsFrame.setVisible(true);
+      this.settingsFrame.requestFocus();
     }
   }
   
   @Override
   public void clientDataUpdated(ClientData updatedClientData) {
+    this.updateUserProfilePanel();
     this.updateChannelsJLists();
+    this.repaint();
   }
 
   @Override
@@ -193,10 +218,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     boolean successful,
     String notifMessage
   ) {
-    if (successful) {
-      System.out.println(notifMessage);
-      return;
-    }
     
     if ((payloadType == PayloadType.KEEP_ALIVE) && (!successful)) {
       JOptionPane.showMessageDialog(this, notifMessage, "Timeout", JOptionPane.INFORMATION_MESSAGE);
@@ -204,18 +225,70 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     }
 
     if (payloadType == PayloadType.CREATE_CHANNEL) {
-      JOptionPane.showMessageDialog(this, notifMessage, "Error", JOptionPane.ERROR_MESSAGE);
+      if (successful) {
+        JOptionPane.showMessageDialog(
+          this,
+          notifMessage,
+          "Success",
+          JOptionPane.PLAIN_MESSAGE
+        );
+
+      } else {
+        JOptionPane.showMessageDialog(
+          this,
+          notifMessage,
+          "Error",
+          JOptionPane.ERROR_MESSAGE
+        );
+      }
     }
 
+  }
+
+  @Override
+  public void mouseReleased(MouseEvent e) {
+    if (e.getSource() == this.groupChannelsList) {
+      if (SwingUtilities.isLeftMouseButton(e)) {
+        GroupChannelMetadata metadata = this.groupChannelsList.getSelectedValue();
+        if (metadata != null) {
+          this.chatFrame.addChannel(metadata.getChannelId());
+        }
+      } else if (SwingUtilities.isRightMouseButton(e)) {
+        //TODO: if owner, show option dialog
+      }
+
+    } else if (e.getSource() == this.privateChannelsList) {
+      if (SwingUtilities.isLeftMouseButton(e)) {
+        PrivateChannelMetadata metadata = this.privateChannelsList.getSelectedValue();
+        if (metadata != null) {
+          this.chatFrame.addChannel(metadata.getChannelId());
+        }
+      }
+    }
+  }
+
+  @Override
+  public void mousePressed(MouseEvent e) {
+  }
+  @Override
+  public void mouseClicked(MouseEvent e) {
+  }
+  @Override
+  public void mouseEntered(MouseEvent e) {
+  }
+  @Override
+  public void mouseExited(MouseEvent e) {
   }
 
   private void updateUserProfilePanel() {
     this.userProfilePanel = new UserProfilePanel();
     this.userProfilePanel.setMaximumSize(new Dimension(UserMainFrame.WIDTH, UserMainFrame.HEIGHT/10));
     this.userProfilePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    this.userProfilePanel.revalidate();
   }
 
-  private void updateChannelsJLists() {
+  private synchronized void updateChannelsJLists() {
+    System.out.println("updating channel");
     DefaultListModel<GroupChannelMetadata> groupChannelsListModel = new DefaultListModel<>();
     DefaultListModel<PrivateChannelMetadata> privateChannelsListModel = new DefaultListModel<>();
     synchronized (GlobalClient.clientData) {
@@ -228,11 +301,13 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
         }
       }
     }
-    this.groupChannelsList = new JList<GroupChannelMetadata>(groupChannelsListModel);
-    this.privateChannelsList = new JList<PrivateChannelMetadata>(privateChannelsListModel);
-  }
-
-  private boolean isOpen(JFrame frame) {
-    return frame != null;
+    System.out.println("dm " + privateChannelsListModel.size());
+    System.out.println("gc " + groupChannelsListModel.size());
+    this.groupChannelsList.setModel(groupChannelsListModel);
+    this.groupChannelsList.revalidate();
+    this.privateChannelsList.setModel(privateChannelsListModel);
+    this.privateChannelsList.revalidate();
+    System.out.println("channels updated");
+    
   }
 }

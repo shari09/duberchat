@@ -148,16 +148,25 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     boolean successful,
     String notifMessage
   ) {
-    if (successful) {
-      return;
-    }
     if (payloadType == PayloadType.LOGIN) {
-      JOptionPane.showMessageDialog(
-        this,
-        notifMessage,
-        "Error",
-        JOptionPane.ERROR_MESSAGE
-      );
+
+      if (successful) {
+        JOptionPane.showMessageDialog(
+          this,
+          notifMessage,
+          "Success",
+          JOptionPane.PLAIN_MESSAGE
+        );
+
+      } else {
+        JOptionPane.showMessageDialog(
+          this,
+          notifMessage,
+          "Error",
+          JOptionPane.ERROR_MESSAGE
+        );
+      }
     }
   }
+
 }

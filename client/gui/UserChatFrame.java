@@ -15,12 +15,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JTabbedPane;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import common.entities.payload.PayloadType;
+import jdk.nashorn.internal.objects.Global;
 import common.entities.ChannelMetadata;
 import common.entities.ClientData;
+import common.entities.GroupChannelMetadata;
+import common.entities.PrivateChannelMetadata;
 
 /**
  * The frame to display the GUI for the client.
@@ -36,13 +40,12 @@ public class UserChatFrame extends UserFrame {
   private static final int PREFERRED_WIDTH = 800;
   private static final int PREFERRED_HEIGHT = 600;
 
-  private ConcurrentSkipListSet<ChannelMetadata> channels;
-  private ChannelMetadata currentChannel;
+  private JTabbedPane tabbedPane;
 
   public UserChatFrame(String title, ClientSocket clientSocket) {
     super(title, clientSocket);
 
-    this.channels = new ConcurrentSkipListSet<ChannelMetadata>();
+    this.tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
     this.setPreferredSize(
       new Dimension(
         UserChatFrame.PREFERRED_WIDTH,
@@ -50,7 +53,6 @@ public class UserChatFrame extends UserFrame {
       )
     );
     this.setResizable(true);
-
     this.setVisible(true);
   }
 
@@ -68,5 +70,20 @@ public class UserChatFrame extends UserFrame {
 
   }
 
+  public void addChannel(String channelId) {
+    ChannelPanel panel = new ChannelPanel(
+      channelId,
+      this.getClientSocket()
+    );
+    this.tabbedPane.insertTab(
+      panel.getChannelTitle(),
+      null,
+      panel,
+      null,
+      0
+    );
+    this.setVisible(true);
+    this.requestFocus();
+  }
 
 }

@@ -106,7 +106,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
     this.descriptionLabel.setLabelFor(this.updateDescriptionButton);
     descriptionPanel.add(descriptionTitle, BorderLayout.PAGE_START);
     descriptionPanel.add(this.descriptionLabel, BorderLayout.CENTER);
-    descriptionPanel.add(this.updateDescriptionButton);
+    descriptionPanel.add(this.updateDescriptionButton, BorderLayout.EAST);
     contentPane.add(descriptionPanel);
     // status
     JPanel statusPanel = new JPanel();
@@ -159,6 +159,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   public synchronized void clientDataUpdated(ClientData updatedClientData) {
     this.updateLabels(updatedClientData);
     this.updateUserStatus(updatedClientData.getStatus());
+    this.repaint();
   }
 
   @Override
@@ -167,15 +168,28 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
     boolean successful,
     String notifMessage
   ) {
-    if (successful) {
-      return;
-    }
     if (
       (payloadType == PayloadType.CHANGE_PROFILE)
       || (payloadType == PayloadType.CHANGE_PASSWORD)
       || (payloadType == PayloadType.UPDATE_STATUS)
     ) {
-      JOptionPane.showMessageDialog(this, notifMessage, "Error", JOptionPane.ERROR_MESSAGE);
+
+      if (successful) {
+        JOptionPane.showMessageDialog(
+          this,
+          notifMessage,
+          "Success",
+          JOptionPane.PLAIN_MESSAGE
+        );
+
+      } else {
+        JOptionPane.showMessageDialog(
+          this,
+          notifMessage,
+          "Error",
+          JOptionPane.ERROR_MESSAGE
+        );
+      }
     }
   }
 
@@ -233,7 +247,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
     JLabel confirmPassLabel = new JLabel("Re-type new password:");
     JPasswordField confirmPassField = new JPasswordField(20);
     panel.add(oldPassLabel);
-    panel.add(newPassField);
+    panel.add(oldPassField);
     panel.add(newPassLabel);
     panel.add(newPassField);
     panel.add(confirmPassLabel);
@@ -375,7 +389,9 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
   private synchronized void updateLabels(ClientData updatedClientData) {
     this.usernameLabel.setText(updatedClientData.getUsername());
+    this.usernameLabel.revalidate();
     this.descriptionLabel.setText(updatedClientData.getDescription());
+    this.descriptionLabel.revalidate();
   }
 
   private synchronized void updateUserStatus(UserStatus status) {

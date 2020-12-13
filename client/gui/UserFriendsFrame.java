@@ -8,9 +8,12 @@ import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.Container;
 import java.awt.CardLayout;
@@ -21,10 +24,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
 import javax.swing.ButtonGroup;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
+import javax.swing.ListSelectionModel;
 import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.jws.soap.SOAPBinding.Use;
@@ -33,10 +38,12 @@ import javax.swing.DefaultListModel;
 
 import common.entities.ChannelMetadata;
 import common.entities.ClientData;
+import common.entities.Token;
 import common.entities.PrivateChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 import common.entities.payload.FriendRequestToServer;
+import common.entities.payload.FriendRequestResponse;
 import common.entities.GroupChannelMetadata;
 import common.entities.payload.PayloadType;
 
@@ -45,9 +52,10 @@ import client.entities.ClientSocketListener;
 import client.resources.GlobalClient;
 
 @SuppressWarnings("serial")
-public class UserFriendsFrame extends UserFrame implements ActionListener {
+public class UserFriendsFrame extends UserFrame implements ActionListener, MouseListener {
   private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
 
+  private JTabbedPane tabbedPane;
   private JList<UserMetadata> friends;
   private JList<UserMetadata> onlineFriends;
   private JList<IncomingFriendRequest> incomingFriendRequests;
@@ -63,26 +71,47 @@ public class UserFriendsFrame extends UserFrame implements ActionListener {
     this.setSize(UserFriendsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserFriendsFrame.PREFERRED_DIMENSION);
     this.setResizable(true);
+    
+    this.friends = new JList<UserMetadata>();
+    this.friends.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    this.friends.addMouseListener(new FriendListMouseListener(this.friends));
+
+    this.onlineFriends = new JList<UserMetadata>();
+    this.onlineFriends.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    this.onlineFriends.addMouseListener(new FriendListMouseListener(this.onlineFriends));
+
+    this.incomingFriendRequests = new JList<IncomingFriendRequest>();
+    this.incomingFriendRequests.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    this.incomingFriendRequests.addMouseListener(this);
+
+    this.outgoingFriendRequests = new JList<OutgoingFriendRequest>();
+    this.outgoingFriendRequests.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    this.outgoingFriendRequests.addMouseListener(this);
+
+    this.blocked = new JList<UserMetadata>();
+    this.blocked.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    this.blocked.addMouseListener(this);
 
     this.updateJLists(GlobalClient.clientData);
-    JTabbedPane tabbedPane = new JTabbedPane();
-    tabbedPane.addTab(
+
+    this.tabbedPane = new JTabbedPane();
+    this.tabbedPane.addTab(
       "Online",
       new JScrollPane(this.onlineFriends)
     );
-    tabbedPane.addTab(
+    this.tabbedPane.addTab(
       "All",
       new JScrollPane(this.friends)
     );
-    tabbedPane.addTab(
+    this.tabbedPane.addTab(
       "Incoming Friend Requests",
       new JScrollPane(this.incomingFriendRequests)
     );
-    tabbedPane.addTab(
+    this.tabbedPane.addTab(
       "Outgoing Friend Requests",
       new JScrollPane(this.outgoingFriendRequests)
     );
-    tabbedPane.addTab(
+    this.tabbedPane.addTab(
       "Blocked",
       new JScrollPane(this.blocked)
     );
@@ -110,9 +139,9 @@ public class UserFriendsFrame extends UserFrame implements ActionListener {
     addFriendPanel.add(usernameSearchPanel);
     addFriendPanel.add(requestMessagePanel);
     addFriendPanel.add(this.sendFriendRequestButton);
-    tabbedPane.addTab("Add friend", addFriendPanel);
+    this.tabbedPane.addTab("Add friend", addFriendPanel);
 
-    this.getContentPane().add(tabbedPane);    
+    this.getContentPane().add(this.tabbedPane);
     this.setVisible(true);
   }
 
@@ -151,6 +180,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener {
   @Override
   public void clientDataUpdated(ClientData updatedClientData) {
     this.updateJLists(updatedClientData);
+    this.repaint();
   }
 
   @Override
@@ -159,18 +189,94 @@ public class UserFriendsFrame extends UserFrame implements ActionListener {
     boolean successful,
     String notifMessage
   ) {
-    if (successful) {
-      System.out.println(notifMessage);
-      return;
-    }
 
     if (
       (payloadType == PayloadType.FRIEND_REQUEST)
       || (payloadType == PayloadType.FRIEND_REQUEST_RESPONSE)
       || (payloadType == PayloadType.BLOCK_USER)
     ) {
-      JOptionPane.showMessageDialog(this, notifMessage, "Error", JOptionPane.ERROR_MESSAGE);
+
+      if (successful) {
+        JOptionPane.showMessageDialog(
+          this,
+          notifMessage,
+          "Success",
+          JOptionPane.PLAIN_MESSAGE
+        );
+
+      } else {
+        JOptionPane.showMessageDialog(
+          this,
+          notifMessage,
+          "Error",
+          JOptionPane.ERROR_MESSAGE
+        );
+      }
     }
+  }
+
+  @Override
+  public void mouseReleased(MouseEvent e) {
+    if (SwingUtilities.isLeftMouseButton(e)) {
+      if (e.getSource() == this.incomingFriendRequests) {
+        String userId;
+        Token token;
+        synchronized (GlobalClient.clientData) {
+          userId = GlobalClient.clientData.getUserId();
+          token = GlobalClient.clientData.getToken();
+        }
+        IncomingFriendRequest selected = this.incomingFriendRequests.getSelectedValue();
+        UserMetadata sender = selected.getSenderMetadata();
+        String[] options = new String[] {"Accept", "Decline", "Cancel"};
+        int choice = JOptionPane.showOptionDialog(
+          this,
+          "Accept friend request from " + sender.getUsername() + "?",
+          "Friend request response",
+          JOptionPane.YES_NO_CANCEL_OPTION,
+          JOptionPane.QUESTION_MESSAGE,
+          null,
+          options,
+          null
+        );
+        if (choice == JOptionPane.YES_OPTION) {
+          this.getClientSocket().sendPayload(
+            new FriendRequestResponse(
+              1,
+              userId,
+              token,
+              sender.getUserId(),
+              true
+            )
+          );
+        } else if (choice == JOptionPane.NO_OPTION) {
+          this.getClientSocket().sendPayload(
+            new FriendRequestResponse(
+              1,
+              userId,
+              token,
+              sender.getUserId(),
+              false
+            )
+          );
+        }
+      }
+    }
+  }
+
+  @Override
+  public void mousePressed(MouseEvent e) {
+  }
+
+  @Override
+  public void mouseExited(MouseEvent e) {
+  }
+
+  @Override
+  public void mouseEntered(MouseEvent e) {
+  }
+
+  @Override
+  public void mouseClicked(MouseEvent e) {
   }
 
   private synchronized void updateJLists(ClientData updatedClientData) {
@@ -184,8 +290,10 @@ public class UserFriendsFrame extends UserFrame implements ActionListener {
         onlineFriendsListModel.addElement(curMetadata);
       }
     }
-    this.friends = new JList<UserMetadata>(friendsListModel);
-    this.onlineFriends = new JList<UserMetadata>(onlineFriendsListModel);
+    this.friends.setModel(friendsListModel);
+    this.friends.revalidate();
+    this.onlineFriends.setModel(onlineFriendsListModel);
+    this.onlineFriends.revalidate();
 
     // incoming friend requests
     DefaultListModel<IncomingFriendRequest> incomingFriendRequestListModel = new DefaultListModel<>();
@@ -198,7 +306,8 @@ public class UserFriendsFrame extends UserFrame implements ActionListener {
         )
       );
     }
-    this.incomingFriendRequests = new JList<IncomingFriendRequest>(incomingFriendRequestListModel);
+    this.incomingFriendRequests.setModel(incomingFriendRequestListModel);
+    this.incomingFriendRequests.revalidate();
 
     // outgoing friend requests
     DefaultListModel<OutgoingFriendRequest> outgoingFriendRequestListModel = new DefaultListModel<>();
@@ -211,16 +320,16 @@ public class UserFriendsFrame extends UserFrame implements ActionListener {
         )
       );
     }
-    this.outgoingFriendRequests = new JList<OutgoingFriendRequest>(outgoingFriendRequestListModel);
-  
+    this.outgoingFriendRequests.setModel(outgoingFriendRequestListModel);
+    this.outgoingFriendRequests.revalidate();
     // blocked
     DefaultListModel<UserMetadata> blockedListModel = new DefaultListModel<>();
     LinkedHashSet<UserMetadata> blockedMetadata = updatedClientData.getBlocked();
     for (UserMetadata curMetadata: blockedMetadata) {
       blockedListModel.addElement(curMetadata);
     }
-    this.blocked = new JList<UserMetadata>(blockedListModel);
-
+    this.blocked.setModel(blockedListModel);
+    this.blocked.revalidate();
   }
 
   public class IncomingFriendRequest {

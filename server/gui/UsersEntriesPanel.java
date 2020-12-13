@@ -38,9 +38,9 @@ public class UsersEntriesPanel extends EntriesPanel implements Subscribable {
 
   private void addClient(Client client) {
     String username = GlobalServices.users.getUsername(client.getUserId());
-    JButton user = new JButton(username);
-    this.users.put(client.getUserId(), user);
-    super.addEntry(user, new JPanel());
+    // JButton user = new JButton(username);
+    JButton tab = super.addEntry(username, new JPanel());
+    this.users.put(client.getUserId(), tab);
   }
 
   private void removeClient(Object emitter) {

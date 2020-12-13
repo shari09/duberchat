@@ -52,7 +52,7 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
     this.defaultEntry = new JButton();
     this.setLayout(new BorderLayout());
 
-    JPanel titlePanel = ComponentsFactory.getHeader(title, Style.GRAY4);
+    JPanel titlePanel = Components.getHeader(title, Components.GRAY4);
     titlePanel.setPreferredSize(new Dimension(
       225, titlePanel.getPreferredSize().height
     ));
@@ -63,52 +63,43 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
 
     this.entriesPanel = new JPanel();
     this.entriesPanel.setLayout(new GridBagLayout());
-    this.entriesPanel.setBackground(Style.GRAY1);
+    this.entriesPanel.setBackground(Components.GRAY1);
     this.entriesPanel.setBorder(BorderFactory.createEmptyBorder());
 
-    this.c = ComponentsFactory.getScrollConstraints();
+    this.c = Components.getScrollConstraints();
     this.entriesPanel.add(Box.createVerticalGlue(), this.c);
 
     this.c.weighty = 0;
 
-    this.scrollPane = ComponentsFactory.getScrollPane(this.entriesPanel, false);
+    this.scrollPane = Components.getScrollPane(this.entriesPanel, false);
 
     //TODO: get better scrollbar
     this.add(this.scrollPane);
     this.setVisible(false);
   }
 
-  public void addEntry(JButton tab, JPanel content) {
+  public JButton addEntry(String text, JPanel content) {
+    JButton tab = Components.getButton(
+      text, Components.LIGHT_TEXT_OVERLAY, 13, 
+      4, 10, 
+      Components.GRAY1, 
+      Components.OVERLAY
+    );
     tab.addActionListener(this);
-    tab.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    tab.setForeground(Style.LIGHT_TEXT_OVERLAY);
-    tab.setBackground(Style.GRAY1);
-    tab.setBorder(BorderFactory.createEmptyBorder(10, 4, 10, 4));
-    tab.addMouseListener(new MouseAdapter() {
-      public void mouseEntered(MouseEvent evt) {
-        tab.setBackground(Style.OVERLAY);
-      }
 
-      public void mouseExited(MouseEvent evt) {
-        tab.setBackground(Style.GRAY1);
-      }
-    });
-    tab.setFocusPainted(false);
-
-    this.entriesPanel.add(tab, c, 0);
+    this.entriesPanel.add(tab, this.c, 0);
     this.defaultEntry = tab;
     
     this.entriesPanel.revalidate();
     this.scrollPane.revalidate();
     this.entries.put(tab, content);
-    this.requestFocus();
     this.repaint();
+    return tab;
   }
 
   public void removeEntry(JButton tab) {
     this.entriesPanel.remove(tab);
     this.entriesPanel.revalidate();
-    this.requestFocus();
     this.repaint();
   }
 

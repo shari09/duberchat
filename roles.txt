@@ -5,15 +5,15 @@ Shari - server
 - client/server connection
 - communications protocol
 - data storing
-- made event queue
 - message/channel creation/interaction on server side
-- updating clients on messages updates
-
+- server gui/swing
+- sending all clients revelant info
 
 
 Candice - client
 - communications protocol
-
+- client gui/swing
+- client sending/receiving payloads
 
 
 Features:

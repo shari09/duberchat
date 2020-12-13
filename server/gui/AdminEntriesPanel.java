@@ -21,13 +21,14 @@ public class AdminEntriesPanel extends EntriesPanel implements Subscribable {
    */
   private static final long serialVersionUID = 1L;
 
-  private JButton broadcast;
+
+  private BroadcastingPanel panel;
 
   public AdminEntriesPanel() {
     super("Admin");
-    this.broadcast = new JButton("Admin");
 
-    // super.addEntry(this.broadcast, content);
+    this.panel = new BroadcastingPanel();
+    super.addEntry("Broadcast", this.panel);
 
     this.activate();
   }

@@ -38,7 +38,7 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
     this.logEntries = GlobalServices.logging.getAllEntries();
     this.curPanel = new LogsPanel("Current");
     this.loadLogs();
-    super.addEntry(new JButton("Current"), this.curPanel);
+    super.addEntry("Current", this.curPanel);
     this.activate();
   }
 
@@ -52,7 +52,7 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
         panel.addLog(log);
       }
       super.addEntry(
-        new JButton(entrySet.getLastModified().toString()),
+        entrySet.getLastModified().toString(),
         panel
       );
     }

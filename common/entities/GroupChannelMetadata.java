@@ -35,7 +35,7 @@ public class GroupChannelMetadata extends ChannelMetadata {
     super(channelId, lastModified, participants);
     this.channelName = channelName;
   }
-
+  
   public String getChannelName() {
     return this.channelName;
   }

@@ -75,6 +75,11 @@ public class LoggingService {
     this.save();
   }
 
+  /**
+   * 
+   * @param entrySetId
+   * @return
+   */
   private LogEntrySet getEntrySet(String entrySetId) {
     LogEntrySet entrySet = null;
     try {
@@ -101,7 +106,10 @@ public class LoggingService {
     CopyOnWriteArrayList<LogEntrySet> entries = new CopyOnWriteArrayList<>();
     int idx = this.logEntriesId.size()-start-1;
     for (int i = idx; i >= Math.max(idx-num, 0); i--) {
-      entries.add(this.getEntrySet(this.logEntriesId.get(i)));
+      LogEntrySet entry = this.getEntrySet(this.logEntriesId.get(i)); 
+      if (entry != null) {
+        entries.add(entry);
+      }
     }
 
     return entries;
@@ -114,6 +122,10 @@ public class LoggingService {
     }
 
     return entries;
+  }
+
+  public int getNumEntries() {
+    return this.logEntriesId.size();
   }
 
 }

@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import common.entities.payload.Payload;
+import common.entities.payload.PayloadType;
 import server.entities.ClientRequest;
 import server.entities.EventType;
 
@@ -57,20 +58,23 @@ public class ClientHandler implements Runnable {
           throw new Exception("Unrecognized payload: " + obj);
         }
         Payload payload = (Payload) obj;
-        GlobalServices.serverEventQueue.emitEvent(
-          EventType.NEW_LOG, 
-          1,
-          String.format(
-            "Payload received of type %s from socket:%s",
-            payload.getType().toString(),
-            this.socket.toString()
-          )
-        );
-        GlobalServices.serverEventQueue.emitEvent(
-          EventType.PAYLOAD, 
-          1, 
-          new ClientRequest(payload, this.output)
-        );
+        if (payload.getType() != PayloadType.KEEP_ALIVE) {
+          GlobalServices.serverEventQueue.emitEvent(
+            EventType.NEW_LOG, 
+            1,
+            String.format(
+              "Payload received of type %s from socket:%s",
+              payload.getType().toString(),
+              this.socket.toString()
+            )
+          );
+          GlobalServices.serverEventQueue.emitEvent(
+            EventType.PAYLOAD, 
+            1, 
+            new ClientRequest(payload, this.output, this.socket)
+          );
+        }
+        
       }
     } catch (SocketTimeoutException e) { // inactive client timing out
       this.handleDisconnection("has timed out");

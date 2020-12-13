@@ -1,6 +1,8 @@
 package server.gui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.GridBagConstraints;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -29,24 +31,47 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
    */
   private static final long serialVersionUID = 1L;
 
-  private CopyOnWriteArrayList<LogEntrySet> logEntries;
   private LogsPanel curPanel;
 
+  private JButton more;
+  private int numLogs;
+  private int totalLogs;
 
   public LogsEntriesPanel() {
     super("Logs");
-    this.logEntries = GlobalServices.logging.getAllEntries();
     this.curPanel = new LogsPanel("Current");
-    this.loadLogs();
-    super.addEntry("Current", this.curPanel);
+    this.numLogs = 5;
+    this.totalLogs = GlobalServices.logging.getNumEntries();
+    
+    
+    this.more = Components.getIconButton("plus", 30, 10, 10);
+    this.more.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        LogsEntriesPanel.this.loadMore();
+      }
+    });
+    
+    
+    GridBagConstraints c = new GridBagConstraints();
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.gridx = 0;
+    this.getEntriesPanel().add(this.more, c, 0);
+    if (this.numLogs >= this.totalLogs) {
+      this.more.setVisible(false);
+    }
+
+      
+    JButton current = super.addEntry("Current", this.curPanel);
+    this.setFixedDefaultEntry(current);
+    this.addLogEntries(GlobalServices.logging.getEntries(1, 5));
+
     this.activate();
   }
 
-  private void loadLogs() {
-    this.logEntries = GlobalServices.logging.getAllEntries();
-    for (int i = this.logEntries.size()-1; i > 0; i--) {
-      LogEntrySet entrySet = this.logEntries.get(i);
-
+  private void addLogEntries(CopyOnWriteArrayList<LogEntrySet> logEntries) {
+    for (int i = 0; i < logEntries.size(); i++) {
+      LogEntrySet entrySet = logEntries.get(i);
       LogsPanel panel = new LogsPanel(entrySet.getLastModified().toString());
       for (Log log: entrySet) {
         panel.addLog(log);
@@ -55,6 +80,20 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
         entrySet.getLastModified().toString(),
         panel
       );
+    }
+  }
+
+
+  private void loadMore() {
+    this.addLogEntries(GlobalServices.logging.getEntries(this.numLogs, 5));
+    this.numLogs += 5;
+
+    System.out.println(this.numLogs);
+    System.out.println(this.totalLogs);
+
+    if (this.numLogs >= this.totalLogs) {
+      System.out.println("max");
+      this.more.setVisible(false);
     }
   }
   

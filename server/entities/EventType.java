@@ -14,6 +14,8 @@ public enum EventType {
   PAYLOAD,
   /** A new client connection is received by the server socket. */
   NEW_CLIENT,
+  /** A newly registered user */
+  NEW_USER,
   /**
    * Once the payload is authenticated,
    * meaning the token matches with what the server sent back originally.
@@ -49,5 +51,9 @@ public enum EventType {
   ADMIN_TAB,
   /** Select an entry to view details about */
   ENTRY_SELECTED,
+  /** Broadcast to selected users */
+  BROADCAST,
+  /** Disconnects selected users */
+  DISCONNECT,
   
 }

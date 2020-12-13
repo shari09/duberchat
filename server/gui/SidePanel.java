@@ -43,31 +43,36 @@ public class SidePanel extends JPanel implements ActionListener {
     this.logs = this.getMenuItem("log-format");
     this.users = this.getMenuItem("user");
     this.admin = this.getMenuItem("gear");
-    this.add(this.users);
     this.add(this.logs);  
+    this.add(this.users);
     this.add(this.admin);
     this.setBackground(Components.GRAY3);
   }
 
   public JButton getMenuItem(String iconName) {
-    JButton button = new JButton();
-    try {
-      BufferedImage img = ImageIO.read(new File("server/assets/"+iconName+".png"));
-      Image icon = img.getScaledInstance(
-        SidePanel.iconSize, 
-        SidePanel.iconSize, 
-        Image.SCALE_SMOOTH
-      );
-      button.setIcon(new ImageIcon(icon));
-    } catch (Exception e) {
-      System.out.println("Unable to add button icon");
-      e.printStackTrace();
-    }
-    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    button.setForeground(Components.DIM_TEXT);
-    button.setContentAreaFilled(false);
-    button.setBorder(BorderFactory.createEmptyBorder(10, 4, 10, 4));
-    button.setFocusable(false);
+    // JButton button = new JButton();
+    // try {
+    //   BufferedImage img = ImageIO.read(new File("server/assets/"+iconName+".png"));
+    //   Image icon = img.getScaledInstance(
+    //     SidePanel.iconSize, 
+    //     SidePanel.iconSize, 
+    //     Image.SCALE_SMOOTH
+    //   );
+    //   button.setIcon(new ImageIcon(icon));
+    // } catch (Exception e) {
+    //   System.out.println("Unable to add button icon");
+    //   e.printStackTrace();
+    // }
+    // button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    // button.setForeground(Components.DIM_TEXT);
+    // button.setContentAreaFilled(false);
+    // button.setBorder(BorderFactory.createEmptyBorder(10, 4, 10, 4));
+    // button.setFocusable(false);
+    JButton button = Components.getIconButton(
+      iconName, 
+      SidePanel.iconSize, 
+      4, 10
+    );
     button.addActionListener(this);
     
     return button;

@@ -43,6 +43,7 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
   private JScrollPane scrollPane;
   private ConcurrentHashMap<JButton, JPanel> entries;
   private JButton defaultEntry;
+  private boolean fixedDefaultEntry;
 
   private GridBagConstraints c;
 
@@ -67,13 +68,13 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
     this.entriesPanel.setBorder(BorderFactory.createEmptyBorder());
 
     this.c = Components.getScrollConstraints();
-    this.entriesPanel.add(Box.createVerticalGlue(), this.c);
+    this.entriesPanel.add(Box.createVerticalGlue(), this.c, 0);
 
     this.c.weighty = 0;
 
     this.scrollPane = Components.getScrollPane(this.entriesPanel, false);
 
-    //TODO: get better scrollbar
+    this.fixedDefaultEntry = false;
     this.add(this.scrollPane);
     this.setVisible(false);
   }
@@ -87,14 +88,26 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
     );
     tab.addActionListener(this);
 
-    this.entriesPanel.add(tab, this.c, 0);
-    this.defaultEntry = tab;
+    this.entriesPanel.add(tab, this.c, this.entries.size());
+    if (!this.fixedDefaultEntry) {
+      this.defaultEntry = tab;
+    }
     
     this.entriesPanel.revalidate();
     this.scrollPane.revalidate();
     this.entries.put(tab, content);
     this.repaint();
     return tab;
+  }
+
+  public JPanel getEntriesPanel() {
+    return this.entriesPanel;
+  }
+
+
+  public void setFixedDefaultEntry(JButton tab) {
+    this.defaultEntry = tab;
+    this.fixedDefaultEntry = true;
   }
 
   public void removeEntry(JButton tab) {

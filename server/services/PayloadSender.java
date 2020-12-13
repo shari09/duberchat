@@ -22,14 +22,19 @@ public class PayloadSender {
     synchronized (client) {
       try {
         client.writeObject(payload);
+        String userId = GlobalServices.clientConnections.getUserId(client);
+        String msg = "";
+        if (userId != null) {
+          msg = "to user:" + userId;
+        }
         //log
         GlobalServices.serverEventQueue.emitEvent(
           EventType.NEW_LOG, 
           1,
           String.format(
-            "Sent %s payload to %s", 
+            "Sent %s payload %s", 
             payload.getType(), 
-            GlobalServices.clientConnections.getUserId(client)
+            msg
           )
         );
 

@@ -68,7 +68,8 @@ public class GroupChannel extends Channel {
       this.getId(), 
       this.getLastModified(),
       this.getParticipants(),
-      this.channelName
+      this.channelName,
+      this.ownerId
     );
   }
 

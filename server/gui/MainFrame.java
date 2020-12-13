@@ -67,10 +67,10 @@ public class MainFrame extends JFrame implements Subscribable {
     this.logsPanel = new LogsEntriesPanel();
     this.adminPanel = new AdminEntriesPanel();
     
-    this.curEntriesPanel = this.usersPanel;
+    this.curEntriesPanel = this.logsPanel;
 
     this.nullPanel = new JPanel();
-    this.entryContentPanel = this.nullPanel;
+    
 
 
     c.gridx = 0;
@@ -87,9 +87,10 @@ public class MainFrame extends JFrame implements Subscribable {
     this.getContentPane().add(this.adminPanel, c);
     
 
-    this.usersPanel.setVisible(true);
+    this.logsPanel.setVisible(true);
     c.gridx = 2;
     c.weightx = 1;
+    this.entryContentPanel = this.logsPanel.getDefaultContent();
     this.getContentPane().add(this.entryContentPanel, c);
     this.setVisible(true);
   }

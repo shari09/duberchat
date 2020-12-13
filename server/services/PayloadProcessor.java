@@ -101,7 +101,7 @@ public class PayloadProcessor implements Subscribable {
     GlobalServices.serverEventQueue.emitEvent(
       EventType.AUTHENTICATED_CLIENT, 
       1,
-      new Client(user.getId(), client.getClientOut())
+      new Client(user.getId(), client.getClientOut(), client.getSocket())
     );
     PayloadSender.send(
       client.getClientOut(), 
@@ -180,7 +180,7 @@ public class PayloadProcessor implements Subscribable {
     GlobalServices.serverEventQueue.emitEvent(
       EventType.AUTHENTICATED_CLIENT, 
       1,
-      new Client(user.getId(), client.getClientOut())
+      new Client(user.getId(), client.getClientOut(), client.getSocket())
     );
     PayloadSender.send(client.getClientOut(), this.getClientInfo(user));
 

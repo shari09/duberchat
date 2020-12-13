@@ -31,6 +31,14 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+/**
+ * 
+ * <p>
+ * Created on 2020.12.12.
+ * @author Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 public class Components {
   public final static Color BLUE = Components.getColour("4C69C7");
   public final static Color OVERLAY = Components.getColour("666666");
@@ -240,6 +248,34 @@ public class Components {
       }
     });
 
+    return button;
+  }
+
+
+
+  public static JButton getIconButton(
+    String iconName,
+    int iconSize,
+    int px,
+    int py
+  ) {
+    JButton button = new JButton();
+    try {
+      BufferedImage img = ImageIO.read(new File("server/assets/"+iconName+".png"));
+      Image icon = img.getScaledInstance(
+        iconSize, iconSize,
+        Image.SCALE_SMOOTH
+      );
+      button.setIcon(new ImageIcon(icon));
+    } catch (Exception e) {
+      System.out.println("Unable to add button icon");
+      e.printStackTrace();
+    }
+    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    button.setContentAreaFilled(false);
+    button.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));
+    button.setFocusable(false);
+    
     return button;
   }
 

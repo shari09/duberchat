@@ -18,6 +18,7 @@ public class GroupChannelMetadata extends ChannelMetadata {
    */
   private static final long serialVersionUID = 1L;
   private String channelName;
+  private String ownerId;
   
   /**
    * 
@@ -30,14 +31,20 @@ public class GroupChannelMetadata extends ChannelMetadata {
     String channelId, 
     Timestamp lastModified, 
     LinkedHashSet<UserMetadata> participants,
-    String channelName
+    String channelName,
+    String ownerId
   ) {
     super(channelId, lastModified, participants);
     this.channelName = channelName;
+    this.ownerId = ownerId;
   }
   
   public String getChannelName() {
     return this.channelName;
+  }
+
+  public String getOwnerId() {
+    return this.ownerId;
   }
 
 }

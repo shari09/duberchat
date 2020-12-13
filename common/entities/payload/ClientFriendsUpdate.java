@@ -45,6 +45,8 @@ public class ClientFriendsUpdate extends Payload {
     this.friends = friends;
     this.incomingFriendRequests = incomingFriendRequests;
     this.outgoingFriendRequests = outgoingFriendRequests;
+    System.out.println(this.incomingFriendRequests);
+    System.out.println(this.outgoingFriendRequests);
   }
 
   public LinkedHashSet<UserMetadata> getFriends() {

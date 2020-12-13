@@ -1,6 +1,7 @@
 package server.entities;
 
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 /**
  * Stores the user's userId and its socket's output stream
@@ -16,9 +17,12 @@ import java.io.ObjectOutputStream;
 public class Client {
   private String userId;
   private ObjectOutputStream client;
-  public Client(String userId, ObjectOutputStream client) {
+  private Socket socket;
+  
+  public Client(String userId, ObjectOutputStream client, Socket socket) {
     this.userId = userId;
     this.client = client;
+    this.socket = socket;
   }
 
   public String getUserId() {
@@ -27,6 +31,10 @@ public class Client {
 
   public ObjectOutputStream getClient() {
     return this.client;
+  }
+
+  public Socket getSocket() {
+    return this.socket;
   }
   
 }

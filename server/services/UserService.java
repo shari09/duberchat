@@ -28,8 +28,8 @@ public class UserService {
   private final String USERNAME_MAPPING_PATH = "database/data/username-to-uid-mapping.ser";
   private final String USER_ID_MAPPING_PATH = "database/data/uid-to-username-mapping.ser";
   private ConcurrentHashMap<String, User> users;
-  private ConcurrentHashMap<String, String> usernameToUid;
-  private ConcurrentHashMap<String, String> uidToUsername;
+  private ConcurrentHashMap<String, String> usernameToId;
+  private ConcurrentHashMap<String, String> idToUsername;
   private int numChanges = 0;
   private int bufferEntriesNum = 1;
 
@@ -44,15 +44,15 @@ public class UserService {
           "Created new user save files"
         );
         this.users = new ConcurrentHashMap<>();
-        this.usernameToUid = new ConcurrentHashMap<>();
-        this.uidToUsername = new ConcurrentHashMap<>();
+        this.usernameToId = new ConcurrentHashMap<>();
+        this.idToUsername = new ConcurrentHashMap<>();
         this.hardSave();
         return;
       }
 
       this.users = DataService.loadData(this.USERS_PATH);
-      this.usernameToUid = DataService.loadData(this.USERNAME_MAPPING_PATH);
-      this.uidToUsername = DataService.loadData(this.USER_ID_MAPPING_PATH);
+      this.usernameToId = DataService.loadData(this.USERNAME_MAPPING_PATH);
+      this.idToUsername = DataService.loadData(this.USER_ID_MAPPING_PATH);
 
     } catch (Exception e) {
       //log
@@ -75,8 +75,8 @@ public class UserService {
   public synchronized void hardSave() {
     try {
       DataService.saveData(this.users, this.USERS_PATH);
-      DataService.saveData(this.usernameToUid, this.USERNAME_MAPPING_PATH);
-      DataService.saveData(this.uidToUsername, this.USER_ID_MAPPING_PATH);
+      DataService.saveData(this.usernameToId, this.USERNAME_MAPPING_PATH);
+      DataService.saveData(this.idToUsername, this.USER_ID_MAPPING_PATH);
     } catch (Exception e) {
       //log
       GlobalServices.serverEventQueue.emitEvent(
@@ -90,18 +90,18 @@ public class UserService {
   }
 
   public boolean usernameExist(String username) {
-    return this.usernameToUid.containsKey(username);
+    return this.usernameToId.containsKey(username);
   }
 
   public String getUsername(String userId) {
-    return this.uidToUsername.get(userId);
+    return this.idToUsername.get(userId);
   }
 
   public String getUserId(String username) {
-    if (!this.usernameToUid.containsKey(username)) {
+    if (!this.usernameToId.containsKey(username)) {
       return null;
     }
-    return this.usernameToUid.get(username);
+    return this.usernameToId.get(username);
   }
 
   public boolean userIdExist(String userId) {
@@ -126,8 +126,8 @@ public class UserService {
   }
 
   public User authenticate(String username, String password) {
-    if (this.usernameToUid.containsKey(username)) {
-      String userId = this.usernameToUid.get(username);
+    if (this.usernameToId.containsKey(username)) {
+      String userId = this.usernameToId.get(username);
       if (this.users.get(userId).hasPassword(password)) {
         return this.users.get(userId);
       }
@@ -149,8 +149,9 @@ public class UserService {
     }
     User user = new User(username, password, description);
     this.users.put(user.getId(), user);
-    this.usernameToUid.put(username, user.getId());
-    this.uidToUsername.put(user.getId(), username);
+    this.usernameToId.put(username, user.getId());
+    this.idToUsername.put(user.getId(), username);
+    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_USER, 1, user);
     this.save();
     return user;
   }
@@ -162,12 +163,17 @@ public class UserService {
     return this.users.get(userId).getMetdata();
   }
 
-  public void changeUsername(String uid, String newUsername) {
-    String oldUsername = this.uidToUsername.get(uid);
-    this.usernameToUid.remove(oldUsername);
-    this.uidToUsername.put(uid, newUsername);
-    this.usernameToUid.put(newUsername, uid);
+  public boolean changeUsername(String userId, String newUsername) {
+    if (this.usernameExist(newUsername)) {
+      return false;
+    }
+    String oldUsername = this.idToUsername.get(userId);
+    this.usernameToId.remove(oldUsername);
+    this.idToUsername.put(userId, newUsername);
+    this.usernameToId.put(newUsername, userId);
+    this.broadcastChanges(this.users.get(userId));
     this.save();
+    return true;
   }
 
   public void updateUserStatus(String userId, UserStatus status) {
@@ -329,7 +335,7 @@ public class UserService {
       return false;
     }
     User user = this.users.get(blockerId);
-    User blocked = this.users.get(this.usernameToUid.get(toBeBlockedId));
+    User blocked = this.users.get(this.usernameToId.get(toBeBlockedId));
     user.removeFriend(blocked.getMetdata());
     blocked.removeFriend(user.getMetdata());
     user.addBlocked(blocked.getMetdata());
@@ -339,24 +345,14 @@ public class UserService {
     return true;
   }
 
-  /**
-   * 
-   * @param userId
-   * @param fieldToChange
-   * @param newValue
-   */
-  public void changeProfile(String userId, ProfileField fieldToChange, String newValue) {
+
+  public boolean changeDescription(String userId, String description) {
     User user = this.users.get(userId);
-    switch (fieldToChange) {
-      case DESCRIPTION:
-        user.updateDescription(newValue);
-        break;
-      case USERNAME:
-        this.changeUsername(userId, newValue);
-        break;
-    }
-    broadcastChanges(user);
+    user.updateDescription(description);
+    this.broadcastChanges(user);
     this.save();
+
+    return true;
   }
 
   /**
@@ -382,6 +378,10 @@ public class UserService {
         friend
       );
     }
+  }
+
+  public ConcurrentHashMap<String, User> getAllUsers() {
+    return this.users;
   }
 
 }

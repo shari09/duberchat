@@ -15,40 +15,23 @@ import server.services.Subscribable;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class AdminEntriesPanel extends EntriesPanel implements Subscribable {
+public class AdminEntriesPanel extends EntriesPanel {
   /**
    *
    */
   private static final long serialVersionUID = 1L;
 
 
-  private BroadcastingPanel panel;
-
   public AdminEntriesPanel() {
     super("Admin");
 
-    this.panel = new BroadcastingPanel();
-    super.addEntry("Broadcast", this.panel);
+    BroadcastingPanel broadcast = new BroadcastingPanel();
+    DisconnectPanel disconnect = new DisconnectPanel();
+    JButton broadbastButton = super.addEntry("Broadcast", broadcast);
+    super.addEntry("Disconnect", disconnect);
 
-    this.activate();
-  }
-
-  // public JPanel getBroadcastMsgPanel() {
-  //   JPanel panel = new JPanel();
-  //   panel.
-    
-  //   return panel;
-  // }
-
-  @Override
-  public void activate() {
+    this.setFixedDefaultEntry(broadbastButton);
 
   }
-
-  @Override
-  public void onEvent(Object emitter, EventType eventType) {
-
-  }
-
   
 }

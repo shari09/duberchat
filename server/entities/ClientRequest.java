@@ -1,6 +1,7 @@
 package server.entities;
 
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import common.entities.payload.Payload;
 
@@ -17,10 +18,12 @@ import common.entities.payload.Payload;
 public class ClientRequest implements Comparable<ClientRequest> {
   private Payload payload;
   private ObjectOutputStream clientOut;
+  private Socket socket;
 
-  public ClientRequest(Payload payload, ObjectOutputStream clientOut) {
+  public ClientRequest(Payload payload, ObjectOutputStream clientOut, Socket socket) {
     this.payload = payload;
     this.clientOut = clientOut;
+    this.socket = socket;
   }
 
   public int compareTo(ClientRequest other) {
@@ -33,5 +36,9 @@ public class ClientRequest implements Comparable<ClientRequest> {
 
   public ObjectOutputStream getClientOut() {
     return this.clientOut;
+  }
+
+  public Socket getSocket() {
+    return this.socket;
   }
 }

@@ -6,6 +6,7 @@ import common.entities.Attachment;
 import common.entities.Message;
 import common.entities.payload.AddParticipant;
 import common.entities.payload.AttachmentToClient;
+import common.entities.payload.AuthenticatablePayload;
 import common.entities.payload.BlacklistUser;
 import common.entities.payload.BlockUser;
 import common.entities.payload.ChangeChannel;
@@ -54,13 +55,15 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   public void onEvent(Object newPayload, EventType eventType) {
     this.payloadQueue.add((AuthenticatedClientRequest) newPayload);
     //log
+    AuthenticatablePayload payload = ((AuthenticatedClientRequest)newPayload).getPayload();
     GlobalServices.serverEventQueue.emitEvent(
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Received authenticated payload:%s", 
-        ((AuthenticatedClientRequest)newPayload).getPayload().getUserId(),
-        ((AuthenticatedClientRequest)newPayload).getPayload().getType()
+        "%s:%s: Received authenticated payload:%s", 
+        this.getUsername(payload),
+        payload.getUserId(),
+        payload.getType()
       )
     );
     // if (this.running) {
@@ -130,7 +133,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
             EventType.NEW_LOG, 
             1,
             String.format(
-              "Uh oh, an incorrect payload has ended up here: %s", 
+              "Incorrect payload: %s", 
               client.getPayload().getType()
             )
           );
@@ -158,7 +161,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Ownership transfer failed", 
+          "%s:%s: Ownership transfer failed",
+          this.getUsername(payload), 
           payload.getType()
         )
       );
@@ -170,7 +174,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Ownership transfer succeeded", 
+        "%s:%s: Ownership transfer succeeded", 
+        this.getUsername(payload),
         payload.getUserId()
       )
     );
@@ -198,7 +203,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Error leaving channel", 
+          "%s:%s: Error leaving channel", 
+          this.getUsername(payload),
           payload.getUserId()
         )
       );
@@ -210,7 +216,9 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Left channel %s", 
+        "%s:%s: Left channel %s", 
+        this.getUsername(payload),
+        GlobalServices.users.getUsername(payload.getUserId()),
         payload.getUserId(),
         payload.getChannelId()
       )
@@ -241,7 +249,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Error changing channel:%s settings", 
+          "%s:%s: Error changing channel:%s settings", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getChannelId()
         )
@@ -254,7 +263,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Changed channel:%s settings", 
+        "%s:%s: Changed channel:%s settings", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getChannelId()
       )
@@ -269,18 +279,50 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void changeProfile(AuthenticatedClientRequest client) {
     ChangeProfile payload = (ChangeProfile) client.getPayload();
-    GlobalServices.users.changeProfile(
-      payload.getUserId(), 
-      payload.getFieldToChange(), 
-      payload.getNewValue()
-    );
+
+    boolean success = false;
+    switch (payload.getFieldToChange()) {
+      case DESCRIPTION:
+        success = GlobalServices.users.changeDescription(
+          payload.getUserId(), 
+          payload.getNewValue()
+        );
+        break;
+      case USERNAME:
+        success = GlobalServices.users.changeUsername(
+          payload.getUserId(), 
+          payload.getNewValue()
+        );
+        break;
+    }
+
+    if (!success) {
+      //log
+      GlobalServices.serverEventQueue.emitEvent(
+        EventType.NEW_LOG, 
+        1,
+        String.format(
+          "%s:%s: Failed to change %s ",
+          this.getUsername(payload),
+          payload.getUserId(),
+          payload.getFieldToChange()
+        )
+      );
+
+      PayloadSender.send(
+        client.getClientOut(), 
+        new ClientRequestStatus(1, payload.getId(), "Change failed")
+      );
+      return;
+    }
 
     //log
     GlobalServices.serverEventQueue.emitEvent(
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Changed %s", 
+        "%s:%s: Changed %s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getFieldToChange()
       )
@@ -304,7 +346,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Changed %s", 
+        "%s:%s: Changed %s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getStatus()
       )
@@ -331,7 +374,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Failed to download attachment:%s", 
+          "%s:%s: Failed to download attachment:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getAttachmentId()
         )
@@ -344,7 +388,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Downloaded attachment:%s", 
+        "%s:%s: Downloaded attachment:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getAttachmentId()
       )
@@ -377,7 +422,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Error removing participant:%s from channel:%s", 
+          "%s:%s: Error removing participant:%s from channel:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getParticipantId(),
           payload.getChannelId()
@@ -390,7 +436,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Removed participant:%s from channel:%s", 
+        "%s:%s: Removed participant:%s from channel:%s",
+        this.getUsername(payload), 
         payload.getUserId(),
         payload.getParticipantId(),
         payload.getChannelId()
@@ -421,7 +468,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Error blacklisting participant:%s from channel:%s", 
+          "%s:%s: Error blacklisting participant:%s from channel:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getParticipantId(),
           payload.getChannelId()
@@ -435,7 +483,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Blacklisted participant:%s from channel:%s", 
+        "%s:%s: Blacklisted participant:%s from channel:%s",
+        this.getUsername(payload), 
         payload.getUserId(),
         payload.getParticipantId(),
         payload.getChannelId()
@@ -470,7 +519,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Error adding user:%s to channel:%s", 
+          "%s:%s: Error adding %s:%s to channel:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getParticipantId(),
           payload.getChannelId()
@@ -484,7 +534,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Added user:%s to channel:%s", 
+        "%s:%s: Added %s:%s to channel:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getParticipantId(),
         payload.getChannelId()
@@ -521,7 +572,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Failed to block user:%s", 
+          "%s:%s: Failed to block %s:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getBlockUsername()
         )
@@ -534,7 +586,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Blocked user:%s", 
+        "%s:%s: Blocked %s:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getBlockUsername()
       )
@@ -565,7 +618,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Failed to edit msg:%s", 
+          "%s:%s: Failed to edit msg:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getMessageId()
         )
@@ -583,7 +637,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Edited msg:%s", 
+        "%s:%s: Edited msg:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getMessageId()
       )
@@ -612,7 +667,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Failed to remove msg:%s", 
+          "%s:%s: Failed to remove msg:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getMessageId()
         )
@@ -629,7 +685,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Removed msg:%s", 
+        "%s:%s: Removed msg:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getMessageId()
       )
@@ -662,7 +719,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Failed to change password", 
+          "%s:%s: Failed to change password",
+          this.getUsername(payload), 
           payload.getUserId()
         )
       );
@@ -674,7 +732,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Changed password", 
+        "%s:%s: Changed password", 
+        this.getUsername(payload),
         payload.getUserId()
       )
     );
@@ -704,7 +763,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Failed to send message to channel:%s", 
+          "%s:%s: Failed to send message to channel:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getChannelId()
         )
@@ -716,7 +776,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Sent message to channel:%s", 
+        "%s:%s: Sent message to channel:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getChannelId()
       )
@@ -748,7 +809,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Failed to send friend req to user:%s", 
+          "%s:%s: Failed to send friend req to user:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getRecipientName()
         )
@@ -760,7 +822,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Sent friend req to user:%s", 
+        "%s:%s: Sent friend req to user:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getRecipientName()
       )
@@ -796,7 +859,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Error responding to friend req from user:%s", 
+          "%s:%s: Error responding to friend req from %s:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getRequesterId()
         )
@@ -808,7 +872,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Responded to friend req from user:%s", 
+        "%s:%s: Responded to friend req from %s:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getRequesterId()
       )
@@ -834,7 +899,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: created a new group channel", 
+        "%s:%s: created a new group channel", 
+        this.getUsername(payload),
         payload.getUserId()
       )
     );
@@ -863,7 +929,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "user:%s: Error retrieving messages for channel:%s", 
+          "%s:%s: Error retrieving messages for channel:%s", 
+          this.getUsername(payload),
           payload.getUserId(),
           payload.getChannelId()
         )
@@ -876,7 +943,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "user:%s: Retrieved messages for channel:%s", 
+        "%s:%s: Retrieved messages for channel:%s", 
+        this.getUsername(payload),
         payload.getUserId(),
         payload.getChannelId()
       )
@@ -891,6 +959,11 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       new MessagesToClient(1, payload.getChannelId(), msgs)
     );
 
+  }
+
+
+  private String getUsername(AuthenticatablePayload payload) {
+    return GlobalServices.users.getUsername(payload.getUserId());
   }
 
 }

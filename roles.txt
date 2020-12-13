@@ -8,6 +8,7 @@ Shari - server
 - message/channel creation/interaction on server side
 - server gui/swing
 - sending all clients revelant info
+- admin power
 
 
 Candice - client
@@ -35,3 +36,6 @@ Features:
 - transfer ownership of group chat
 - blacklist user from group chat
 - leave group chat
+
+
+- server broadcasting to all connected clients (high priority)

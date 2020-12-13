@@ -1,14 +1,13 @@
 package server.gui;
 
-import java.awt.event.ActionEvent;
-import java.io.ObjectOutputStream;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import server.entities.Client;
 import server.entities.EventType;
+import server.entities.User;
 import server.services.GlobalServices;
 import server.services.Subscribable;
 
@@ -31,29 +30,37 @@ public class UsersEntriesPanel extends EntriesPanel implements Subscribable {
 
 
   public UsersEntriesPanel() {
-    super("Connected Users");
+    super("All Users");
     this.users = new ConcurrentHashMap<>();
+    this.loadUsers();
+
     this.activate();
   }
 
-  private void addClient(Client client) {
-    String username = GlobalServices.users.getUsername(client.getUserId());
-    // JButton user = new JButton(username);
+  private void addUser(User user) {
+    String username = user.getUsername();
     JButton tab = super.addEntry(username, new JPanel());
-    this.users.put(client.getUserId(), tab);
+    this.users.put(user.getId(), tab);
   }
 
-  private void removeClient(Object emitter) {
-    String userId;
-    if (emitter instanceof ObjectOutputStream) {
-      ObjectOutputStream toClient = (ObjectOutputStream) emitter;
-      userId = GlobalServices.clientConnections.getUserId(toClient);
-    } else {
-      userId = (String) emitter;
+  private void loadUsers() {
+    ConcurrentHashMap<String, User> users = GlobalServices.users.getAllUsers();
+    for (User user: users.values()) {
+      this.addUser(user);
     }
-    super.removeEntry(this.users.get(userId));
-    this.users.remove(userId);
   }
+
+  // private void removeClient(Object emitter) {
+  //   String userId;
+  //   if (emitter instanceof ObjectOutputStream) {
+  //     ObjectOutputStream toClient = (ObjectOutputStream) emitter;
+  //     userId = GlobalServices.clientConnections.getUserId(toClient);
+  //   } else {
+  //     userId = (String) emitter;
+  //   }
+  //   super.removeEntry(this.users.get(userId));
+  //   this.users.remove(userId);
+  // }
 
 
 
@@ -72,21 +79,13 @@ public class UsersEntriesPanel extends EntriesPanel implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalServices.serverEventQueue.subscribe(EventType.AUTHENTICATED_CLIENT, this);
-    GlobalServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.NEW_USER, this);
+    // GlobalServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
   }
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
-    switch(eventType) {
-      case AUTHENTICATED_CLIENT:
-        this.addClient((Client)emitter);
-        break;
-      case CLIENT_DISCONNECTED:
-        this.removeClient(emitter);
-      default:
-        break;
-    }
+    this.addUser((User)emitter);
   }
   
 

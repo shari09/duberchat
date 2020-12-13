@@ -130,7 +130,6 @@ public abstract class Channel implements Identifiable, Serializable {
                         .equals(userId);
   }
 
-  //TODO: improve time complexity???? but java only gives me itr from head/tail
   /**
    * Gets the specified number of messages before a certain time.
    * @param before        the specified time to query

@@ -21,6 +21,7 @@ import javax.swing.DefaultListModel;
 
 import common.entities.ChannelMetadata;
 import common.entities.Constants;
+import common.entities.payload.ServerBroadcast;
 import common.entities.ClientData;
 import common.entities.PrivateChannelMetadata;
 import common.entities.UserMetadata;
@@ -218,11 +219,27 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
 
   @Override
+  public void serverBroadcastReceived(ServerBroadcast broadcast) {
+    this.requestFocus();
+    synchronized (broadcast) {
+      JOptionPane.showMessageDialog(
+        this,
+        broadcast.getMessage(),
+        "!Important Message From Server!",
+        JOptionPane.WARNING_MESSAGE
+      );
+    }
+  }
+
+  @Override
   public void mouseReleased(MouseEvent e) {
     if (e.getSource() == this.groupChannelsList) {
+      GroupChannelMetadata metadata = this.groupChannelsList.getSelectedValue();
+      if (metadata == null) {
+        return;
+      }
       if (SwingUtilities.isLeftMouseButton(e)) {
-        GroupChannelMetadata metadata = this.groupChannelsList.getSelectedValue();
-        if (!this.chatFrame.hasChannelTab(metadata)) {
+        if (!this.chatFrame.hasChannelTab(metadata.getChannelId())) {
           this.chatFrame.addChannel(metadata.getChannelId());
           this.chatFrame.setVisible(true);
           this.chatFrame.requestFocus();
@@ -230,12 +247,16 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
         }
       } else if (SwingUtilities.isRightMouseButton(e)) {
         //TODO: if owner, show option dialog
+        //if (metadata.get) {
       }
 
     } else if (e.getSource() == this.privateChannelsList) {
+      PrivateChannelMetadata metadata = this.privateChannelsList.getSelectedValue();
+      if (metadata == null) {
+        return;
+      }
       if (SwingUtilities.isLeftMouseButton(e)) {
-        PrivateChannelMetadata metadata = this.privateChannelsList.getSelectedValue();
-        if (!this.chatFrame.hasChannelTab(metadata)) {
+        if ((metadata != null) && (!this.chatFrame.hasChannelTab(metadata.getChannelId()))) {
           this.chatFrame.addChannel(metadata.getChannelId());
           this.chatFrame.setVisible(true);
           this.chatFrame.requestFocus();
@@ -266,7 +287,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
 
   private synchronized void updateChannelsJLists() {
-    System.out.println("updating channel");
     DefaultListModel<GroupChannelMetadata> groupChannelsListModel = new DefaultListModel<>();
     DefaultListModel<PrivateChannelMetadata> privateChannelsListModel = new DefaultListModel<>();
     synchronized (GlobalClient.clientData) {

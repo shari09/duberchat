@@ -21,6 +21,7 @@ import common.entities.ProfileField;
 import common.entities.Token;
 import common.entities.ClientData;
 import common.entities.UserStatus;
+import common.entities.payload.ServerBroadcast;
 import common.entities.payload.ChangeProfile;
 import common.entities.payload.PayloadType;
 import common.entities.payload.ChangePassword;
@@ -161,34 +162,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
 
   @Override
-  public void clientRequestStatusReceived(
-    PayloadType payloadType, 
-    boolean successful,
-    String notifMessage
-  ) {
-    if (
-      (payloadType == PayloadType.CHANGE_PROFILE)
-      || (payloadType == PayloadType.CHANGE_PASSWORD)
-      || (payloadType == PayloadType.UPDATE_STATUS)
-    ) {
-
-      if (successful) {
-        JOptionPane.showMessageDialog(
-          this,
-          notifMessage,
-          "Success",
-          JOptionPane.PLAIN_MESSAGE
-        );
-
-      } else {
-        JOptionPane.showMessageDialog(
-          this,
-          notifMessage,
-          "Error",
-          JOptionPane.ERROR_MESSAGE
-        );
-      }
-    }
+  public void serverBroadcastReceived(ServerBroadcast broadcast) {
   }
 
   private void promptChangeUsername() {

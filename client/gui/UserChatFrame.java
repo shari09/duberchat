@@ -6,6 +6,7 @@ import javax.swing.JTabbedPane;
 
 import client.entities.ClientSocket;
 import common.entities.payload.PayloadType;
+import common.entities.payload.ServerBroadcast;
 import common.entities.ChannelMetadata;
 import common.entities.ClientData;
 
@@ -68,7 +69,7 @@ public class UserChatFrame extends UserFrame {
   @Override
   public void clientDataUpdated(ClientData updatedClientData) {
     for(int i = 0; i < this.tabbedPane.getTabCount(); i++) {
-      Component comp = this.tabbedPane.getTabComponentAt(i);
+      Component comp = this.tabbedPane.getComponentAt(i);
       if (comp instanceof ChannelPanel) {
         ChannelPanel panel = ((ChannelPanel)comp);
         this.tabbedPane.setTitleAt(i, panel.getChannelTitle());
@@ -79,23 +80,25 @@ public class UserChatFrame extends UserFrame {
     this.repaint();
   }
 
+  @Override
+  public void serverBroadcastReceived(ServerBroadcast broadcast) {
+  }
+
   public void addChannel(String channelId) {
     ChannelPanel panel = new ChannelPanel(
       channelId,
       this.getClientSocket()
     );
     this.tabbedPane.addTab(panel.getChannelTitle(), panel);
+    this.requestFocus();
   }
 
-  public boolean hasChannelTab(ChannelMetadata channelMetadata) {
-    if (channelMetadata == null) {
-      return true;
-    }
+  public boolean hasChannelTab(String channelId) {
     for(int i = 0; i < this.tabbedPane.getTabCount(); i++) {
-      Component comp = this.tabbedPane.getTabComponentAt(i);
+      Component comp = this.tabbedPane.getComponentAt(i);
       if (comp instanceof ChannelPanel) {
         ChannelPanel panel = ((ChannelPanel)comp);
-        if (panel.getChannelId().equals(channelMetadata.getChannelId())) {
+        if (panel.getChannelId().equals(channelId)) {
           return true;
         }
       }

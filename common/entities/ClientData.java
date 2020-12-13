@@ -52,34 +52,6 @@ public class ClientData implements Serializable {
     this.channels = channels;
   }
 
-  public synchronized UserMetadata getBlockedByUserId(String userId) {
-    for (UserMetadata blockedMetadata: this.blocked) {
-      if (blockedMetadata.getUserId().equals(userId)) {
-        return blockedMetadata;
-      }
-    }
-    return null;
-  }
-
-  public synchronized ChannelMetadata getChannelByChannelId(String channelId) {
-    for (ChannelMetadata channelMetadata: this.channels) {
-      if (channelMetadata.getChannelId().equals(channelId)) {
-        return channelMetadata;
-      }
-    }
-    return null;
-  }
-
-  public synchronized UserMetadata getOtherUserInPrivateChannel(PrivateChannelMetadata privateChannelMetadata) {
-    LinkedHashSet<UserMetadata> participants = privateChannelMetadata.getParticipants();
-    for (UserMetadata userMetadata: participants) {
-      if (!userMetadata.getUserId().equals(this.userId)) {
-        return userMetadata;
-      }
-    }
-    return null;
-  }
-
   public String getUserId() {
     return this.userId;
   }

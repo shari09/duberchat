@@ -2,6 +2,7 @@ package client.entities;
 
 import common.entities.ClientData;
 import common.entities.payload.PayloadType;
+import common.entities.payload.ServerBroadcast;
 
 /**
  * An interface for objects that listens to the client's data change.
@@ -21,5 +22,7 @@ public interface ClientSocketListener {
     boolean successful,
     String notifMessage
   );
+
+  public void serverBroadcastReceived(ServerBroadcast broadcast);
 
 }

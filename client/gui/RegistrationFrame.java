@@ -15,6 +15,7 @@ import javax.swing.JPasswordField;
 
 import common.entities.payload.NewUser;
 import common.entities.payload.PayloadType;
+import common.entities.payload.ServerBroadcast;
 import common.entities.ClientData;
 import common.entities.Constants;
 import client.entities.ClientSocket;
@@ -200,6 +201,10 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
         this.getClientSocket()
       );
     }
+  }
+
+  @Override
+  public void serverBroadcastReceived(ServerBroadcast broadcast) {
   }
 
 }

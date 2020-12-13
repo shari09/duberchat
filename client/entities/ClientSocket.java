@@ -20,6 +20,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.net.SocketTimeoutException;
 
+import client.services.ChannelServices;
 import client.resources.GlobalClient;
 import common.entities.Constants;
 import common.entities.Attachment;
@@ -116,7 +117,7 @@ public class ClientSocket implements Runnable {
         this.running = false;
             
       } catch (Exception e) {
-        System.out.println("Failed to receive response from server");
+        System.out.println("Failed to receive/process response from server");
         e.printStackTrace();
       }
     }
@@ -173,6 +174,7 @@ public class ClientSocket implements Runnable {
         GlobalClient.clientData.setFriends(friendsUpdate.getFriends());
         GlobalClient.clientData.setIncomingFriendRequests(friendsUpdate.getIncomingFriendRequests());
         GlobalClient.clientData.setOutgoingFriendRequests(friendsUpdate.getOutgoingFriendRequests());
+        System.out.println("CLIENT_FRIENDS_UPDATE");
         this.notifyClientDataUpdate();
         break;
 
@@ -184,7 +186,9 @@ public class ClientSocket implements Runnable {
 
       case MESSAGES_TO_CLIENT:
         MessagesToClient messagesUpdate = (MessagesToClient)payload;
-        this.addMessages(messagesUpdate.getChannelId(), messagesUpdate.getMessages());
+        System.out.println("messages received");
+        ChannelServices.addMessages(messagesUpdate.getChannelId(), messagesUpdate.getMessages());
+        System.out.println("messages added");
         this.notifyClientDataUpdate();
         break;
 
@@ -199,10 +203,14 @@ public class ClientSocket implements Runnable {
         this.notifyClientDataUpdate();
         break;
 
+      case SERVER_BROADCAST:
+        this.notifyServerBroadcast((ServerBroadcast)payload);
+        break;
       default:
         System.out.println("unknown payload type");
         break;
     }
+    System.out.println("processed payload " + payload);
   }
 
   private synchronized void processMessageUpdate(MessageUpdateToClient messageUpdate) {
@@ -457,24 +465,6 @@ public class ClientSocket implements Runnable {
     
   }
 
-  private void addMessages(String channelId, Message[] messages) {
-    ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
-    if (channelMessages != null) {
-      for (Message msg: messages) {
-        channelMessages.add(msg);
-      }
-    }
-  }
-
-  private void removeMessages(String channelId, Message[] messages) {
-    ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
-    if (channelMessages != null) {
-      for (Message msg: messages) {
-        channelMessages.remove(msg);
-      }
-    }
-  }
-
   private synchronized void changeProfile(ChangeProfile changeProfile) {
     String newValue = changeProfile.getNewValue();
     switch (changeProfile.getFieldToChange()) {
@@ -518,9 +508,17 @@ public class ClientSocket implements Runnable {
     );
   }
 
-  private synchronized void notifyClientDataUpdate() {
+  private void notifyClientDataUpdate() {
+    synchronized (GlobalClient.clientData) {
+      for (ClientSocketListener listener: this.listeners) {
+        listener.clientDataUpdated(GlobalClient.clientData);
+      }
+    }
+  }
+
+  private synchronized void notifyServerBroadcast(ServerBroadcast broadcast) {
     for (ClientSocketListener listener: this.listeners) {
-      listener.clientDataUpdated(GlobalClient.clientData);
+      listener.serverBroadcastReceived(broadcast);
     }
   }
 

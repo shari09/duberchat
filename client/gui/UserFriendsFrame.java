@@ -22,6 +22,7 @@ import javax.swing.DefaultListModel;
 
 import common.entities.ClientData;
 import common.entities.Token;
+import common.entities.payload.ServerBroadcast;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 import common.entities.payload.FriendRequestToServer;
@@ -184,6 +185,10 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   }
 
   @Override
+  public void serverBroadcastReceived(ServerBroadcast broadcast) {
+  }
+
+  @Override
   public void mouseReleased(MouseEvent e) {
     if (SwingUtilities.isLeftMouseButton(e)) {
       if (e.getSource() == this.incomingFriendRequests) {
@@ -290,6 +295,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     }
     this.outgoingFriendRequests.setModel(outgoingFriendRequestListModel);
     this.outgoingFriendRequests.revalidate();
+
     // blocked
     DefaultListModel<UserMetadata> blockedListModel = new DefaultListModel<>();
     LinkedHashSet<UserMetadata> blockedMetadata = updatedClientData.getBlocked();
@@ -298,6 +304,8 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     }
     this.blocked.setModel(blockedListModel);
     this.blocked.revalidate();
+
+    System.out.println("friends data updated");
   }
 
   public class IncomingFriendRequest {

@@ -25,6 +25,7 @@ import javax.swing.JScrollPane;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
+import client.services.ChannelServices;
 import common.entities.Token;
 import common.entities.ChannelMetadata;
 import common.entities.Message;
@@ -33,15 +34,18 @@ import common.entities.ClientData;
 import common.entities.PrivateChannelMetadata;
 import common.entities.GroupChannelMetadata;
 import common.entities.payload.MessageToServer;
+import common.entities.payload.RequestMessages;
 
 @SuppressWarnings("serial")
 public class ChannelPanel extends JPanel implements ActionListener {
   public static final Dimension SIZE = new Dimension(600, 800);
 
+  private static final int MESSAGE_REQUEST_QUANTITY = 50;
   private static final String DEFAULT_ATTACHMENT_LABEL_TEXT = "no file selected";
 
+  private final String channelId;
+
   private ClientSocket clientSocket;
-  private String channelId;
 
   private JTextArea inputArea;
   private JFileChooser fileChooser;
@@ -64,6 +68,7 @@ public class ChannelPanel extends JPanel implements ActionListener {
 
     this.messagesList = new JList<Message>();
     this.participantsList = new JList<UserMetadata>();
+    this.requestMessages();
     this.syncClientData();
 
     this.fileChooser = new JFileChooser();
@@ -81,7 +86,7 @@ public class ChannelPanel extends JPanel implements ActionListener {
     partScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     partScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     partPanel.add(partScrollPane, BorderLayout.CENTER);
-    this.add(partPanel, BorderLayout.WEST);
+    this.add(partPanel, BorderLayout.EAST);
 
     JPanel inputPanel = new JPanel();
     // text input area
@@ -160,23 +165,23 @@ public class ChannelPanel extends JPanel implements ActionListener {
   }
   
   public void syncClientData() {
+    System.out.println("syncing..");
     this.updateJLists();
+    this.revalidate();
     this.repaint();
   }
 
   public synchronized String getChannelTitle() {
     String title = "";
-    ChannelMetadata channelMetadata = GlobalClient.clientData.getChannelByChannelId(this.channelId);
+    ChannelMetadata channelMetadata = ChannelServices.getChannelByChannelId(this.channelId);
     
     if (channelMetadata instanceof PrivateChannelMetadata) {
       PrivateChannelMetadata pcMeta = ((PrivateChannelMetadata)channelMetadata);
-      title = GlobalClient.clientData.getOtherUserInPrivateChannel(pcMeta).getUsername();
+      title = ChannelServices.getOtherUserInPrivateChannel(pcMeta).getUsername();
 
     } else if (channelMetadata instanceof GroupChannelMetadata) {
       title = ((GroupChannelMetadata)channelMetadata).getChannelName();
     }
-    System.out.println("channel name: " + title);
-
     return title;
   }
 
@@ -194,8 +199,8 @@ public class ChannelPanel extends JPanel implements ActionListener {
       this.messagesList.setModel(messagesListModel);
       this.messagesList.revalidate();
     }
-    System.out.println(Integer.toString(this.messagesList.getModel().getSize()) + " messages in channel " + this.getChannelTitle());
-    LinkedHashSet<UserMetadata> participants = GlobalClient.clientData.getChannelByChannelId(this.channelId).getParticipants();
+    //System.out.println(Integer.toString(this.messagesList.getModel().getSize()) + " messages in channel " + this.getChannelTitle());
+    LinkedHashSet<UserMetadata> participants = ChannelServices.getChannelByChannelId(this.channelId).getParticipants();
     if (participants != null) {
       DefaultListModel<UserMetadata> participantsListModel = new DefaultListModel<>();
       for (UserMetadata participant: participants) {
@@ -204,5 +209,21 @@ public class ChannelPanel extends JPanel implements ActionListener {
       this.participantsList.setModel(participantsListModel);
       this.participantsList.revalidate();
     }
+  }
+
+  private void requestMessages() {
+    synchronized (GlobalClient.clientData) {
+      this.clientSocket.sendPayload(
+        new RequestMessages(
+          1,
+          GlobalClient.clientData.getUserId(),
+          GlobalClient.clientData.getToken(),
+          this.channelId,
+          ChannelServices.getEarliestStoredMessageTime(this.channelId),
+          ChannelPanel.MESSAGE_REQUEST_QUANTITY
+        )
+      );
+    }
+    System.out.println("messages requested");
   }
 }

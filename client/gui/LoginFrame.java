@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 
 import common.entities.payload.PayloadType;
+import common.entities.payload.ServerBroadcast;
 import common.entities.ClientData;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
@@ -143,15 +144,20 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   }
 
   @Override
-  public synchronized void clientDataUpdated(ClientData updatedClientData) {
+  public void clientDataUpdated(ClientData updatedClientData) {
     // user successfully logged in
     if (GlobalClient.hasData()) {
-      this.dispose();
       UserMainFrame nextFrame = new UserMainFrame(
         this.getTitle(),
         this.getClientSocket()
       );
+    } else {
+      System.out.println("failed to initialize client data");
     }
+    this.dispose();
   }
 
+  @Override
+  public void serverBroadcastReceived(ServerBroadcast broadcast) {
+  }
 }

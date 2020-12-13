@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 
 import common.entities.ClientData;
 import common.entities.payload.PayloadType;
+import common.entities.payload.ServerBroadcast;
 
 import client.entities.ClientSocket;
 import client.entities.ClientSocketListener;
@@ -35,6 +36,9 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
 
   @Override
   public abstract void clientDataUpdated(ClientData updatedClientData);
+
+  @Override
+  public abstract void serverBroadcastReceived(ServerBroadcast broadcast);
 
   @Override
   public synchronized void clientRequestStatusReceived(

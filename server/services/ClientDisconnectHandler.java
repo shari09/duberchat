@@ -19,20 +19,20 @@ public class ClientDisconnectHandler implements Subscribable {
   }
 
   public void activate() {
-    GlobalServerServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
   }
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
     if (emitter instanceof ObjectOutputStream) {
       ObjectOutputStream toClient = (ObjectOutputStream) emitter;
-      String userId = GlobalServerServices.clientConnections.getUserId(toClient);
-      GlobalServerServices.clientConnections.remove(toClient);
-      GlobalServerServices.tokens.remove(userId);
+      String userId = GlobalServices.clientConnections.getUserId(toClient);
+      GlobalServices.clientConnections.remove(toClient);
+      GlobalServices.tokens.remove(userId);
       return;
     }
     String userId = (String) emitter;
-    GlobalServerServices.clientConnections.remove(userId);
-    GlobalServerServices.tokens.remove(userId);
+    GlobalServices.clientConnections.remove(userId);
+    GlobalServices.tokens.remove(userId);
   }
 }

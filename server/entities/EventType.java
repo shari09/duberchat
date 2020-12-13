@@ -37,14 +37,14 @@ public enum EventType {
   /** Any updates relating to channels (updating, removing users, etc) */
   CHANNEL_UPDATE,
 
+  /** New information for logging */
+  NEW_LOG,
 
   //gui events
   /** Active/connected users tab */
   USERS_TAB,
   /** Server logs */
   LOGS_TAB,
-  /** Select an user to view details about */
-  SELECT_USER,
-  /** Select a log entry to view details about */
-  SELECT_ENTRY,
+  /** Select an entry to view details about */
+  ENTRY_SELECTED,
 }

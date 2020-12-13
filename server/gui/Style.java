@@ -17,8 +17,8 @@ public class Style {
   public final static Color GRAY2 = Style.getColour("5A5A5A");
   public final static Color GRAY3 = Style.getColour("333333");
   public final static Color GRAY4 = Style.getColour("1F1F1F");
-  public final static Color TEXT = Style.getColour("000000", 90);
-  public final static Color DIM_TEXT = Style.getColour("000000", 80);
+  public final static Color TEXT = Style.getColour("1A1A1A");
+  public final static Color DIM_TEXT = Style.getColour("333333");
   public final static Color LIGHT_TEXT = Style.getColour("FFFFFF");
   public final static Color LIGHT_TEXT_OVERLAY = Style.getColour("FFFFFF", 60);
 

@@ -30,9 +30,9 @@ public class MessageQueue implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalServerServices.serverEventQueue.subscribe(EventType.NEW_MESSAGE, this);
-    GlobalServerServices.serverEventQueue.subscribe(EventType.EDIT_MESSAGE, this);
-    GlobalServerServices.serverEventQueue.subscribe(EventType.REMOVE_MESSAGE, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.NEW_MESSAGE, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.EDIT_MESSAGE, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.REMOVE_MESSAGE, this);
   }
 
   @Override
@@ -69,14 +69,14 @@ public class MessageQueue implements Subscribable {
         return;
     }
 
-    LinkedHashSet<UserMetadata> users = GlobalServerServices.channels.getParticipants(channelId);
+    LinkedHashSet<UserMetadata> users = GlobalServices.channels.getParticipants(channelId);
     Iterator<UserMetadata> itr = users.iterator();
     while (itr.hasNext()) {
       UserMetadata user = itr.next();
       String userId = user.getUserId();
       // TODO: fix the consistency of where to check client existence
-      if (GlobalServerServices.clientConnections.hasClient(userId)) {
-        PayloadSender.send(GlobalServerServices.clientConnections.getClient(userId),
+      if (GlobalServices.clientConnections.hasClient(userId)) {
+        PayloadSender.send(GlobalServices.clientConnections.getClient(userId),
             new MessageUpdateToClient(1, channelId, message, type));
       }
     }

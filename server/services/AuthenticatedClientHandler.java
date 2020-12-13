@@ -18,12 +18,12 @@ public class AuthenticatedClientHandler implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalServerServices.serverEventQueue.subscribe(EventType.AUTHENTICATED_CLIENT, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.AUTHENTICATED_CLIENT, this);
   }
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
     Client client = (Client)emitter;
-    GlobalServerServices.clientConnections.add(client.getUserId(), client.getClient());
+    GlobalServices.clientConnections.add(client.getUserId(), client.getClient());
   }
 }

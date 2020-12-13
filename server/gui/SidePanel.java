@@ -14,7 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import server.entities.EventType;
-import server.services.GlobalServerServices;
+import server.services.GlobalServices;
 
 /**
  * The main server window.
@@ -74,11 +74,11 @@ public class SidePanel extends JPanel implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == this.users) {
-      GlobalServerServices.guiEventQueue.emitEvent(
+      GlobalServices.guiEventQueue.emitEvent(
         EventType.USERS_TAB, 1, this.users
       );
     } else if (e.getSource() == this.logs) {
-      GlobalServerServices.guiEventQueue.emitEvent(
+      GlobalServices.guiEventQueue.emitEvent(
         EventType.LOGS_TAB, 1, this.logs
       );
     }

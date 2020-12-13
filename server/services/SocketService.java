@@ -33,13 +33,18 @@ public class SocketService implements Runnable {
   public void run() {
     try {
       this.server = new ServerSocket(5000);
-      System.out.println("Starting server...");
 
       while (running) {
         Socket client = server.accept();
         client.setSoTimeout(Constants.SOCKET_TIMEOUT);
-        System.out.println("Client accepted: " + client.toString());
-        GlobalServerServices.serverEventQueue.emitEvent(EventType.NEW_CLIENT, 1, new ClientHandler(client));
+        GlobalServices.serverEventQueue.emitEvent(
+          EventType.NEW_LOG, 1, "Client accepted: " + client.toString()
+        );
+        GlobalServices.serverEventQueue.emitEvent(
+          EventType.NEW_CLIENT,
+          1, 
+          new ClientHandler(client)
+        );
       }
     } catch (Exception e) {
       System.out.println("Error accepting connection");

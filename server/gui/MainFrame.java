@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.ConcurrentHashMap;
-import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
 import javax.swing.BorderFactory;
@@ -21,7 +21,7 @@ import javax.swing.SwingConstants;
 
 import server.entities.Client;
 import server.entities.EventType;
-import server.services.GlobalServerServices;
+import server.services.GlobalServices;
 import server.services.Subscribable;
 
 /**
@@ -38,15 +38,19 @@ public class MainFrame extends JFrame implements Subscribable {
    *
    */
   private static final long serialVersionUID = 1L;
-  private static final int WIDTH = 800;
+  private static final int WIDTH = 1000;
   private static final int HEIGHT = 600;
 
   private SidePanel sidePanel;
-  private EntriesPanel usersPanel;
-  private EntriesPanel logsPanel;
+  private LogsEntriesPanel logsPanel;
   private EntriesPanel curEntriesPanel;
 
-  private ConcurrentHashMap<String, JButton> users;
+  private UsersEntriesPanel usersPanel;
+
+  private JPanel entryContentPanel;
+  private JPanel nullPanel;
+
+  private GridBagConstraints c;
 
   public MainFrame() {
     super("DuberChat Server");
@@ -55,45 +59,44 @@ public class MainFrame extends JFrame implements Subscribable {
     this.setResizable(false);
     this.setBackground(Color.BLACK);
 
-    this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    this.setLayout(new GridBagLayout());
+    this.c = new GridBagConstraints();
     this.sidePanel = new SidePanel();
-    this.sidePanel.setPreferredSize(new Dimension(
-      sidePanel.getPreferredSize().width, 
-      MainFrame.HEIGHT
-    ));
-
-    this.usersPanel = new EntriesPanel("Connected Users");
-    this.usersPanel.setPreferredSize(new Dimension(
-      this.usersPanel.getPreferredSize().width, 
-      MainFrame.HEIGHT
-    ));
-    this.logsPanel = new EntriesPanel("Logs");
-    this.logsPanel.setPreferredSize(new Dimension(
-      this.logsPanel.getPreferredSize().width, 
-      MainFrame.HEIGHT
-    ));
-
-    this.users = new ConcurrentHashMap<>();
-
+    this.usersPanel = new UsersEntriesPanel();
+    this.logsPanel = new LogsEntriesPanel();
     
     this.curEntriesPanel = this.usersPanel;
 
+    this.nullPanel = new JPanel();
+    this.entryContentPanel = this.nullPanel;
 
-    this.getContentPane().add(this.sidePanel);
-    this.getContentPane().add(this.curEntriesPanel);
+
+    c.gridx = 0;
+    c.gridy = 0;
+    c.fill = GridBagConstraints.BOTH;
+    c.weightx = 0;
+    c.weighty = 1;
+    this.getContentPane().add(this.sidePanel, c);
+    c.gridx = 1;
+    c.weightx = 0;
+
+    this.getContentPane().add(this.usersPanel, c);
+    this.getContentPane().add(this.logsPanel, c);
+    
+
+    this.usersPanel.setVisible(true);
+    c.gridx = 2;
+    c.weightx = 1;
+    this.getContentPane().add(this.entryContentPanel, c);
     this.setVisible(true);
-    this.usersPanel.addEntry(new JButton("dsjhf"), new JPanel());
-    this.usersPanel.addEntry(new JButton("dsjhf"), new JPanel());
-    this.usersPanel.addEntry(new JButton("dsjhf"), new JPanel());
-    this.usersPanel.addEntry(new JButton("dsjhf"), new JPanel());
   }
 
   @Override
   public void activate() {
-    GlobalServerServices.guiEventQueue.subscribe(EventType.LOGS_TAB, this);
-    GlobalServerServices.guiEventQueue.subscribe(EventType.USERS_TAB, this);
-    GlobalServerServices.serverEventQueue.subscribe(EventType.AUTHENTICATED_CLIENT, this);
-    GlobalServerServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
+    GlobalServices.guiEventQueue.subscribe(EventType.LOGS_TAB, this);
+    GlobalServices.guiEventQueue.subscribe(EventType.USERS_TAB, this);
+    GlobalServices.guiEventQueue.subscribe(EventType.ENTRY_SELECTED, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.NEW_LOG, this);
   }
 
   @Override
@@ -101,15 +104,19 @@ public class MainFrame extends JFrame implements Subscribable {
     switch(eventType) {
       case LOGS_TAB:
         this.switchEntriesPanel(this.logsPanel);
+        this.switchContentPanel(this.logsPanel.getDefaultContent());
         break;
       case USERS_TAB:
         this.switchEntriesPanel(this.usersPanel);
+        this.switchContentPanel(this.usersPanel.getDefaultContent());
         break;
-      case AUTHENTICATED_CLIENT:
-        this.newClient((Client)emitter);
+      case ENTRY_SELECTED:
+        this.switchContentPanel(this.curEntriesPanel.getContent((JButton)emitter));
         break;
-      case CLIENT_DISCONNECTED:
-        this.removeClient(emitter);
+      case NEW_LOG:
+        this.curEntriesPanel.requestFocus();
+        this.setVisible(true);
+        break;
       default:
         break;
     }
@@ -123,31 +130,29 @@ public class MainFrame extends JFrame implements Subscribable {
     this.curEntriesPanel.setVisible(false);
     this.curEntriesPanel = panel;
     this.curEntriesPanel.setVisible(true);
-    this.getContentPane().add(this.curEntriesPanel);
     this.curEntriesPanel.requestFocus();
     this.setVisible(true);
   }
 
-  private void newClient(Client client) {
-    String username = GlobalServerServices.users.getUsername(client.getUserId());
-    JButton user = new JButton(username);
-    this.users.put(client.getUserId(), user);
-    this.usersPanel.addEntry(user, new JPanel());
-    System.out.println("SKDFJ");
-  }
-
-  private void removeClient(Object emitter) {
-    String userId;
-    if (emitter instanceof ObjectOutputStream) {
-      ObjectOutputStream toClient = (ObjectOutputStream) emitter;
-      userId = GlobalServerServices.clientConnections.getUserId(toClient);
-    } else {
-      userId = (String) emitter;
+  /**
+   * Switch panels - remove old panel and add new panel.
+   * @param panel the panel to switch to.
+   */
+  private void switchContentPanel(JPanel panel) {
+    if (panel == null) {
+      panel = this.nullPanel;
     }
-    this.usersPanel.removeEntry(this.users.get(userId));
-    this.users.remove(userId);
-
+    this.entryContentPanel.setVisible(false);
+    this.entryContentPanel = panel;
+    this.entryContentPanel.setVisible(true);
+    this.getContentPane().add(this.entryContentPanel, this.c);
+    this.entryContentPanel.requestFocus();
+    this.setVisible(true);
   }
+
+  
+
+  
 
   
 }

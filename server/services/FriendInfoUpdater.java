@@ -20,7 +20,7 @@ public class FriendInfoUpdater implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalServerServices.serverEventQueue.subscribe(EventType.FRIEND_UPDATE, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.FRIEND_UPDATE, this);
   }
 
   @Override

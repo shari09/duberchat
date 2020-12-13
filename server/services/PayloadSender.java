@@ -3,6 +3,7 @@ package server.services;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
 
+import common.entities.payload.ClientChannelsUpdate;
 import common.entities.payload.Payload;
 import server.entities.EventType;
 
@@ -21,30 +22,69 @@ public class PayloadSender {
     synchronized (client) {
       try {
         client.writeObject(payload);
+        //log
+        GlobalServices.serverEventQueue.emitEvent(
+          EventType.NEW_LOG, 
+          1,
+          String.format(
+            "Sent %s payload to %s", 
+            payload.getType(), 
+            GlobalServices.clientConnections.getUserId(client)
+          )
+        );
+
         client.flush();
       } catch (SocketException e) {
-        GlobalServerServices.serverEventQueue.emitEvent(EventType.CLIENT_DISCONNECTED, 2, client);
+        GlobalServices.serverEventQueue.emitEvent(EventType.CLIENT_DISCONNECTED, 2, client);
       } catch (Exception e) {
-        System.out.println("Failed to send payload to client");
+        //log
+        GlobalServices.serverEventQueue.emitEvent(
+          EventType.NEW_LOG, 
+          1,
+          String.format(
+            "Failed to send %s payload to %s", 
+            payload.getType(), 
+            GlobalServices.clientConnections.getUserId(client)
+          )
+        );
         e.printStackTrace();
       }
     }
   }
 
   public static void send(String userId, Payload payload) {
-    if (!GlobalServerServices.clientConnections.hasClient(userId)) {
+    if (!GlobalServices.clientConnections.hasClient(userId)) {
       return;
     }
-    ObjectOutputStream client = GlobalServerServices.clientConnections.getClient(userId);
-    System.out.println(client);
+    ObjectOutputStream client = GlobalServices.clientConnections.getClient(userId);
+    //log
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.NEW_LOG, 
+      1,
+      String.format("Sent %s payload to %s", payload.getType(), userId)
+    );
     synchronized (client) {
       try {
         client.writeObject(payload);
+        if (payload instanceof ClientChannelsUpdate) {
+          System.out.println("payload"+((ClientChannelsUpdate)payload).getChannels());
+        }
         client.flush();
       } catch (SocketException e) {
-        GlobalServerServices.serverEventQueue.emitEvent(EventType.CLIENT_DISCONNECTED, 2, client);
+        GlobalServices.serverEventQueue.emitEvent(
+          EventType.CLIENT_DISCONNECTED, 2, client
+        );
       } catch (Exception e) {
-        System.out.println("Failed to send payload to client");
+        //log
+        GlobalServices.serverEventQueue.emitEvent(
+          EventType.NEW_LOG, 
+          1,
+          String.format(
+            "Failed to sent %s payload to %s", 
+            payload.getType(), 
+            userId
+          )
+        );
         e.printStackTrace();
       }
     }

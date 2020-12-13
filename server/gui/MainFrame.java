@@ -43,6 +43,7 @@ public class MainFrame extends JFrame implements Subscribable {
 
   private SidePanel sidePanel;
   private LogsEntriesPanel logsPanel;
+  private AdminEntriesPanel adminPanel;
   private EntriesPanel curEntriesPanel;
 
   private UsersEntriesPanel usersPanel;
@@ -64,6 +65,7 @@ public class MainFrame extends JFrame implements Subscribable {
     this.sidePanel = new SidePanel();
     this.usersPanel = new UsersEntriesPanel();
     this.logsPanel = new LogsEntriesPanel();
+    this.adminPanel = new AdminEntriesPanel();
     
     this.curEntriesPanel = this.usersPanel;
 
@@ -82,6 +84,7 @@ public class MainFrame extends JFrame implements Subscribable {
 
     this.getContentPane().add(this.usersPanel, c);
     this.getContentPane().add(this.logsPanel, c);
+    this.getContentPane().add(this.adminPanel, c);
     
 
     this.usersPanel.setVisible(true);
@@ -95,6 +98,7 @@ public class MainFrame extends JFrame implements Subscribable {
   public void activate() {
     GlobalServices.guiEventQueue.subscribe(EventType.LOGS_TAB, this);
     GlobalServices.guiEventQueue.subscribe(EventType.USERS_TAB, this);
+    GlobalServices.guiEventQueue.subscribe(EventType.ADMIN_TAB, this);
     GlobalServices.guiEventQueue.subscribe(EventType.ENTRY_SELECTED, this);
     GlobalServices.serverEventQueue.subscribe(EventType.NEW_LOG, this);
   }
@@ -109,6 +113,10 @@ public class MainFrame extends JFrame implements Subscribable {
       case USERS_TAB:
         this.switchEntriesPanel(this.usersPanel);
         this.switchContentPanel(this.usersPanel.getDefaultContent());
+        break;
+      case ADMIN_TAB:
+        this.switchEntriesPanel(this.adminPanel);
+        this.switchContentPanel(this.adminPanel.getDefaultContent());
         break;
       case ENTRY_SELECTED:
         this.switchContentPanel(this.curEntriesPanel.getContent((JButton)emitter));

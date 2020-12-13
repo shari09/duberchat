@@ -2,6 +2,7 @@ package server.services;
 
 import java.io.ObjectOutputStream;
 
+import common.entities.UserStatus;
 import server.entities.EventType;
 
 /**
@@ -24,14 +25,14 @@ public class ClientDisconnectHandler implements Subscribable {
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
+    String userId;
     if (emitter instanceof ObjectOutputStream) {
       ObjectOutputStream toClient = (ObjectOutputStream) emitter;
-      String userId = GlobalServices.clientConnections.getUserId(toClient);
-      GlobalServices.clientConnections.remove(toClient);
-      GlobalServices.tokens.remove(userId);
-      return;
+      userId = GlobalServices.clientConnections.getUserId(toClient);
+    } else {
+      userId = (String) emitter;
     }
-    String userId = (String) emitter;
+    GlobalServices.users.updateUserStatus(userId, UserStatus.OFFLINE);
     GlobalServices.clientConnections.remove(userId);
     GlobalServices.tokens.remove(userId);
   }

@@ -36,7 +36,8 @@ public class SocketService implements Runnable {
 
       while (running) {
         Socket client = server.accept();
-        client.setSoTimeout(Constants.SOCKET_TIMEOUT);
+        //TODO: add timeout back
+        // client.setSoTimeout(Constants.SOCKET_TIMEOUT);
         GlobalServices.serverEventQueue.emitEvent(
           EventType.NEW_LOG, 1, "Client accepted: " + client.toString()
         );

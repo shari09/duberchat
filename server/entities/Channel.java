@@ -93,6 +93,10 @@ public abstract class Channel implements Identifiable, Serializable {
     return this.metadata;
   }
 
+  public void updateMetadata(ChannelMetadata metadata) {
+    this.metadata = metadata;
+  }
+
   /**
    * 
    * @return    a new metadata object

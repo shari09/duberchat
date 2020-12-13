@@ -43,14 +43,10 @@ public class LogsPanel extends JPanel {
     super();
     this.setLayout(new BorderLayout());
 
-    JLabel titleLabel = new JLabel(title);
-    titleLabel.setFont(Style.getFont(15));
-    titleLabel.setForeground(Style.LIGHT_TEXT);
-    JPanel titlePanel = new JPanel();
-    titlePanel.add(titleLabel);
-    titlePanel.setBackground(Style.GRAY2);
-    titlePanel.setPreferredSize(titlePanel.getPreferredSize());
-    this.add(titlePanel, BorderLayout.PAGE_START);
+    this.add(
+      Components.getHeader(title, Components.GRAY2), 
+      BorderLayout.PAGE_START
+    );
 
     this.logPane = new JPanel();
     this.logPane.setLayout(new GridBagLayout());
@@ -58,12 +54,7 @@ public class LogsPanel extends JPanel {
     this.logPane.setAlignmentX(LEFT_ALIGNMENT);
     this.logPane.setBackground(Color.WHITE);
 
-    this.c = new GridBagConstraints();
-    this.c.fill = GridBagConstraints.HORIZONTAL;
-    this.c.anchor = GridBagConstraints.NORTH;
-    this.c.weightx = 1;
-    this.c.weighty = 1;
-    this.c.gridx = 0;
+    this.c = Components.getScrollConstraints();
     this.logPane.add(Box.createVerticalGlue(), this.c);
 
     this.c.weighty = 0;
@@ -72,11 +63,12 @@ public class LogsPanel extends JPanel {
     this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
     this.scrollPane.setBackground(Color.WHITE);
     this.scrollPane.setVerticalScrollBarPolicy(
-      ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
+      ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
     );
     this.scrollPane.setHorizontalScrollBarPolicy(
       JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
     );
+    // this.scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
     this.add(this.scrollPane);
@@ -84,17 +76,17 @@ public class LogsPanel extends JPanel {
 
   public synchronized void addLog(Log log) {
     JLabel timeLabel = new JLabel(log.getCreated().toString());
-    timeLabel.setFont(Style.getFont(10));
-    timeLabel.setForeground(Style.DIM_TEXT);
+    timeLabel.setFont(Components.getFont(10));
+    timeLabel.setForeground(Components.DIM_TEXT);
     timeLabel.setBackground(Color.WHITE);
     JTextArea msgLabel = new JTextArea(log.getMsg());
-    msgLabel.setFont(Style.getFont(15));
+    msgLabel.setFont(Components.getFont(15));
     msgLabel.setBackground(Color.WHITE);
-    msgLabel.setForeground(Style.TEXT);
+    msgLabel.setForeground(Components.TEXT);
     msgLabel.setLineWrap(true);
     msgLabel.setEditable(false);
 
-    this.logPane.add(Style.getEmptyHeight(10), this.c);
+    this.logPane.add(Components.getEmptyHeight(10), this.c);
     this.logPane.add(timeLabel, this.c);
     this.logPane.add(msgLabel, this.c);
 

@@ -56,43 +56,43 @@ public class StartFrame extends JFrame implements ActionListener {
       "<html><div style='text-align: center;'>DuberChat<br/>Server</div></html>",
       SwingConstants.CENTER
     );
-    title.setFont(Style.getFont(30));
-    title.setForeground(Style.BLUE);
+    title.setFont(Components.getFont(30));
+    title.setForeground(Components.BLUE);
     title.setAlignmentX(CENTER_ALIGNMENT);
 
-    panel.add(Style.getEmptyHeight(25));
+    panel.add(Components.getEmptyHeight(25));
     panel.add(title);
-    panel.add(Style.getEmptyHeight(60));
+    panel.add(Components.getEmptyHeight(60));
 
     //port number
     this.portField = new JTextField(StartFrame.DEFAULT_PORT, 20);
-    this.portField.setFont(Style.getFont(15));
+    this.portField.setFont(Components.getFont(15));
     this.portField.setMaximumSize(this.portField.getPreferredSize());
     this.portField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
     
     JLabel port = new JLabel("PORT");
     port.setAlignmentX(CENTER_ALIGNMENT);
-    port.setFont(Style.getFont(13));
+    port.setFont(Components.getFont(13));
 
     panel.add(port);
-    panel.add(Style.getEmptyHeight(10));
+    panel.add(Components.getEmptyHeight(10));
     panel.add(this.portField);
 
-    panel.add(Style.getEmptyHeight(60));
+    panel.add(Components.getEmptyHeight(60));
 
     //error msg
     this.error = new JLabel("");
     this.error.setAlignmentX(CENTER_ALIGNMENT);
-    this.error.setFont(Style.getFont(13));
+    this.error.setFont(Components.getFont(13));
     this.error.setForeground(Color.RED);
     
     //start button
     JButton button = new JButton("START");
-    button.setFont(Style.getFont(20));
+    button.setFont(Components.getFont(20));
     button.setAlignmentX(CENTER_ALIGNMENT);
-    button.setForeground(Style.BLUE);
+    button.setForeground(Components.BLUE);
     button.setBorder(BorderFactory.createCompoundBorder(
-      BorderFactory.createLineBorder(Style.BLUE, 1),
+      BorderFactory.createLineBorder(Components.BLUE, 1),
       BorderFactory.createEmptyBorder(5, 10, 5, 10)
     ));
     button.setCursor(new Cursor(Cursor.HAND_CURSOR));

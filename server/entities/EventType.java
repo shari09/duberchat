@@ -45,6 +45,9 @@ public enum EventType {
   USERS_TAB,
   /** Server logs */
   LOGS_TAB,
+  /** Admin tab */
+  ADMIN_TAB,
   /** Select an entry to view details about */
   ENTRY_SELECTED,
+  
 }

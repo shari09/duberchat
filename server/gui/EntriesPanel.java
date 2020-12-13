@@ -5,6 +5,8 @@ import javax.swing.JScrollPane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
@@ -12,23 +14,15 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 import server.entities.EventType;
 import server.services.GlobalServices;
-import server.services.Subscribable;
 
 
 /**
@@ -58,12 +52,7 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
     this.defaultEntry = new JButton();
     this.setLayout(new BorderLayout());
 
-    JLabel titleLabel = new JLabel(title);
-    titleLabel.setFont(Style.getFont(15));
-    titleLabel.setForeground(Style.LIGHT_TEXT);
-    JPanel titlePanel = new JPanel();
-    titlePanel.add(titleLabel);
-    titlePanel.setBackground(Style.GRAY4);
+    JPanel titlePanel = Components.getHeader(title, Components.GRAY4);
     titlePanel.setPreferredSize(new Dimension(
       225, titlePanel.getPreferredSize().height
     ));
@@ -74,65 +63,43 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
 
     this.entriesPanel = new JPanel();
     this.entriesPanel.setLayout(new GridBagLayout());
-    this.entriesPanel.setBackground(Style.GRAY1);
+    this.entriesPanel.setBackground(Components.GRAY1);
     this.entriesPanel.setBorder(BorderFactory.createEmptyBorder());
 
-    this.c = new GridBagConstraints();
-    this.c.fill = GridBagConstraints.HORIZONTAL;
-    this.c.anchor = GridBagConstraints.NORTH;
-    this.c.weightx = 1;
-    this.c.weighty = 100;
-    this.c.gridx = 0;
+    this.c = Components.getScrollConstraints();
     this.entriesPanel.add(Box.createVerticalGlue(), this.c);
 
     this.c.weighty = 0;
 
-
-
-    this.scrollPane = new JScrollPane(this.entriesPanel);
-    this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    this.scrollPane.setVerticalScrollBarPolicy(
-      ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
-    );
-    this.scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+    this.scrollPane = Components.getScrollPane(this.entriesPanel, false);
 
     //TODO: get better scrollbar
-    // this.scrollPane.getVerticalScrollBar().setUI(new TinyScrollUI());
     this.add(this.scrollPane);
     this.setVisible(false);
   }
 
-  public void addEntry(JButton tab, JPanel content) {
+  public JButton addEntry(String text, JPanel content) {
+    JButton tab = Components.getButton(
+      text, Components.LIGHT_TEXT_OVERLAY, 13, 
+      4, 10, 
+      Components.GRAY1, 
+      Components.OVERLAY
+    );
     tab.addActionListener(this);
-    tab.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    tab.setForeground(Style.LIGHT_TEXT_OVERLAY);
-    tab.setBackground(Style.GRAY1);
-    tab.setBorder(BorderFactory.createEmptyBorder(10, 4, 10, 4));
-    tab.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseEntered(java.awt.event.MouseEvent evt) {
-        tab.setBackground(Style.OVERLAY);
-      }
 
-      public void mouseExited(java.awt.event.MouseEvent evt) {
-        tab.setBackground(Style.GRAY1);
-      }
-    });
-    tab.setFocusPainted(false);
-
-    this.entriesPanel.add(tab, c, 0);
+    this.entriesPanel.add(tab, this.c, 0);
     this.defaultEntry = tab;
     
     this.entriesPanel.revalidate();
     this.scrollPane.revalidate();
     this.entries.put(tab, content);
-    this.requestFocus();
     this.repaint();
+    return tab;
   }
 
   public void removeEntry(JButton tab) {
     this.entriesPanel.remove(tab);
     this.entriesPanel.revalidate();
-    this.requestFocus();
     this.repaint();
   }
 

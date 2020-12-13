@@ -60,7 +60,11 @@ public class ClientHandler implements Runnable {
         GlobalServices.serverEventQueue.emitEvent(
           EventType.NEW_LOG, 
           1,
-          "Payload received of type " + payload.getType().toString()
+          String.format(
+            "Payload received of type %s from socket:%s",
+            payload.getType().toString(),
+            this.socket.toString()
+          )
         );
         GlobalServices.serverEventQueue.emitEvent(
           EventType.PAYLOAD, 

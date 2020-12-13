@@ -66,9 +66,6 @@ public class PayloadSender {
     synchronized (client) {
       try {
         client.writeObject(payload);
-        if (payload instanceof ClientChannelsUpdate) {
-          System.out.println("payload"+((ClientChannelsUpdate)payload).getChannels());
-        }
         client.flush();
       } catch (SocketException e) {
         GlobalServices.serverEventQueue.emitEvent(

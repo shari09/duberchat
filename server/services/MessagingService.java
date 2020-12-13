@@ -243,7 +243,6 @@ public class MessagingService {
     String ownerId
   ) {
     // TODO: verify that all the participants exist
-    // System.out.println(participants);
     
     
     GroupChannel channel = new GroupChannel(participants, channelName, ownerId);

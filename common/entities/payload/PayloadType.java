@@ -71,5 +71,8 @@ public enum PayloadType {
   /** The requested file from the client */
   ATTACHMENT_TO_CLIENT,
   /** Update on a message in a channel the user is in */
-  MESSAGE_UPDATE_TO_CLIENT
+  MESSAGE_UPDATE_TO_CLIENT,
+  /** A message from server to all connected clients */
+  SERVER_BROADCAST,
+
 }

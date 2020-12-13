@@ -75,7 +75,7 @@ public class User implements Serializable, Identifiable {
 
   public void updateUsername(String username) {
     this.username = username;
-    this.updateUsername(username);
+    this.metadata.updateUsername(username);
   }
 
   public void updatePassword(String password) {

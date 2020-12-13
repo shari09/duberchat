@@ -14,11 +14,12 @@ import server.entities.ClientConnections;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class GlobalServerServices {
+public class GlobalServices {
   public static EventQueueService serverEventQueue = new EventQueueService();
   public static EventQueueService guiEventQueue = new EventQueueService();
   public static UserService users = new UserService();
   public static MessagingService channels = new MessagingService();
   public static ConcurrentHashMap<String, Token> tokens = new ConcurrentHashMap<>();
   public static ClientConnections clientConnections = new ClientConnections();
+  public static LoggingService logging = new LoggingService();
 }

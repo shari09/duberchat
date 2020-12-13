@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import common.entities.ChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.payload.ClientChannelsUpdate;
+import common.entities.payload.PayloadType;
 import server.entities.EventType;
 import server.entities.GroupChannel;
 
@@ -26,7 +27,7 @@ public class ChannelUpdateHandler implements Subscribable {
 
   @Override
   public void activate() {
-    GlobalServerServices.serverEventQueue.subscribe(EventType.CHANNEL_UPDATE, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.CHANNEL_UPDATE, this);
   }
 
   @Override
@@ -36,9 +37,21 @@ public class ChannelUpdateHandler implements Subscribable {
     Iterator<UserMetadata> itr = channel.getParticipants().iterator();
     while (itr.hasNext()) {
       String userId = itr.next().getUserId();
-      LinkedHashSet<ChannelMetadata> channels = GlobalServerServices.users.getChannels(userId);
+      LinkedHashSet<ChannelMetadata> channels = GlobalServices.users.getChannels(userId);
+      System.out.println(channels);
       PayloadSender.send(userId, new ClientChannelsUpdate(1, channels));
-      System.out.println("Sent payload of type " + EventType.CHANNEL_UPDATE);
+      //log
+      GlobalServices.serverEventQueue.emitEvent(
+        EventType.NEW_LOG, 
+        1,
+        String.format(
+          "sent %s payload to user:%s", 
+          PayloadType.CLIENT_CHANNELS_UPDATE,
+          userId
+        )
+      );
+
+      
     }
   }
 

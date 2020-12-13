@@ -15,6 +15,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import server.Server;
+import server.entities.EventType;
+import server.services.GlobalServices;
 
 /**
  * The start up server window.
@@ -116,6 +118,11 @@ public class StartFrame extends JFrame implements ActionListener {
       return;
     }
     this.dispose();
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.NEW_LOG, 
+      1,
+      "Server starting..."
+    );
     this.socket.start();
 
   }

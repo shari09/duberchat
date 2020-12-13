@@ -22,7 +22,7 @@ public class ClientQueue implements Subscribable {
   }
 
   public void activate() {
-    GlobalServerServices.serverEventQueue.subscribe(EventType.NEW_CLIENT, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.NEW_CLIENT, this);
   }
 
   @Override

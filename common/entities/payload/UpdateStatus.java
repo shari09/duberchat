@@ -27,7 +27,7 @@ public class UpdateStatus extends AuthenticatablePayload {
     UserStatus status
   ) {
     super(
-      PayloadType.CHANGE_PROFILE,
+      PayloadType.UPDATE_STATUS,
       priority,
       userId,
       token

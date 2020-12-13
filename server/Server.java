@@ -6,6 +6,7 @@ import server.services.AuthenticatedClientHandler;
 import server.services.AuthenticatedPayloadProcessor;
 import server.services.ClientQueue;
 import server.services.FriendInfoUpdater;
+import server.services.LoggingHandler;
 import server.services.MessageQueue;
 import server.services.ChannelUpdateHandler;
 import server.services.PayloadProcessor;
@@ -34,6 +35,8 @@ public class Server {
     FriendInfoUpdater friendInfoUpdater = new FriendInfoUpdater();
     ChannelUpdateHandler channelUpdateHandler = new ChannelUpdateHandler();
     SocketService socket = new SocketService();
+    LoggingHandler log = new LoggingHandler();
+
 
     payloadProcessor.activate();
     clientQueue.activate();
@@ -42,6 +45,7 @@ public class Server {
     messageQueue.activate();
     friendInfoUpdater.activate();
     channelUpdateHandler.activate();
+    log.activate();
     socket.start();
     (new MainFrame()).activate();; 
   }

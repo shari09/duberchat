@@ -44,6 +44,7 @@ public class ClientData implements Serializable {
     this.token = token;
     this.username = username;
     this.description = description;
+    this.status = status;
     this.friends = friends;
     this.incomingFriendRequests = incomingFriendRequests;
     this.outgoingFriendRequests = outgoingFriendRequests;
@@ -147,6 +148,7 @@ public class ClientData implements Serializable {
 
   public synchronized void setChannels(LinkedHashSet<ChannelMetadata> channels) {
     this.channels = channels;
+    System.out.println(channels);
   }
 
 }

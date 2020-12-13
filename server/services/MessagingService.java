@@ -25,11 +25,11 @@ import server.entities.PrivateChannel;
  * @since 1.0.0
  */
 public class MessagingService {
-  private final String CHANNELS_DIR_PATH = "cliendata/data/channels/";
-  private final String ASSETS_DIR_PATH = "cliendata/assets/";
+  private final String CHANNELS_DIR_PATH = "database/data/channels/";
+  private final String ASSETS_DIR_PATH = "database/assets/";
   private ConcurrentHashMap<String, Channel> channels;
   private ConcurrentHashMap<String, Integer> numChanges;
-  private final int bufferEntriesNum = 2;
+  private final int bufferEntriesNum = 1;
 
   public MessagingService() {
     this.channels = new ConcurrentHashMap<>();
@@ -114,8 +114,13 @@ public class MessagingService {
    * @param attachmentName
    * @return successfully sent or not
    */
-  public boolean addMessage(String senderId, String channelId, String content, byte[] attachment,
-      String attachmentName) {
+  public boolean addMessage(
+    String senderId, 
+    String channelId, 
+    String content, 
+    byte[] attachment,
+    String attachmentName
+  ) {
     if (this.getChannel(channelId) == null) {
       return false;
     }
@@ -128,7 +133,7 @@ public class MessagingService {
     }
 
     this.addMsgToChannel(channelId, msg);
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.NEW_MESSAGE, 1, msg);
+    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_MESSAGE, 1, msg);
     return true;
   }
 
@@ -165,7 +170,7 @@ public class MessagingService {
   public void removeMessage(String channelId, String messageId) {
     Message msg = this.getChannel(channelId).removeMessage(messageId);
     this.updateChannel(channelId);
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.REMOVE_MESSAGE, 1, msg);
+    GlobalServices.serverEventQueue.emitEvent(EventType.REMOVE_MESSAGE, 1, msg);
   }
 
   // TODO: verify the existence of the message
@@ -179,7 +184,7 @@ public class MessagingService {
     Channel channel = this.getChannel(channelId);
     Message msg = channel.editMessage(messageId, newContent);
     this.updateChannel(channelId);
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.EDIT_MESSAGE, 1, msg);
+    GlobalServices.serverEventQueue.emitEvent(EventType.EDIT_MESSAGE, 1, msg);
   }
 
   /**
@@ -203,11 +208,24 @@ public class MessagingService {
    * @param userTwo
    * @return
    */
-  public ChannelMetadata createPrivateChannel(UserMetadata userOne, UserMetadata userTwo) {
+  public ChannelMetadata createPrivateChannel(
+    UserMetadata userOne, 
+    UserMetadata userTwo
+  ) {
     PrivateChannel channel = new PrivateChannel(userOne, userTwo);
     this.channels.put(channel.getId(), channel);
     this.hardSave(channel.getId());
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel);
+    GlobalServices.users.addChannel(
+      userOne.getUserId(), 
+      channel.getMetadata()
+    );
+    GlobalServices.users.addChannel(
+      userTwo.getUserId(), 
+      channel.getMetadata()
+    );
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.CHANNEL_UPDATE, 1, channel
+    );
     return channel.getMetadata();
   }
 
@@ -225,12 +243,23 @@ public class MessagingService {
     String ownerId
   ) {
     // TODO: verify that all the participants exist
-    System.out.println(participants);
+    // System.out.println(participants);
+    
     
     GroupChannel channel = new GroupChannel(participants, channelName, ownerId);
     this.channels.put(channel.getId(), channel);
+    for (UserMetadata user: participants) {
+      GlobalServices.users.addChannel(
+        user.getUserId(), 
+        channel.getMetadata()
+      ); 
+    }
     this.hardSave(channel.getId());
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel.getMetadata());
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.CHANNEL_UPDATE, 
+      1, 
+      channel.getMetadata()
+    );
     return channel.getMetadata();
   }
 
@@ -255,8 +284,13 @@ public class MessagingService {
     if (channel.isBlacklisted(userId)) {
       return false;
     }
-    channel.addParticipant(GlobalServerServices.users.getUserMetadata(userId));
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel.getMetadata());
+    channel.addParticipant(GlobalServices.users.getUserMetadata(userId));
+    GlobalServices.users.addChannel(userId, channel.getMetadata());
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.CHANNEL_UPDATE, 
+      1, 
+      channel.getMetadata()
+    );
     this.updateChannel(channelId);
     return true;
   }
@@ -272,8 +306,13 @@ public class MessagingService {
       return false;
     }
     GroupChannel gc = (GroupChannel) this.getChannel(channelId);
-    gc.removeParticipant(GlobalServerServices.users.getUserMetadata(userId));
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
+    gc.removeParticipant(GlobalServices.users.getUserMetadata(userId));
+    GlobalServices.users.leaveChannel(userId, gc.getMetadata());
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.CHANNEL_UPDATE, 
+      1, 
+      gc.getMetadata()
+    );
     this.updateChannel(channelId);
     return true;
   }
@@ -307,8 +346,15 @@ public class MessagingService {
       return false;
     }
     Channel channel = this.getChannel(channelId);
+    UserMetadata user = GlobalServices.users.getUserMetadata(userId);
+    channel.removeParticipant(user);
+    GlobalServices.users.leaveChannel(userId, channel.getMetadata());
     channel.blacklistUser(userId);
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, channel.getMetadata());
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.CHANNEL_UPDATE, 
+      1, 
+      channel.getMetadata()
+    );
     this.updateChannel(channelId);
     return true;
   }
@@ -328,6 +374,7 @@ public class MessagingService {
     if (!channel.getOwnerId().equals(userId)) {
       return true;
     }
+    GlobalServices.users.leaveChannel(userId, channel.getMetadata());
     // if the group chat is empty
     if (channel.getSize() == 0) {
       this.channels.remove(channelId);
@@ -353,7 +400,9 @@ public class MessagingService {
 
     GroupChannel gc = (GroupChannel) this.getChannel(channelId);
     gc.updateOwner(userId);
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.CHANNEL_UPDATE, 1, gc.getMetadata()
+    );
     this.updateChannel(channelId);
     return true;
   }
@@ -365,7 +414,11 @@ public class MessagingService {
    * @param newValue
    * @return if the setting is successfully changed
    */
-  public boolean changeChannelSettings(String channelId, ChannelField fieldToChange, String newValue) {
+  public boolean changeChannelSettings(
+    String channelId, 
+    ChannelField fieldToChange, 
+    String newValue
+  ) {
     Channel channel = this.getChannel(channelId);
     if (channel instanceof PrivateChannel) {
       return false;
@@ -376,7 +429,9 @@ public class MessagingService {
         gc.updateChannelName(newValue);
         break;
     }
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.CHANNEL_UPDATE, 1, gc.getMetadata());
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.CHANNEL_UPDATE, 1, gc.getMetadata()
+    );
     this.updateChannel(channelId);
     return true;
   }

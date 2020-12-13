@@ -28,18 +28,18 @@ import server.entities.User;
 
 public class PayloadProcessor implements Subscribable {
   private PriorityBlockingQueue<ClientRequest> payloadQueue;
-  private boolean running;
+  // private boolean running;
 
   public PayloadProcessor() {
     this.payloadQueue = new PriorityBlockingQueue<>();
-    this.running = false;
+    // this.running = false;
   }
 
   /**
    * Subscribes to all the events
    */
   public void activate() {
-    GlobalServerServices.serverEventQueue.subscribe(EventType.PAYLOAD, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.PAYLOAD, this);
   }
 
   @Override
@@ -71,18 +71,42 @@ public class PayloadProcessor implements Subscribable {
    */
   private void authenticateLogin(ClientRequest client) {
     Login payload = (Login) client.getPayload();
-    User user = GlobalServerServices.users.authenticate(payload.getUsername(), payload.getPassword());
+    User user = GlobalServices.users.authenticate(
+      payload.getUsername(), 
+      payload.getPassword()
+    );
     if (user == null) { // unauthorized
-      PayloadSender.send(client.getClientOut(),
-          new ClientRequestStatus(1, payload.getId(), "Incorrect username or password"));
+      PayloadSender.send(
+        client.getClientOut(),
+        new ClientRequestStatus(
+          1, payload.getId(), "Incorrect username or password"
+        )
+      );
+      //log
+      GlobalServices.serverEventQueue.emitEvent(
+        EventType.NEW_LOG, 
+        1,
+        "Incorrect username or password"
+      );
+      
       return;
     }
-    GlobalServerServices.serverEventQueue.emitEvent(
+    //log
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.NEW_LOG, 
+      1,
+      String.format("User %s has successfully logged in.", payload.getUsername())
+    );
+    //event
+    GlobalServices.serverEventQueue.emitEvent(
       EventType.AUTHENTICATED_CLIENT, 
       1,
       new Client(user.getId(), client.getClientOut())
     );
-    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
+    PayloadSender.send(
+      client.getClientOut(), 
+      new ClientRequestStatus(1, payload.getId(), null)
+    );
     PayloadSender.send(client.getClientOut(), this.getClientInfo(user));
   }
 
@@ -92,13 +116,31 @@ public class PayloadProcessor implements Subscribable {
   private void authenticateToken(ClientRequest client) {
     AuthenticatablePayload payload = (AuthenticatablePayload) client.getPayload();
 
-    boolean authenticated = GlobalServerServices.users.authenticateToken(payload.getUserId(), payload.getToken());
+    boolean authenticated = GlobalServices.users.authenticateToken(
+      payload.getUserId(), 
+      payload.getToken()
+    );
     if (!authenticated) {
-      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Unauthorized"));
+      PayloadSender.send(
+        client.getClientOut(), 
+        new ClientRequestStatus(1, payload.getId(), "Unauthorized")
+      );
+      //log
+      GlobalServices.serverEventQueue.emitEvent(
+        EventType.NEW_LOG, 
+        1,
+        String.format("user:%s: unauthorized token", payload.getUserId())
+      );
       return;
     }
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.AUTHENTICATED_PAYLOAD, 1,
-        new AuthenticatedClientRequest((AuthenticatablePayload) client.getPayload(), client.getClientOut()));
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.AUTHENTICATED_PAYLOAD, 
+      1,
+      new AuthenticatedClientRequest(
+        (AuthenticatablePayload) client.getPayload(), 
+        client.getClientOut()
+      )
+    );
   }
 
   /**
@@ -106,27 +148,61 @@ public class PayloadProcessor implements Subscribable {
    */
   private void newUser(ClientRequest client) {
     NewUser payload = (NewUser) client.getPayload();
-    User user = GlobalServerServices.users.newUser(payload.getUsername(), payload.getPassword(), payload.getDescription());
+    User user = GlobalServices.users.newUser(
+      payload.getUsername(), 
+      payload.getPassword(), 
+      payload.getDescription()
+    );
     if (user == null) { // username taken
-      PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), "Username taken"));
+      PayloadSender.send(
+        client.getClientOut(), 
+        new ClientRequestStatus(1, payload.getId(), "Username taken")
+      );
+      GlobalServices.serverEventQueue.emitEvent(
+        EventType.NEW_LOG, 
+        1,
+        String.format("Username taken: %s", payload.getUsername())
+      );
       return;
     }
     // request status
-    PayloadSender.send(client.getClientOut(), new ClientRequestStatus(1, payload.getId(), null));
+    PayloadSender.send(
+      client.getClientOut(), 
+      new ClientRequestStatus(1, payload.getId(), null)
+    );
+    //log
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.NEW_LOG, 
+      1,
+      String.format("New user: %s", payload.getUsername())
+    );
     // event
-    GlobalServerServices.serverEventQueue.emitEvent(EventType.AUTHENTICATED_CLIENT, 1,
-        new Client(user.getId(), client.getClientOut()));
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.AUTHENTICATED_CLIENT, 
+      1,
+      new Client(user.getId(), client.getClientOut())
+    );
     PayloadSender.send(client.getClientOut(), this.getClientInfo(user));
 
   }
 
   private ClientInfo getClientInfo(User user) {
     Token token = TokenService.generateToken();
-    GlobalServerServices.tokens.put(user.getId(), token);
+    GlobalServices.tokens.put(user.getId(), token);
     return new ClientInfo(1,
-        new ClientData(user.getId(), token, user.getUsername(), user.getDescription(), user.getStatus(),
-            user.getFriends(), user.getIncomingFriendRequests(), user.getOutgoingFriendRequests(), user.getBlocked(),
-            user.getChannels()));
+      new ClientData(
+        user.getId(), 
+        token, 
+        user.getUsername(), 
+        user.getDescription(), 
+        user.getStatus(),
+        user.getFriends(), 
+        user.getIncomingFriendRequests(), 
+        user.getOutgoingFriendRequests(), 
+        user.getBlocked(),
+        user.getChannels()
+      )
+    );
 
   }
 

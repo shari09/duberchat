@@ -17,15 +17,17 @@ public class ClientChannelsUpdate extends Payload {
    *
    */
   private static final long serialVersionUID = 1L;
-  private final LinkedHashSet<ChannelMetadata> channels;
+  private LinkedHashSet<ChannelMetadata> channels;
 
 
+  @SuppressWarnings("unchecked")
   public ClientChannelsUpdate(
     int priority,
     LinkedHashSet<ChannelMetadata> channels
   ) {
     super(PayloadType.CLIENT_CHANNELS_UPDATE, priority);
-    this.channels = channels;
+    //TODO: duct tape solution
+    this.channels = (LinkedHashSet<ChannelMetadata>)channels.clone();
   }
 
   public LinkedHashSet<ChannelMetadata> getChannels() {

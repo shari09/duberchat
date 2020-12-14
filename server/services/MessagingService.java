@@ -467,6 +467,7 @@ public class MessagingService {
     GlobalServices.serverEventQueue.emitEvent(
       EventType.CHANNEL_UPDATE, 1, gc.getMetadata()
     );
+    
     this.updateChannel(channelId);
     return true;
   }

@@ -63,33 +63,29 @@ public class PayloadSender {
       return;
     }
     ObjectOutputStream client = GlobalServices.clientConnections.getClient(userId);
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format("Sent %s payload to %s", payload.getType(), userId)
-    );
+
     synchronized (client) {
       try {
         client.reset();
         client.writeObject(payload);
         client.flush();
-      } catch (SocketException e) {
-        GlobalServices.serverEventQueue.emitEvent(
-          EventType.CLIENT_DISCONNECTED, 2, client
-        );
-      } catch (Exception e) {
         //log
         GlobalServices.serverEventQueue.emitEvent(
           EventType.NEW_LOG, 
           1,
-          String.format(
-            "Failed to sent %s payload to %s", 
-            payload.getType(), 
-            userId
-          )
+          String.format("|SUCCESS| Sent %s payload to %s", payload.getType(), userId)
         );
-        e.printStackTrace();
+      } catch (Exception e) {
+        //log
+        // GlobalServices.serverEventQueue.emitEvent(
+        //   EventType.NEW_LOG, 
+        //   1,
+        //   String.format(
+        //     "|ERROR| Failed to sent %s payload to user:%s", 
+        //     payload.getType(), 
+        //     userId
+        //   )
+        // );
       }
     }
   }

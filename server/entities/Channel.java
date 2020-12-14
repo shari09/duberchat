@@ -91,10 +91,6 @@ public abstract class Channel implements Identifiable, Serializable {
 
   public void updateMetadata(ChannelMetadata metadata) {
     this.metadata = metadata;
-    if (this.metadata instanceof GroupChannelMetadata) {
-
-      System.out.println("updated"+((GroupChannelMetadata)this.metadata).getOwnerId());
-    }
   }
 
   /**

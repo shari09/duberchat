@@ -20,7 +20,7 @@ public class ClientDisconnectHandler implements Subscribable {
   }
 
   public void activate() {
-    GlobalServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
+    GlobalServices.serverEventQueue.subscribe(EventType.REMOVE_CLIENT_CONNECTION, this);
   }
 
   @Override
@@ -32,6 +32,7 @@ public class ClientDisconnectHandler implements Subscribable {
     } else {
       userId = (String) emitter;
     }
+
     GlobalServices.users.updateUserStatus(userId, UserStatus.OFFLINE);
     GlobalServices.clientConnections.remove(userId);
     GlobalServices.tokens.remove(userId);

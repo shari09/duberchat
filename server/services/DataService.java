@@ -42,6 +42,7 @@ public class DataService {
       new File(filePath).getParentFile().mkdirs();
       FileOutputStream fileOut = new FileOutputStream(filePath);
       ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
+      objOut.reset();
       objOut.writeObject(data);
       fileOut.close();
       objOut.close();

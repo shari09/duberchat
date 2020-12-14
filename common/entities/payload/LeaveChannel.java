@@ -23,8 +23,7 @@ public class LeaveChannel extends AuthenticatablePayload {
     int priority,
     String userId,
     Token token,
-    String channelId,
-    String recipientId
+    String channelId
   ) {
     super(PayloadType.LEAVE_CHANNEL, priority, userId, token);
     this.channelId = channelId;
@@ -33,6 +32,5 @@ public class LeaveChannel extends AuthenticatablePayload {
   public String getChannelId() {
     return this.channelId;
   }
-
 
 }

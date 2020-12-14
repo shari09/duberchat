@@ -20,13 +20,12 @@ import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.DefaultListModel;
 
+import client.resources.GlobalJDialogPrompter;
 import common.entities.ClientData;
-import common.entities.Token;
 import common.entities.payload.ServerBroadcast;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 import common.entities.payload.FriendRequestToServer;
-import common.entities.payload.FriendRequestResponse;
 import common.entities.payload.PayloadType;
 
 import client.entities.ClientSocket;
@@ -66,11 +65,11 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     
     this.friends = new JList<UserMetadata>();
     this.friends.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    this.friends.addMouseListener(new FriendListMouseListener(this.friends));
+    this.friends.addMouseListener(this);
 
     this.onlineFriends = new JList<UserMetadata>();
     this.onlineFriends.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    this.onlineFriends.addMouseListener(new FriendListMouseListener(this.onlineFriends));
+    this.onlineFriends.addMouseListener(this);
 
     this.incomingFriendRequests = new JList<IncomingFriendRequest>();
     this.incomingFriendRequests.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -192,45 +191,35 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   public void mouseReleased(MouseEvent e) {
     if (SwingUtilities.isLeftMouseButton(e)) {
       if (e.getSource() == this.incomingFriendRequests) {
-        String userId;
-        Token token;
-        synchronized (GlobalClient.clientData) {
-          userId = GlobalClient.clientData.getUserId();
-          token = GlobalClient.clientData.getToken();
-        }
         IncomingFriendRequest selected = this.incomingFriendRequests.getSelectedValue();
-        UserMetadata sender = selected.getSenderMetadata();
-        String[] options = new String[] {"Accept", "Decline", "Cancel"};
-        int choice = JOptionPane.showOptionDialog(
-          this,
-          "Accept friend request from " + sender.getUsername() + "?",
-          "Friend request response",
-          JOptionPane.YES_NO_CANCEL_OPTION,
-          JOptionPane.QUESTION_MESSAGE,
-          null,
-          options,
-          null
-        );
-        if (choice == JOptionPane.YES_OPTION) {
-          this.getClientSocket().sendPayload(
-            new FriendRequestResponse(
-              1,
-              userId,
-              token,
-              sender.getUserId(),
-              true
-            )
+        if (selected != null) {
+          GlobalJDialogPrompter.promptRespondFriendRequest(
+            this,
+            selected.getSenderMetadata(),
+            this.getClientSocket()
           );
-        } else if (choice == JOptionPane.NO_OPTION) {
-          this.getClientSocket().sendPayload(
-            new FriendRequestResponse(
-              1,
-              userId,
-              token,
-              sender.getUserId(),
-              false
-            )
+        }
+
+      } else if (e.getSource() == this.outgoingFriendRequests) {
+        OutgoingFriendRequest selected = this.outgoingFriendRequests.getSelectedValue();
+        if (selected != null) {
+          GlobalJDialogPrompter.promptCancelFriendRequest(
+            this,
+            selected.getRecipientMetadata(),
+            this.getClientSocket()
           );
+        }
+
+      } else if (e.getSource() == this.friends) {
+        UserMetadata metadata = this.friends.getSelectedValue();
+        if (metadata != null) {
+          GlobalJDialogPrompter.displayUserMetadata(this, metadata);
+        }
+
+      } else if (e.getSource() == this.onlineFriends) {
+        UserMetadata metadata = this.onlineFriends.getSelectedValue();
+        if (metadata != null) {
+          GlobalJDialogPrompter.displayUserMetadata(this, metadata);
         }
       }
     }
@@ -308,7 +297,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     System.out.println("friends data updated");
   }
 
-  public class IncomingFriendRequest {
+  private class IncomingFriendRequest {
     private UserMetadata senderMetadata;
     private String requestMessage;
 
@@ -326,7 +315,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     }
   }
 
-  public class OutgoingFriendRequest {
+  private class OutgoingFriendRequest {
     private UserMetadata recipientMetadata;
     private String requestMessage;
 

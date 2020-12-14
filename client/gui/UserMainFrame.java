@@ -31,6 +31,8 @@ import common.entities.payload.PayloadType;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
+import client.resources.GlobalJDialogPrompter;
+import client.services.ChannelServices;
 
 /**
  * The frame to display the GUI for the client.
@@ -233,35 +235,56 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
 
   @Override
   public void mouseReleased(MouseEvent e) {
+    // group channels
     if (e.getSource() == this.groupChannelsList) {
+      int row = this.groupChannelsList.locationToIndex(e.getPoint());
+      this.groupChannelsList.setSelectedIndex(row);
       GroupChannelMetadata metadata = this.groupChannelsList.getSelectedValue();
       if (metadata == null) {
         return;
       }
+      // open chat
       if (SwingUtilities.isLeftMouseButton(e)) {
         if (!this.chatFrame.hasChannelTab(metadata.getChannelId())) {
           this.chatFrame.addChannel(metadata.getChannelId());
-          this.chatFrame.setVisible(true);
-          this.chatFrame.requestFocus();
-          this.privateChannelsList.setSelectedValue(null, false);
         }
+        this.chatFrame.setVisible(true);
+        this.chatFrame.requestFocus();
+        this.privateChannelsList.setSelectedValue(null, false);
+      
+      // group chat actions
       } else if (SwingUtilities.isRightMouseButton(e)) {
-        //TODO: if owner, show option dialog
-        //if (metadata.get) {
+        GlobalJDialogPrompter.promptGroupChannelAction(
+          this,
+          metadata,
+          this.getClientSocket()
+        );
       }
 
+    // private channels
     } else if (e.getSource() == this.privateChannelsList) {
+      int row = this.privateChannelsList.locationToIndex(e.getPoint());
+      this.privateChannelsList.setSelectedIndex(row);
       PrivateChannelMetadata metadata = this.privateChannelsList.getSelectedValue();
       if (metadata == null) {
         return;
       }
+      // open chat
       if (SwingUtilities.isLeftMouseButton(e)) {
         if ((metadata != null) && (!this.chatFrame.hasChannelTab(metadata.getChannelId()))) {
           this.chatFrame.addChannel(metadata.getChannelId());
-          this.chatFrame.setVisible(true);
-          this.chatFrame.requestFocus();
-          this.privateChannelsList.setSelectedValue(null, false);
         }
+        this.chatFrame.setVisible(true);
+        this.chatFrame.requestFocus();
+        this.privateChannelsList.setSelectedValue(null, false);
+
+      // friend actions
+      } else if (SwingUtilities.isRightMouseButton(e)) {
+        GlobalJDialogPrompter.promptFriendAction(
+          this,
+          ChannelServices.getOtherUserInPrivateChannel(metadata),
+          this.getClientSocket()
+        );
       }
     }
   }

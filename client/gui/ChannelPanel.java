@@ -214,14 +214,18 @@ public class ChannelPanel extends JPanel implements ActionListener {
 
   private void requestMessages() {
     synchronized (GlobalClient.clientData) {
+      Timestamp before = ChannelServices.getEarliestStoredMessageTime(this.channelId);
+      if (before == null) {
+        before = new Timestamp(System.currentTimeMillis());
+      }
+      
       this.clientSocket.sendPayload(
         new RequestMessages(
           1,
           GlobalClient.clientData.getUserId(),
           GlobalClient.clientData.getToken(),
           this.channelId,
-          // ChannelServices.getEarliestStoredMessageTime(this.channelId),
-          new Timestamp(System.currentTimeMillis()),
+          before,
           ChannelPanel.MESSAGE_REQUEST_QUANTITY
         )
       );

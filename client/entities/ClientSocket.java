@@ -1,5 +1,6 @@
 package client.entities;
 
+import java.nio.file.Path;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.io.InputStream;
@@ -440,16 +441,23 @@ public class ClientSocket implements Runnable {
   }
 
   private synchronized void saveAttachment(Attachment attachment) {
-    String filePath = GlobalClient.getDownloadFolderPath() + attachment.getName();
+    File directory = new File(GlobalClient.getDownloadFolderPath());
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
+    Path filePath = directory.toPath().resolve(attachment.getName());
+
     int versionNumber = 0;
-    boolean fileExists = Files.isRegularFile(Paths.get(filePath));
+    boolean fileExists = Files.isRegularFile(filePath);
     while (fileExists) {
       versionNumber++;
-      filePath = " (" + Integer.toString(versionNumber) + ") " + filePath;
-      fileExists = Files.isRegularFile(Paths.get(filePath));
+      filePath = directory.toPath().resolve(
+        " (" + Integer.toString(versionNumber) + ") " + attachment.getName()
+      );
+      fileExists = Files.isRegularFile(filePath);
     }
     try {
-      FileOutputStream out = new FileOutputStream(filePath);
+      FileOutputStream out = new FileOutputStream(filePath.toString());
       out.write(attachment.getData());
       out.close();
       this.notifyRequestStatus(

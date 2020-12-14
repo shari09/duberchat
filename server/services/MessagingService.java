@@ -125,7 +125,7 @@ public class MessagingService {
       return false;
     }
     Message msg;
-    if (attachment == null) {
+    if (attachment != null) {
       String attachmentId = this.saveAttatchment(attachmentName, attachment);
       msg = new Message(content, senderId, channelId, attachmentId, attachmentName);
     } else {

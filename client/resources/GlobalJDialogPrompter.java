@@ -674,7 +674,7 @@ public class GlobalJDialogPrompter {
       null
     ));
 
-    return choice;
+    return participantsIds[Arrays.asList(participantsUsernames).indexOf(choice)];
   }
 
   public static synchronized boolean confirmAction(Component parentComponent) {

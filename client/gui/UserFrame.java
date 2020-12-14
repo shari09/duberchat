@@ -2,11 +2,14 @@ package client.gui;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
 import common.entities.ClientData;
 import common.entities.payload.PayloadType;
 import common.entities.payload.ServerBroadcast;
-
+import common.entities.Constants;
 import client.entities.ClientSocket;
 import client.entities.ClientSocketListener;
 
@@ -30,6 +33,12 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
     
     this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
+    try {
+      this.setIconImage(ImageIO.read(new File(Constants.ICON_PATH)));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
     this.clientSocket = clientSocket;
     this.clientSocket.addListener(this);
   }

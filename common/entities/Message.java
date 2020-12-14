@@ -61,6 +61,10 @@ public class Message implements Serializable, Identifiable, Comparable<Message> 
     this.edited = new Timestamp(System.currentTimeMillis());
   }
 
+  public boolean hasEdited() {
+    return this.edited != null;
+  }
+
   public boolean hasAttachment() {
     return this.attachmentId != null;
   }

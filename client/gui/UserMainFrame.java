@@ -171,12 +171,10 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
       }
 
       if ((!Constants.NAME_VALIDATOR.matches(channelName))) {
-        JOptionPane.showMessageDialog(
+        GlobalJDialogPrompter.warnInvalidInput(
           this,
-          "Channel name does not meet requirements:"
-          + "\n" + Constants.NAME_VALIDATOR.getDescription(),
-          "Submission failed",
-          JOptionPane.INFORMATION_MESSAGE
+          "Channel name",
+          Constants.NAME_VALIDATOR
         );
         return;
       }

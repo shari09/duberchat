@@ -18,8 +18,10 @@ import common.entities.payload.PayloadType;
 import common.entities.payload.ServerBroadcast;
 import common.entities.ClientData;
 import common.entities.Constants;
+import common.entities.RegexValidator;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
+import client.resources.GlobalJDialogPrompter;
 
 /**
  * The frame to display the GUI for the client.
@@ -167,14 +169,14 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
         || (!Constants.PASSWORD_VALIDATOR.matches(password))
         || (!Constants.DESCRIPTION_VALIDATOR.matches(description))
       ) {
-        JOptionPane.showMessageDialog(
+        GlobalJDialogPrompter.warnInvalidInput(
           this,
-          "Username, password, or description does not meet requirements:"
-          + "\nUsername: " + Constants.NAME_VALIDATOR.getDescription()
-          + "\nPassword: " + Constants.PASSWORD_VALIDATOR.getDescription()
-          + "\nDescription: " + Constants.DESCRIPTION_VALIDATOR.getDescription(),
-          "Submission failed",
-          JOptionPane.INFORMATION_MESSAGE
+          "Username, password, or description",
+          new RegexValidator[] {
+            Constants.NAME_VALIDATOR,
+            Constants.PASSWORD_VALIDATOR,
+            Constants.DESCRIPTION_VALIDATOR
+          }
         );
         return;
       }

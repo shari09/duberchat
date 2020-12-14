@@ -22,6 +22,7 @@ import common.entities.payload.RemoveMessage;
 import common.entities.payload.ChangeProfile;
 import common.entities.payload.ChangePassword;
 import common.entities.payload.LeaveChannel;
+import common.entities.payload.RemoveFriend;
 import common.entities.payload.AddParticipant;
 import common.entities.payload.BlacklistUser;
 import common.entities.payload.RemoveParticipant;
@@ -329,7 +330,11 @@ public class GlobalJDialogPrompter {
 
     // block
     if (choice == JOptionPane.YES_OPTION) {
-      if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
+      if (GlobalJDialogPrompter.confirmAction(
+        parentComponent,
+        "Are you sure you want to block this user (permanently)?"
+        )
+      ) {
         clientSocket.sendPayload(
           new BlockUser(
             1,
@@ -342,7 +347,14 @@ public class GlobalJDialogPrompter {
     // remove friend
     } else if (choice == JOptionPane.NO_OPTION) {
       if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-        //TODO: remove friend
+        clientSocket.sendPayload(
+          new RemoveFriend(
+            1,
+            userId,
+            token,
+            metadata.getUserId()
+          )
+        );
       }
     }
   }
@@ -504,7 +516,16 @@ public class GlobalJDialogPrompter {
             false,
             clientSocket
           );
-          if ((userIdToBlacklist != null) && (userIdToBlacklist.length() > 0)) {
+          if (
+            (userIdToBlacklist != null)
+            && (userIdToBlacklist.length() > 0)
+            && (
+              GlobalJDialogPrompter.confirmAction(
+              parentComponent,
+              "Are you sure you want to blacklist this user for this channel (permanently)?"
+              )
+            )
+          ) {
             clientSocket.sendPayload(
               new BlacklistUser(
                 1,
@@ -716,6 +737,19 @@ public class GlobalJDialogPrompter {
     ));
 
     return participantsIds[Arrays.asList(participantsUsernames).indexOf(choice)];
+  }
+
+  public static synchronized boolean confirmAction(Component parentComponent, String customMessage) {
+    int n = JOptionPane.showConfirmDialog(
+      parentComponent,
+      customMessage,
+      "Confirm Action",
+      JOptionPane.YES_NO_OPTION
+    );
+    if (n == JOptionPane.YES_OPTION) {
+      return true;
+    }
+    return false;
   }
 
   public static synchronized boolean confirmAction(Component parentComponent) {

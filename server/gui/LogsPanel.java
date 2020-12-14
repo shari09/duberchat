@@ -44,7 +44,7 @@ public class LogsPanel extends JPanel {
     this.setLayout(new BorderLayout());
 
     this.add(
-      Components.getHeader(title, Components.GRAY2), 
+      ServerGUIFactory.getHeader(title, ServerGUIFactory.GRAY2), 
       BorderLayout.PAGE_START
     );
 
@@ -54,7 +54,7 @@ public class LogsPanel extends JPanel {
     this.logPane.setAlignmentX(LEFT_ALIGNMENT);
     this.logPane.setBackground(Color.WHITE);
 
-    this.c = Components.getScrollConstraints();
+    this.c = ServerGUIFactory.getScrollConstraints();
     this.logPane.add(Box.createVerticalGlue(), this.c);
 
     this.c.weighty = 0;
@@ -76,17 +76,17 @@ public class LogsPanel extends JPanel {
 
   public synchronized void addLog(Log log) {
     JLabel timeLabel = new JLabel(log.getCreated().toString());
-    timeLabel.setFont(Components.getFont(10));
-    timeLabel.setForeground(Components.DIM_TEXT);
+    timeLabel.setFont(ServerGUIFactory.getFont(10));
+    timeLabel.setForeground(ServerGUIFactory.DIM_TEXT);
     timeLabel.setBackground(Color.WHITE);
     JTextArea msgLabel = new JTextArea(log.getMsg());
-    msgLabel.setFont(Components.getFont(15));
+    msgLabel.setFont(ServerGUIFactory.getFont(15));
     msgLabel.setBackground(Color.WHITE);
-    msgLabel.setForeground(Components.TEXT);
+    msgLabel.setForeground(ServerGUIFactory.TEXT);
     msgLabel.setLineWrap(true);
     msgLabel.setEditable(false);
 
-    this.logPane.add(Components.getEmptyHeight(10), this.c);
+    this.logPane.add(ServerGUIFactory.getEmptyHeight(10), this.c);
     this.logPane.add(timeLabel, this.c);
     this.logPane.add(msgLabel, this.c);
 

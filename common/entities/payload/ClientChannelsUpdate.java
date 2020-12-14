@@ -20,14 +20,13 @@ public class ClientChannelsUpdate extends Payload {
   private LinkedHashSet<ChannelMetadata> channels;
 
 
-  @SuppressWarnings("unchecked")
   public ClientChannelsUpdate(
     int priority,
     LinkedHashSet<ChannelMetadata> channels
   ) {
     super(PayloadType.CLIENT_CHANNELS_UPDATE, priority);
     //TODO: duct tape solution
-    this.channels = (LinkedHashSet<ChannelMetadata>)channels.clone();
+    this.channels = channels;
   }
 
   public LinkedHashSet<ChannelMetadata> getChannels() {

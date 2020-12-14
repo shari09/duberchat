@@ -33,8 +33,12 @@ public enum PayloadType {
   REQUEST_MESSAGES,
   /** Sending a friend request to a specified user */
   FRIEND_REQUEST,
+  /** Cancels an outgoing friend request */
+  CANCEL_FRIEND_REQUEST,
   /** The response to a friend request. Either accepted or denied. */
   FRIEND_REQUEST_RESPONSE,
+  /** Removes a friend */
+  REMOVE_FRIEND,
   /** Request to download a file that someone sent in a channel. */
   REQUEST_ATTACHMENT,
   /** Create a new group channel */

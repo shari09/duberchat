@@ -1,11 +1,12 @@
 package server.gui;
 
-
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import common.entities.UserMetadata;
 import server.entities.EventType;
 import server.entities.User;
 import server.services.GlobalServices;
@@ -37,15 +38,15 @@ public class UsersEntriesPanel extends EntriesPanel implements Subscribable {
     this.activate();
   }
 
-  private void addUser(User user) {
+  private void addUser(UserMetadata user) {
     String username = user.getUsername();
-    JButton tab = super.addEntry(username, new JPanel());
-    this.users.put(user.getId(), tab);
+    JButton tab = super.addEntry(username, new UserInfoPanel(user));
+    this.users.put(user.getUserId(), tab);
   }
 
   private void loadUsers() {
-    ConcurrentHashMap<String, User> users = GlobalServices.users.getAllUsers();
-    for (User user: users.values()) {
+    ArrayList<UserMetadata> users = GlobalServices.users.getAllUsers();
+    for (UserMetadata user: users) {
       this.addUser(user);
     }
   }
@@ -85,7 +86,7 @@ public class UsersEntriesPanel extends EntriesPanel implements Subscribable {
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
-    this.addUser((User)emitter);
+    this.addUser((UserMetadata)emitter);
   }
   
 

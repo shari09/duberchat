@@ -39,22 +39,22 @@ import javax.swing.SwingConstants;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class Components {
-  public final static Color BLUE = Components.getColour("4C69C7");
-  public final static Color OVERLAY = Components.getColour("666666");
-  public final static Color STRONGER_OVERLAY = Components.getColour("7F7F7F");
-  public final static Color GRAY1 = Components.getColour("595959");
-  public final static Color GRAY2 = Components.getColour("5A5A5A");
-  public final static Color GRAY3 = Components.getColour("333333");
-  public final static Color GRAY4 = Components.getColour("1F1F1F");
-  public final static Color TEXT = Components.getColour("1A1A1A");
-  public final static Color DIM_TEXT = Components.getColour("333333");
-  public final static Color LIGHT_TEXT = Components.getColour("FFFFFF");
-  public final static Color LIGHT_TEXT_OVERLAY = Components.getColour("FFFFFF", 60);
-  public final static Color LIGHT_PURPLE = Components.getColour("EDE8EF");
-  public final static Color LIGHT_PURPLE2 = Components.getColour("BCB3D2");
-  public final static Color DARK_PURPLE = Components.getColour("4E3D6A");
-  public final static Color DARK_PURPLE_OVERLAY = Components.getColour("705697");
+public class ServerGUIFactory {
+  public final static Color BLUE = ServerGUIFactory.getColour("4C69C7");
+  public final static Color OVERLAY = ServerGUIFactory.getColour("666666");
+  public final static Color STRONGER_OVERLAY = ServerGUIFactory.getColour("7F7F7F");
+  public final static Color GRAY1 = ServerGUIFactory.getColour("595959");
+  public final static Color GRAY2 = ServerGUIFactory.getColour("5A5A5A");
+  public final static Color GRAY3 = ServerGUIFactory.getColour("333333");
+  public final static Color GRAY4 = ServerGUIFactory.getColour("1F1F1F");
+  public final static Color TEXT = ServerGUIFactory.getColour("1A1A1A");
+  public final static Color DIM_TEXT = ServerGUIFactory.getColour("333333");
+  public final static Color LIGHT_TEXT = ServerGUIFactory.getColour("FFFFFF");
+  public final static Color LIGHT_TEXT_OVERLAY = ServerGUIFactory.getColour("FFFFFF", 60);
+  public final static Color LIGHT_PURPLE = ServerGUIFactory.getColour("EDE8EF");
+  public final static Color LIGHT_PURPLE2 = ServerGUIFactory.getColour("BCB3D2");
+  public final static Color DARK_PURPLE = ServerGUIFactory.getColour("4E3D6A");
+  public final static Color DARK_PURPLE_OVERLAY = ServerGUIFactory.getColour("705697");
 
   public static Font getFont(int size) {
     return new Font("Arial", Font.PLAIN, size);
@@ -99,8 +99,8 @@ public class Components {
 
   public static JPanel getHeader(String title, Color bg) {
     JLabel titleLabel = new JLabel(title);
-    titleLabel.setFont(Components.getFont(15));
-    titleLabel.setForeground(Components.LIGHT_TEXT);
+    titleLabel.setFont(ServerGUIFactory.getFont(15));
+    titleLabel.setForeground(ServerGUIFactory.LIGHT_TEXT);
     JPanel titlePanel = new JPanel();
     titlePanel.add(titleLabel);
     titlePanel.setBackground(bg);
@@ -117,42 +117,6 @@ public class Components {
     c.gridx = 0;
     return c;
   }
-
-  // public static JScrollPane createScrollingButtons(
-  //   JPanel panel, 
-  //   GridBagConstraints c
-  // ) {
-
-  //   panel.setLayout(new GridBagLayout());
-  //   panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-  //   panel.setBackground(Color.GRAY);
-
-
-  //   c.fill = GridBagConstraints.HORIZONTAL;
-  //   c.anchor = GridBagConstraints.NORTH;
-  //   c.weightx = 1;
-  //   c.weighty = 1;
-  //   c.gridx = 0;
-
-  //   panel.add(Box.createVerticalGlue(), c);
-
-  //   c.weighty = 0;
-
-  //   JScrollPane scrollPane = new JScrollPane(panel);
-  //   scrollPane.setBorder(BorderFactory.createEmptyBorder());
-  //   scrollPane.setVerticalScrollBarPolicy(
-  //     ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
-  //   );
-  //   scrollPane.setHorizontalScrollBarPolicy(
-  //     JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-  //   );
-
-  //   // if (!visibleScrollBar) {
-  //   //   scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-  //   // }
-  //   scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-  //   return scrollPane;
-  // }
 
   /**
    * 
@@ -197,8 +161,8 @@ public class Components {
       System.out.println("Unable to add button icon");
       e.printStackTrace();
     }
-    box.setFont(Components.getFont(17));
-    box.setForeground(Components.TEXT);
+    box.setFont(ServerGUIFactory.getFont(17));
+    box.setForeground(ServerGUIFactory.TEXT);
     box.setCursor(new Cursor(Cursor.HAND_CURSOR));
     box.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));
     box.setMinimumSize(new Dimension(
@@ -233,7 +197,7 @@ public class Components {
   ) {
     JButton button = new JButton(text);
     button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    button.setFont(Components.getFont(textSize));
+    button.setFont(ServerGUIFactory.getFont(textSize));
     button.setForeground(textColor);
     button.setBackground(bg);
     button.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));

@@ -1,6 +1,7 @@
 package server.services;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -151,7 +152,7 @@ public class UserService {
     this.users.put(user.getId(), user);
     this.usernameToId.put(username, user.getId());
     this.idToUsername.put(user.getId(), username);
-    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_USER, 1, user);
+    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_USER, 1, user.getMetdata());
     this.save();
     return user;
   }
@@ -187,7 +188,7 @@ public class UserService {
    * @param userId
    * @param recipientId
    * @param msg
-   * @return false if the recipient doesn't exist
+   * @return                false if recipient doesn't exist or it's a duplicate
    */
   public boolean sendFriendRequest(String userId, String recipientId, String msg) {
     if (recipientId == null || !this.userIdExist(recipientId) || this.isBlocked(recipientId, userId)) {
@@ -309,10 +310,13 @@ public class UserService {
     this.save();
   }
 
-  public void removeFriend(String userId, UserMetadata friendMetatdata) {
+  public void removeFriend(String userId, String friendId) {
     User user = this.users.get(userId);
-    User friend = this.users.get(friendMetatdata.getUserId());
-    user.removeFriend(friendMetatdata);
+    User friend = this.users.get(friendId);
+    if (friend == null) {
+      return;
+    }
+    user.removeFriend(friend.getMetdata());
     friend.removeFriend(friend.getMetdata());
     this.save();
   }
@@ -380,8 +384,12 @@ public class UserService {
     }
   }
 
-  public ConcurrentHashMap<String, User> getAllUsers() {
-    return this.users;
+  public ArrayList<UserMetadata> getAllUsers() {
+    ArrayList<UserMetadata> users = new ArrayList<>();
+    for (User user: this.users.values()) {
+      users.add(user.getMetdata());
+    }
+    return users;
   }
 
 }

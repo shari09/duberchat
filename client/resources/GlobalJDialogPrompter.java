@@ -29,6 +29,7 @@ import common.entities.payload.TransferOwnership;
 import common.entities.payload.BlockUser;
 import common.entities.payload.FriendRequestResponse;
 import common.entities.ProfileField;
+import common.entities.RegexValidator;
 import common.entities.Constants;
 import common.entities.GroupChannelMetadata;
 import common.entities.Message;
@@ -67,12 +68,10 @@ public class GlobalJDialogPrompter {
     }
 
     if ((!Constants.NAME_VALIDATOR.matches(newUsername))) {
-      JOptionPane.showMessageDialog(
+      GlobalJDialogPrompter.warnInvalidInput(
         parentComponent,
-        "New username does not meet requirements:"
-        + "\n" + Constants.NAME_VALIDATOR.getDescription(),
-        "Submission failed",
-        JOptionPane.INFORMATION_MESSAGE
+        "New username",
+        Constants.NAME_VALIDATOR
       );
       return;
     }
@@ -146,12 +145,10 @@ public class GlobalJDialogPrompter {
     }
 
     if ((!Constants.PASSWORD_VALIDATOR.matches(newPassStr))) {
-      JOptionPane.showMessageDialog(
+      GlobalJDialogPrompter.warnInvalidInput(
         parentComponent,
-        "New password does not meet requirements:"
-        + "\n" + Constants.PASSWORD_VALIDATOR.getDescription(),
-        "Submission failed",
-        JOptionPane.INFORMATION_MESSAGE
+        "New password",
+        Constants.PASSWORD_VALIDATOR
       );
       return;
     }
@@ -460,6 +457,7 @@ public class GlobalJDialogPrompter {
         "add participant",
         "remove participant",
         "blacklist participant",
+        "rename channel",
         "leave channel",
         "transfer ownership"
       };
@@ -514,6 +512,25 @@ public class GlobalJDialogPrompter {
                 token,
                 metadata.getChannelId(),
                 userIdToBlacklist
+              )
+            );
+          }
+        
+        } else if (choice.equals("remove participant")) {
+          String userIdToRemove = GlobalJDialogPrompter.promptSelectParticipantFromChannel(
+            parentComponent,
+            metadata,
+            false,
+            clientSocket
+          );
+          if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
+            clientSocket.sendPayload(
+              new RemoveParticipant(
+                1,
+                userId,
+                token,
+                metadata.getChannelId(),
+                userIdToRemove
               )
             );
           }
@@ -587,6 +604,31 @@ public class GlobalJDialogPrompter {
         }
       }
     }
+  }
+
+  public static synchronized void warnInvalidInput(Component parentComponent, String field, RegexValidator validator) {
+    String strToShow = field + " does not meet requirement:" + "\n" + validator.getDescription();
+    JOptionPane.showMessageDialog(
+      parentComponent,
+      strToShow,
+      "Submission failed",
+      JOptionPane.INFORMATION_MESSAGE
+    );
+    return;
+  }
+
+  public static synchronized void warnInvalidInput(Component parentComponent, String field, RegexValidator[] validators) {
+    String strToShow = field + " does not meet requirements:";
+    for (int i = 0; i < validators.length; i++) {
+      strToShow += "\n" + validators[i].getDescription();
+    }
+    JOptionPane.showMessageDialog(
+      parentComponent,
+      strToShow,
+      "Submission failed",
+      JOptionPane.INFORMATION_MESSAGE
+    );
+    return;
   }
 
   public static synchronized void promptAddParticipantToChannel(

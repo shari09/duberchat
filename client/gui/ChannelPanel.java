@@ -10,12 +10,14 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Dimension;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
+
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.JList;
@@ -26,6 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
@@ -36,6 +39,7 @@ import common.entities.ChannelMetadata;
 import common.entities.Message;
 import common.entities.UserMetadata;
 import common.entities.ClientData;
+import common.entities.Constants;
 import common.entities.PrivateChannelMetadata;
 import common.entities.GroupChannelMetadata;
 import common.entities.payload.MessageToServer;
@@ -73,6 +77,7 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
 
     this.messagesList = new JList<Message>();
     this.messagesList.addMouseListener(this);
+    this.messagesList.setCellRenderer(new MessageRenderer());
     this.participantsList = new JList<UserMetadata>();
     this.requestMessages();
     this.syncClientData();
@@ -138,21 +143,31 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
       }
 
       if ((text.length() > 0) || (attachment != null)) {
-        this.clientSocket.sendPayload(
-          new MessageToServer (
-            1,
-            userId,
-            token,
-            this.channelId,
-            text,
-            attachment,
-            attachmentName
-          )
-        );
-        // reset inputs
-        this.inputArea.setText("");
-        this.attachmentLabel.setText(ChannelPanel.DEFAULT_ATTACHMENT_LABEL_TEXT);
-        this.fileChooser.setSelectedFile(null);
+        if (Constants.MESSAGE_VALIDATOR.matches(text)) {
+          this.clientSocket.sendPayload(
+            new MessageToServer (
+              1,
+              userId,
+              token,
+              this.channelId,
+              text,
+              attachment,
+              attachmentName
+            )
+          );
+          // reset inputs
+          this.inputArea.setText("");
+          this.attachmentLabel.setText(ChannelPanel.DEFAULT_ATTACHMENT_LABEL_TEXT);
+          this.fileChooser.setSelectedFile(null);
+        } else {
+          GlobalJDialogPrompter.warnInvalidInput(
+            this,
+            "message",
+            Constants.MESSAGE_VALIDATOR
+          );
+        }
+
+        
       } else {
         JOptionPane.showMessageDialog(
           this,
@@ -229,7 +244,7 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
     if (messages != null) {
       DefaultListModel<Message> messagesListModel = new DefaultListModel<>();
       for (Message msg: messages) {
-        messagesListModel.addElement(msg);
+        messagesListModel.add(0, msg);
       }
       this.messagesList.setModel(messagesListModel);
       this.messagesList.revalidate();
@@ -264,5 +279,30 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
       );
     }
     System.out.println("messages requested");
+  }
+
+  private class MessageRenderer extends JLabel implements ListCellRenderer<Message> {
+    @Override
+    public Component getListCellRendererComponent(
+      JList<? extends Message> messages,
+      Message msg,
+      int index,
+      boolean isSelected,
+      boolean hasFocus
+    ) {
+      String strToSend = String.format(
+        "Sender: %s\nCreated time: %s\nContent: %s",
+        msg.getSenderId(),
+        msg.getCreated().toString(),
+        msg.getContent()
+      );
+      if (msg.hasAttachment()) {
+        strToSend += "\n" + "Attachment: " + msg.getAttachmentName();
+      }
+      if (msg.hasEdited()) {
+        strToSend += "\n(Edited at" + msg.getEditedTime().toString() + ")";
+      }
+      return new JTextArea(strToSend + "\n");
+    }
   }
 }

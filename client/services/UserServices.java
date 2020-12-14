@@ -2,10 +2,17 @@ package client.services;
 
 import java.util.LinkedHashSet;
 
-import common.entities.ChannelMetadata;
-import common.entities.GroupChannelMetadata;
 import common.entities.UserMetadata;
 import client.resources.GlobalClient;
+
+/**
+ * [description]
+ * <p>
+ * Created on 2020.12.13.
+ * @author Candice Zhang
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 
 public class UserServices {
   public static synchronized boolean isFriend(String userId) {
@@ -27,17 +34,4 @@ public class UserServices {
     }
     return false;
   }
-
-  // public static synchronized boolean isOwned(String channelId) {
-  //   String userId = GlobalClient.clientData.getUserId();
-  //   LinkedHashSet<ChannelMetadata> channels = GlobalClient.clientData.getChannels();
-  //   for (ChannelMetadata channel: channels) {
-  //     if (channel instanceof GroupChannelMetadata) {
-  //       if(((GroupChannelMetadata)channel).getOwnerId().equals(userId)) {
-  //         return true;
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
 }

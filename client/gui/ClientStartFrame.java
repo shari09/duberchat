@@ -1,12 +1,13 @@
 package client.gui;
 
-import java.awt.Font;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import javax.swing.BoxLayout;
+import javax.imageio.ImageIO;
+import java.io.File;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import common.entities.Constants;
 import client.entities.ClientSocket;
 
 /**
@@ -40,6 +42,12 @@ public class ClientStartFrame extends JFrame implements ActionListener {
   public ClientStartFrame(String title) {
     super(title);
 
+    try {
+      this.setIconImage(ImageIO.read(new File(Constants.ICON_PATH)));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(ClientStartFrame.WIDTH, ClientStartFrame.HEIGHT);
     this.setResizable(false);
@@ -47,45 +55,76 @@ public class ClientStartFrame extends JFrame implements ActionListener {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     panel.setAlignmentX(CENTER_ALIGNMENT);
+    panel.setBackground(Color.WHITE);
+    
+    panel.add(Box.createRigidArea(new Dimension(0, 30)));
 
     // title
-    JLabel titleLabel = new JLabel("Welcome");
+    JLabel titleLabel = ClientGUIFactory.getTextLabel(
+      "Welcome",
+      ClientGUIFactory.getBoldFont(30),
+      ClientGUIFactory.PURPLE_SHADE_4
+    );
     titleLabel.setAlignmentX(CENTER_ALIGNMENT);
-    titleLabel.setFont(new Font("Serif", Font.PLAIN, 30));
     
     panel.add(titleLabel);
     panel.add(Box.createRigidArea(new Dimension(0, 50)));
 
     // fields
-    this.addressField = new JTextField(ClientStartFrame.DEFAULT_ADDRESS, 20);
-    JLabel addressLabel = new JLabel("Server IP address: ");
-    addressLabel.setFont(new Font("Serif", Font.PLAIN, 20));
-    addressLabel.setLabelFor(this.addressField);
+    this.addressField = ClientGUIFactory.getTextField(
+      20,
+      ClientStartFrame.DEFAULT_ADDRESS,
+      ClientGUIFactory.getPlainFont(20),
+      ClientGUIFactory.GRAY_SHADE_4,
+      ClientGUIFactory.GRAY_SHADE_1
+    );
+    JLabel addressLabel = ClientGUIFactory.getTextLabel(
+      "Server IP address: ",
+      ClientGUIFactory.getPlainFont(20),
+      ClientGUIFactory.PURPLE_SHADE_4
+    );
     JPanel addressPanel = new JPanel();
     addressPanel.add(addressLabel);
     addressPanel.add(this.addressField);
+    addressPanel.setBackground(Color.WHITE);
     panel.add(addressPanel);
 
-    this.portField = new JTextField(ClientStartFrame.DEFAULT_PORT, 20);
-    JLabel portLabel = new JLabel("Port number: ");
-    portLabel.setFont(new Font("Serif", Font.PLAIN, 20));
-    portLabel.setLabelFor(this.portField);
+    this.portField = ClientGUIFactory.getTextField(
+      20,
+      ClientStartFrame.DEFAULT_PORT,
+      ClientGUIFactory.getPlainFont(20),
+      ClientGUIFactory.GRAY_SHADE_4,
+      ClientGUIFactory.GRAY_SHADE_1
+    );
+    JLabel portLabel = ClientGUIFactory.getTextLabel(
+      "Port number: ",
+      ClientGUIFactory.getPlainFont(20),
+      ClientGUIFactory.PURPLE_SHADE_4
+    );
     JPanel portPanel = new JPanel();
     portPanel.add(portLabel);
     portPanel.add(this.portField);
+    portPanel.setBackground(Color.WHITE);
     panel.add(portPanel);
 
     // confirmation button
-    JButton button = new JButton("Connect");
+    JButton button = ClientGUIFactory.getTextButton(
+      "Connect",
+      ClientGUIFactory.getPlainFont(15),
+      ClientGUIFactory.PURPLE_SHADE_4,
+      ClientGUIFactory.PURPLE_SHADE_1
+    );
     button.setAlignmentX(CENTER_ALIGNMENT);
     button.addActionListener(this);
     panel.add(button);
 
     // error message
-    this.errorLabel = new JLabel(" ");
+    this.errorLabel = ClientGUIFactory.getTextLabel(
+      "",
+      ClientGUIFactory.getPlainFont(20),
+      ClientGUIFactory.RED_SHADE_1
+    );
     this.errorLabel.setAlignmentX(CENTER_ALIGNMENT);
-    this.errorLabel.setFont(new Font("Serif", Font.PLAIN, 20));
-    this.errorLabel.setForeground(Color.RED);
     panel.add(Box.createRigidArea(new Dimension(0, 10)));
     panel.add(this.errorLabel);
     panel.add(Box.createRigidArea(new Dimension(0, 20)));

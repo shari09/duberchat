@@ -5,7 +5,7 @@ import java.io.ObjectOutputStream;
 import common.entities.payload.ServerBroadcast;
 import server.entities.EventType;
 import server.services.GlobalServices;
-import server.services.PayloadSender;
+import server.services.PayloadService;
 
 /**
  * 
@@ -25,7 +25,7 @@ public class DisconnectPanel extends AdminPanel {
   private static final String PROMPT = "Disconnection message...";
 
   public DisconnectPanel() {
-    super("Disconnect", EventType.DISCONNECT);
+    super("Disconnect", "Disconnecting (Connected users)", EventType.DISCONNECT);
     this.setMessageText(DisconnectPanel.PROMPT);
   }
 
@@ -50,7 +50,7 @@ public class DisconnectPanel extends AdminPanel {
 
   private void disconnectUsers() {
     for (ObjectOutputStream out: this.getSelectedUsersOut()) {
-        PayloadSender.send(out, new ServerBroadcast(this.getMessageText()));
+        PayloadService.send(out, new ServerBroadcast(this.getMessageText()));
         String userId = GlobalServices.clientConnections.getUserId(out);
         String username = GlobalServices.users.getUsername(userId);
         try {
@@ -58,13 +58,13 @@ public class DisconnectPanel extends AdminPanel {
           GlobalServices.serverEventQueue.emitEvent(
             EventType.NEW_LOG, 
             1,
-            String.format("Disconnected %s:%s", username, userId)
+            String.format("[CONNECTION] Disconnected %s:%s", username, userId)
           );
         } catch (Exception e) {
           GlobalServices.serverEventQueue.emitEvent(
             EventType.NEW_LOG, 
             1,
-            String.format("Failed to disconnect %s:%s", username, userId)
+            String.format("[CONNECTION] Failed to disconnect %s:%s", username, userId)
           );
         }
     }

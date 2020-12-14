@@ -26,7 +26,7 @@ public class FriendInfoUpdater implements Subscribable {
   @Override
   public void onEvent(Object emitter, EventType eventType) {
     User user = (User) emitter;
-    PayloadSender.send(
+    PayloadService.send(
       user.getId(), 
       new ClientFriendsUpdate(
         1, 

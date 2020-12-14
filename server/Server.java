@@ -53,7 +53,7 @@ public class Server {
     log.activate();
     socket.start();
     (new MainFrame()).activate();
-    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_LOG, 1, "Server started");
+    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_LOG, 1, "[SERVER] Server started");
   }
 
   public static void main(String[] args) {

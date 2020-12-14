@@ -37,11 +37,11 @@ public class StartFrame extends JFrame implements ActionListener {
   private static final long serialVersionUID = 1L;
   private JTextField portField;
   private JLabel error;
-  private Server socket;
+  private Server server;
 
   public StartFrame(Server socket) {
     super("Duberchat Server");
-    this.socket = socket;
+    this.server = socket;
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(StartFrame.INITIAL_WIDTH, StartFrame.INITIAL_HEIGHT);
     this.setResizable(false);
@@ -118,13 +118,7 @@ public class StartFrame extends JFrame implements ActionListener {
       return;
     }
     this.dispose();
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      "Server starting..."
-    );
-    this.socket.start();
-
+    this.server.start();
   }
   
 }

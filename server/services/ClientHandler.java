@@ -37,13 +37,13 @@ public class ClientHandler implements Runnable {
       GlobalServices.serverEventQueue.emitEvent(
         EventType.NEW_LOG, 
         1,
-        "Client connected: " + client.toString()
+        "[SUCCESS] Client connected: " + client.toString()
       );
     } catch (Exception e) {
       GlobalServices.serverEventQueue.emitEvent(
         EventType.NEW_LOG, 
         1,
-        "Client connection error"
+        "[ERROR] Client connection"
       );
       e.printStackTrace();
     }
@@ -63,7 +63,7 @@ public class ClientHandler implements Runnable {
             EventType.NEW_LOG, 
             1,
             String.format(
-              "Payload received of type %s from socket:%s",
+              "[SUCCESS] Socket:%s sent %s payload",
               payload.getType().toString(),
               this.socket.toString()
             )
@@ -87,7 +87,7 @@ public class ClientHandler implements Runnable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "Failed to receive payload from the client\n%s", 
+          "[ERROR] Failed to receive payload from the client\n%s", 
           e.getMessage()
         )
       );
@@ -102,7 +102,7 @@ public class ClientHandler implements Runnable {
       GlobalServices.serverEventQueue.emitEvent(
         EventType.NEW_LOG, 
         1,
-        String.format("%s %s\n", this.socket, disconnectMsg)
+        String.format("[CONNECTION] %s %s\n", this.socket, disconnectMsg)
       );
       return;
     }
@@ -114,7 +114,7 @@ public class ClientHandler implements Runnable {
       EventType.NEW_LOG, 
       0,
       String.format(
-        "User %s:%s at %s %s\n", 
+        "[CONNECTION] User %s:%s at %s %s\n", 
         username, 
         userId, 
         this.socket, 

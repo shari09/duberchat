@@ -6,7 +6,6 @@ import common.entities.ClientData;
 import common.entities.Token;
 import common.entities.payload.AuthenticatablePayload;
 import common.entities.payload.ClientInfo;
-import common.entities.payload.ClientRequestStatus;
 import common.entities.payload.Login;
 import common.entities.payload.NewUser;
 import common.entities.payload.PayloadType;
@@ -28,11 +27,9 @@ import server.entities.User;
 
 public class PayloadProcessor implements Subscribable {
   private PriorityBlockingQueue<ClientRequest> payloadQueue;
-  // private boolean running;
 
   public PayloadProcessor() {
     this.payloadQueue = new PriorityBlockingQueue<>();
-    // this.running = false;
   }
 
   /**
@@ -46,10 +43,6 @@ public class PayloadProcessor implements Subscribable {
   public void onEvent(Object emitter, EventType eventType) {
     ClientRequest clientReq = (ClientRequest) emitter;
     this.payloadQueue.add(clientReq);
-    // if (this.running) {
-    // return;
-    // }
-    // this.running = true;
     // authenticate clients differently depending on whether or not
     // they are creating a new user, logging in, or sending another request
     while (!this.payloadQueue.isEmpty()) {
@@ -63,7 +56,6 @@ public class PayloadProcessor implements Subscribable {
       }
 
     }
-    // this.running = false;
   }
 
   /**
@@ -75,39 +67,37 @@ public class PayloadProcessor implements Subscribable {
       payload.getUsername(), 
       payload.getPassword()
     );
-    if (user == null) { // unauthorized
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(
-          1, payload.getId(), "Incorrect username or password"
-        )
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        "Incorrect username or password"
-      );
-      
-      return;
+
+    boolean success = false;
+    String errorMsg = "";
+
+    if (user == null) {
+      errorMsg = "Incorrect username or password";
+    } else if (GlobalServices.clientConnections.hasClient(user.getId())) {
+      errorMsg = "Please log out of your other window first";
+    } else {
+      success = true;
     }
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format("User %s has successfully logged in.", payload.getUsername())
+
+    
+    PayloadService.sendResponse(
+      client, 
+      success, 
+      String.format("Logging in username:%s", payload.getUsername()), 
+      errorMsg
     );
-    //event
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.AUTHENTICATED_CLIENT, 
-      1,
-      new Client(user.getId(), client.getClientOut(), client.getSocket())
-    );
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
-    PayloadSender.send(client.getClientOut(), this.getClientInfo(user));
+    
+    
+    if (success) {
+      //event
+      GlobalServices.serverEventQueue.emitEvent(
+        EventType.AUTHENTICATED_CLIENT, 
+        1,
+        new Client(user.getId(), client.getClientOut(), client.getSocket())
+      );
+      PayloadService.send(client.getClientOut(), this.getClientInfo(user));
+    }
+    
   }
 
   /**
@@ -120,28 +110,26 @@ public class PayloadProcessor implements Subscribable {
       payload.getUserId(), 
       payload.getToken()
     );
-    if (!authenticated) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Unauthorized")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format("user:%s: unauthorized token", payload.getUserId())
-      );
-      return;
-    }
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.AUTHENTICATED_PAYLOAD, 
-      1,
-      new AuthenticatedClientRequest(
-        (AuthenticatablePayload) client.getPayload(), 
-        client.getClientOut(), 
-        client.getSocket()
-      )
+
+    PayloadService.sendResponse(
+      client, 
+      authenticated, 
+      String.format("Authenticating user:%s", payload.getUserId()), 
+      "Unauthorized"
     );
+
+    if (authenticated) {
+      GlobalServices.serverEventQueue.emitEvent(
+        EventType.AUTHENTICATED_PAYLOAD, 
+        1,
+        new AuthenticatedClientRequest(
+          (AuthenticatablePayload) client.getPayload(), 
+          client.getClientOut(), 
+          client.getSocket()
+        )
+      );
+    }
+
   }
 
   /**
@@ -154,36 +142,28 @@ public class PayloadProcessor implements Subscribable {
       payload.getPassword(), 
       payload.getDescription()
     );
-    if (user == null) { // username taken
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Username taken")
-      );
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format("Username taken: %s", payload.getUsername())
-      );
-      return;
+
+    boolean success = false;
+    if (user != null) {
+      success = true;
     }
-    // request status
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+
+    PayloadService.sendResponse(
+      client, 
+      success, 
+      String.format("New user with username:%s", payload.getUsername()), 
+      "Username taken"
     );
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format("New user: %s", payload.getUsername())
-    );
+
     // event
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.AUTHENTICATED_CLIENT, 
-      1,
-      new Client(user.getId(), client.getClientOut(), client.getSocket())
-    );
-    PayloadSender.send(client.getClientOut(), this.getClientInfo(user));
+    if (success) {
+      GlobalServices.serverEventQueue.emitEvent(
+        EventType.AUTHENTICATED_CLIENT, 
+        1,
+        new Client(user.getId(), client.getClientOut(), client.getSocket())
+      );
+      PayloadService.send(client.getClientOut(), this.getClientInfo(user));
+    }   
 
   }
 

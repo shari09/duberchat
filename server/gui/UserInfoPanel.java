@@ -5,8 +5,11 @@ import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import common.entities.UserMetadata;
 
@@ -36,52 +39,49 @@ public class UserInfoPanel extends JPanel {
       BorderLayout.PAGE_START
     );
 
-    JLabel title = new JLabel("User ID");
-    title.setFont(ServerGUIFactory.getFont(15));
-    title.setForeground(ServerGUIFactory.LIGHT_TEXT);    
+    JPanel panel = new JPanel();
+    panel.setLayout(new GridBagLayout());
+    GridBagConstraints c = new GridBagConstraints();
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    c.weightx = 1;
+    c.weighty = 0;
 
-    JLabel userId = new JLabel(this.user.getUserId());
-    userId.setFont(ServerGUIFactory.getFont(20));
-    userId.setForeground(ServerGUIFactory.LIGHT_TEXT);
+    panel.add(this.getSection("Username", this.user.getUsername()), c);
+    panel.add(this.getSection("User ID", this.user.getUserId()), c);
+    panel.add(this.getSection(
+      "Creator notes", 
+      "This doesn't listen to *all* real-time updates for now because I really don't have time to implement that."
+    ), c);
+    c.weighty = 1;
+    panel.add(Box.createVerticalGlue(), c);
+    this.add(panel);
+  }
+
+
+  public JPanel getSection(String labelMsg, String contentMsg) {
+    JLabel label = new JLabel(labelMsg);
+    label.setFont(ServerGUIFactory.getFont(15));
+    label.setForeground(ServerGUIFactory.LIGHT_TEXT);    
+
+    JTextArea content = new JTextArea(contentMsg);
+    content.setLineWrap(true);
+    content.setFont(ServerGUIFactory.getFont(20));
+    content.setForeground(ServerGUIFactory.LIGHT_TEXT);
+    content.setOpaque(false);
+    content.setEditable(false);
 
     JPanel panel = new JPanel();
     panel.setLayout(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
     c.fill = GridBagConstraints.HORIZONTAL;
     c.gridwidth = GridBagConstraints.REMAINDER;
-    panel.add(title, c);
-    panel.add(userId, c);
+    c.weightx = 1;
+    panel.add(label, c);
+    panel.add(content, c);
+    panel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
     panel.setBackground(Color.GRAY);
-    this.add(panel);
 
+    return panel;
   }
-
-
-  // public JPanel getUserIdPane() {
-  //   JPanel panel = new JPanel();
-  //   JLabel title = new JLabel("User ID");
-  //   title.setFont(ServerGUIFactory.getFont(15));
-  //   title.setForeground(ServerGUIFactory.DIM_TEXT);
-  //   title.setBackground(Color.WHITE);
-
-  //   JLabel userId = new JLabel(this.user.getUserId());
-  //   userId.setFont(ServerGUIFactory.getFont(20));
-  //   userId.setForeground(ServerGUIFactory.TEXT);
-  //   userId.setBackground(Color.WHITE);
-
-  //   GridBagConstraints c = new GridBagConstraints();
-  //   c.gridx = 0;
-  //   c.gridy = 0;
-  //   c.weightx = 10;
-  //   c.fill = GridBagConstraints.HORIZONTAL;
-  //   panel.add(title, c);
-  //   c.gridy = 1;
-  //   panel.add(userId, c);
-    
-  //   c.gridy = 2;
-  //   c.weighty = 50;
-  //   panel.add(Box.createVerticalGlue(), c);
-
-  //   return panel;
-  // }
 }

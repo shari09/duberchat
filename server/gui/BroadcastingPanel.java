@@ -5,7 +5,7 @@ import java.io.ObjectOutputStream;
 import common.entities.payload.ServerBroadcast;
 import server.entities.EventType;
 import server.services.GlobalServices;
-import server.services.PayloadSender;
+import server.services.PayloadService;
 
 /**
  * 
@@ -25,7 +25,7 @@ public class BroadcastingPanel extends AdminPanel {
   private static final String PROMPT = "Message to broadcast...";
 
   public BroadcastingPanel() {
-    super("Broadcast", EventType.BROADCAST);
+    super("Broadcast", "Broadcasting (Connected users)", EventType.BROADCAST);
     this.setMessageText(BroadcastingPanel.PROMPT);
   }
 
@@ -50,7 +50,7 @@ public class BroadcastingPanel extends AdminPanel {
 
   private void broadcastMsg() {
     for (ObjectOutputStream out: this.getSelectedUsersOut()) {
-        PayloadSender.send(out, new ServerBroadcast(this.getMessageText()));
+        PayloadService.send(out, new ServerBroadcast(this.getMessageText()));
     }
     this.setMessageText(BroadcastingPanel.PROMPT);
   }

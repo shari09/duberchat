@@ -76,7 +76,7 @@ public class MessageQueue implements Subscribable {
       String userId = user.getUserId();
       // TODO: fix the consistency of where to check client existence
       if (GlobalServices.clientConnections.hasClient(userId)) {
-        PayloadSender.send(GlobalServices.clientConnections.getClient(userId),
+        PayloadService.send(GlobalServices.clientConnections.getClient(userId),
             new MessageUpdateToClient(1, channelId, message, type));
       }
     }

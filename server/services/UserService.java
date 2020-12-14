@@ -42,7 +42,7 @@ public class UserService {
         GlobalServices.serverEventQueue.emitEvent(
           EventType.NEW_LOG, 
           1,
-          "Created new user save files"
+          "[SUCCESS] Creating new user data files"
         );
         this.users = new ConcurrentHashMap<>();
         this.usernameToId = new ConcurrentHashMap<>();
@@ -60,7 +60,7 @@ public class UserService {
       GlobalServices.serverEventQueue.emitEvent(
         EventType.NEW_LOG, 
         1,
-        "Errors loading user save files"
+        "[ERROR] Loading user data files"
       );
     }
   }
@@ -83,7 +83,7 @@ public class UserService {
       GlobalServices.serverEventQueue.emitEvent(
         EventType.NEW_LOG, 
         1,
-        "Errors saving user save files: " + e.getMessage()
+        "[ERROR] Saving user data files"
       );
       System.out.println(e.getMessage());
       e.printStackTrace();

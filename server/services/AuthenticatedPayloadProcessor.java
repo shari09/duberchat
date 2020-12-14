@@ -6,14 +6,12 @@ import common.entities.Attachment;
 import common.entities.Message;
 import common.entities.payload.AddParticipant;
 import common.entities.payload.AttachmentToClient;
-import common.entities.payload.AuthenticatablePayload;
 import common.entities.payload.BlacklistUser;
 import common.entities.payload.BlockUser;
 import common.entities.payload.CancelFriendRequest;
 import common.entities.payload.ChangeChannel;
 import common.entities.payload.ChangePassword;
 import common.entities.payload.ChangeProfile;
-import common.entities.payload.ClientRequestStatus;
 import common.entities.payload.CreateChannel;
 import common.entities.payload.EditMessage;
 import common.entities.payload.FriendRequestResponse;
@@ -54,14 +52,6 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   @Override
   public void onEvent(Object newPayload, EventType eventType) {
     this.payloadQueue.add((AuthenticatedClientRequest) newPayload);
-    //log
-    AuthenticatablePayload payload = ((AuthenticatedClientRequest)newPayload).getPayload();
-    this.log(String.format(
-      "%s:%s: Sent authenticated payload:%s", 
-      this.getUsername(payload),
-      payload.getUserId(),
-      payload.getType()
-    ));
     while (!this.payloadQueue.isEmpty()) {
       AuthenticatedClientRequest client = this.payloadQueue.poll();
       switch (client.getPayload().getType()) {
@@ -127,7 +117,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           break;
         default:
           //log
-          this.log(String.format(
+          PayloadService.log(String.format(
             "Incorrect payload: %s", 
             client.getPayload().getType()
           ));
@@ -145,7 +135,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format("Transferring ownership to user:%s", payload.getRecipientId()),
@@ -161,7 +151,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       "Leaving channel", 
@@ -178,7 +168,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getNewValue()
     );
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format("Changing channel %s", payload.getFieldToChange()), 
@@ -197,7 +187,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           payload.getUserId(), 
           payload.getNewValue()
         );
-        this.sendResponse(
+        PayloadService.sendAuthenticatedResponse(
           client, 
           success, 
           String.format("Changing %s", payload.getFieldToChange()), 
@@ -209,7 +199,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           payload.getUserId(), 
           payload.getNewValue()
         );
-        this.sendResponse(
+        PayloadService.sendAuthenticatedResponse(
           client, 
           success, 
           String.format("Changing %s", payload.getFieldToChange()), 
@@ -226,7 +216,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getUserId(), 
       payload.getStatus()
     );
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       true, 
       String.format("Updating status to %s", payload.getStatus()), 
@@ -237,47 +227,29 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   private void requestAttachment(AuthenticatedClientRequest client) {
     RequestAttachment payload = (RequestAttachment) client.getPayload();
     Attachment attachment = GlobalServices.channels.getAttachment(payload.getAttachmentId());
-    if (attachment == null) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(
-          1, payload.getId(), "Unable to download attachment"
-        )
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Failed to download attachment:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getAttachmentId()
-        )
-      );
-      return;
-    }
+    
+    boolean success = false;
+    if (attachment != null) {
+      success = true;
+    } 
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    PayloadService.sendAuthenticatedResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Downloaded attachment:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
+        "Downloading attachment:%s",
         payload.getAttachmentId()
-      )
-    );
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+      ), 
+      "Unable to download attachment"
     );
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new AttachmentToClient(1, attachment)
-    );
+    if (success) {
+      PayloadService.send(
+        client.getClientOut(), 
+        new AttachmentToClient(1, attachment)
+      );
+    }
+    
   }
 
   private void removeParticipant(AuthenticatedClientRequest client) {
@@ -288,43 +260,17 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Cannot remove participant")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Error removing participant:%s from channel:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getParticipantId(),
-          payload.getChannelId()
-        )
-      );
-      return;
-    }
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    PayloadService.sendAuthenticatedResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Removed participant:%s from channel:%s",
-        this.getUsername(payload), 
-        payload.getUserId(),
+        "Removing participant:%s from channel:%s",
         payload.getParticipantId(),
         payload.getChannelId()
-      )
+      ), 
+      "Cannot remove participant"
     );
 
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
   }
 
   private void blacklistUser(AuthenticatedClientRequest client) {
@@ -335,42 +281,15 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Cannot blacklist participant")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Error blacklisting participant:%s from channel:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getParticipantId(),
-          payload.getChannelId()
-        )
-      );
-      return;
-    }
-
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    PayloadService.sendAuthenticatedResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Blacklisted participant:%s from channel:%s",
-        this.getUsername(payload), 
-        payload.getUserId(),
+        "Blacklisting participant:%s from channel:%s",
         payload.getParticipantId(),
         payload.getChannelId()
-      )
-    );
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+      ), 
+      "Cannot blacklist participant"
     );
   }
 
@@ -392,7 +311,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       success = false;
     }
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -413,7 +332,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getBlockUsername()
     );
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format("Blocking %s", payload.getBlockUsername()), 
@@ -430,15 +349,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getMessageId()
     );
 
-    if (success) {
-      GlobalServices.channels.editMessage(
-        payload.getChannelId(), 
-        payload.getMessageId(), 
-        payload.getNewContent()
-      );
-    }
-
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -447,7 +358,14 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       ), 
       "Cannot edit message"
     );
-    
+
+    if (success) {
+      GlobalServices.channels.editMessage(
+        payload.getChannelId(), 
+        payload.getMessageId(), 
+        payload.getNewContent()
+      );
+    }
   }
 
   private void removeMessage(AuthenticatedClientRequest client) {
@@ -458,14 +376,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getMessageId()
     );
 
-    if (success) {
-      GlobalServices.channels.removeMessage(
-        payload.getChannelId(), 
-        payload.getMessageId()
-      );
-    }
-
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -474,6 +385,13 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       ), 
       "Cannot remove message"
     );
+
+    if (success) {
+      GlobalServices.channels.removeMessage(
+        payload.getChannelId(), 
+        payload.getMessageId()
+      );
+    }
     
   }
 
@@ -485,7 +403,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getNewPassword()
     );
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       "Changing password",
@@ -517,7 +435,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       msg = "You have been blocked/blacklisted";
     }
     
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -549,7 +467,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       }
     }
     
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -567,7 +485,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getRecipientId()
     );
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -596,7 +514,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       );
     }
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -615,7 +533,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getUserId()
     );
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       true, 
       "Creating a new group channel",
@@ -638,7 +556,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       success = true;
     }
 
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -649,7 +567,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     );
 
     if (success) {
-      PayloadSender.send(
+      PayloadService.send(
         client.getClientOut(), 
         new MessagesToClient(1, payload.getChannelId(), msgs)
       );
@@ -660,71 +578,13 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   private void removeFriend(AuthenticatedClientRequest client) {
     RemoveFriend payload = (RemoveFriend)client.getPayload();
     GlobalServices.users.removeFriend(payload.getUserId(), payload.getFriendId());
-    this.sendResponse(
+    PayloadService.sendAuthenticatedResponse(
       client, 
       true, 
       String.format("Removing friend:%s", payload.getFriendId()),
       "Error removing friend"
     );
 
-  }
-
-
-  private String getUsername(AuthenticatablePayload payload) {
-    return GlobalServices.users.getUsername(payload.getUserId());
-  }
-
-
-  /**
-   * 
-   * @param client
-   * @param success
-   * @param logSuccess
-   * @param logError
-   * @param errorMsgToClient
-   */
-  private void sendResponse(
-    AuthenticatedClientRequest client,
-    boolean success,
-    String log,
-    String errorMsgToClient
-  ) {
-    AuthenticatablePayload payload = (AuthenticatablePayload)client.getPayload();
-    if (!success) {
-      this.sendError(client, errorMsgToClient);
-      this.log(String.format(
-        "|ERROR| %s:%s: %s", 
-        this.getUsername(payload),
-        payload.getUserId(),
-        log
-      ));
-      return;
-    }
-    this.log(String.format(
-      "|SUCCESS| %s:%s: %s", 
-      this.getUsername(payload),
-      payload.getUserId(),
-      log
-    ));
-    this.sendSuccess(client);
-  }
-
-  private void sendSuccess(AuthenticatedClientRequest client) {
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, client.getPayload().getId(), null)
-    );
-  }
-
-  private void sendError(AuthenticatedClientRequest client, String errorMsg) {
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, client.getPayload().getId(), errorMsg)
-    );
-  }
-
-  private void log(String msg) {
-    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_LOG, 1, msg);
   }
 
 }

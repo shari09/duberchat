@@ -37,9 +37,9 @@ public class SocketService implements Runnable {
       while (running) {
         Socket client = server.accept();
         //TODO: add timeout back
-        // client.setSoTimeout(Constants.SOCKET_TIMEOUT);
+        client.setSoTimeout(Constants.SOCKET_TIMEOUT);
         GlobalServices.serverEventQueue.emitEvent(
-          EventType.NEW_LOG, 1, "Client accepted: " + client.toString()
+          EventType.NEW_LOG, 1, "[SUCCESS] Client accepted: " + client.toString()
         );
         GlobalServices.serverEventQueue.emitEvent(
           EventType.NEW_CLIENT,
@@ -50,7 +50,7 @@ public class SocketService implements Runnable {
     } catch (Exception e) {
       System.out.println("Error accepting connection");
       e.printStackTrace();
-      this.running = false;
+      // this.running = false;
     }
   }
 }

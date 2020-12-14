@@ -50,24 +50,6 @@ public class SidePanel extends JPanel implements ActionListener {
   }
 
   public JButton getMenuItem(String iconName) {
-    // JButton button = new JButton();
-    // try {
-    //   BufferedImage img = ImageIO.read(new File("server/assets/"+iconName+".png"));
-    //   Image icon = img.getScaledInstance(
-    //     SidePanel.iconSize, 
-    //     SidePanel.iconSize, 
-    //     Image.SCALE_SMOOTH
-    //   );
-    //   button.setIcon(new ImageIcon(icon));
-    // } catch (Exception e) {
-    //   System.out.println("Unable to add button icon");
-    //   e.printStackTrace();
-    // }
-    // button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    // button.setForeground(Components.DIM_TEXT);
-    // button.setContentAreaFilled(false);
-    // button.setBorder(BorderFactory.createEmptyBorder(10, 4, 10, 4));
-    // button.setFocusable(false);
     JButton button = ServerGUIFactory.getIconButton(
       iconName, 
       SidePanel.iconSize, 

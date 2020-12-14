@@ -37,7 +37,7 @@ import common.entities.payload.ServerBroadcast;
 import server.entities.Client;
 import server.entities.EventType;
 import server.services.GlobalServices;
-import server.services.PayloadSender;
+import server.services.PayloadService;
 import server.services.Subscribable;
 
 /**
@@ -73,7 +73,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
   private String action;
 
 
-  public AdminPanel(String action, EventType eventType) {
+  public AdminPanel(String action, String title, EventType eventType) {
     super();
     this.userToCheckBox = new LinkedHashMap<>();
     this.checkBoxToUser = new LinkedHashMap<>();
@@ -83,8 +83,8 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
 
     this.setLayout(new GridBagLayout());
     
-    JPanel title = ServerGUIFactory.getHeader(
-      "Broadcasting", ServerGUIFactory.GRAY2
+    JPanel titlePanel = ServerGUIFactory.getHeader(
+      title, ServerGUIFactory.GRAY2
     );
     GridBagConstraints overallC = new GridBagConstraints();
     
@@ -97,7 +97,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     overallC.fill = GridBagConstraints.BOTH;
     overallC.anchor = GridBagConstraints.NORTH;
 
-    this.add(title, overallC);
+    this.add(titlePanel, overallC);
 
     //select all
     //TODO: get a better icon

@@ -77,7 +77,6 @@ public abstract class Channel implements Identifiable, Serializable {
   public synchronized boolean removeParticipant(UserMetadata user) {
     this.participants.remove(user);
     this.metadata.updateParticipants(this.participants);
-    System.out.println(this.participants);
     this.size--;
     return true;
   }
@@ -92,10 +91,6 @@ public abstract class Channel implements Identifiable, Serializable {
 
   public void updateMetadata(ChannelMetadata metadata) {
     this.metadata = metadata;
-    if (this.metadata instanceof GroupChannelMetadata) {
-
-      System.out.println("updated"+((GroupChannelMetadata)this.metadata).getOwnerId());
-    }
   }
 
   /**

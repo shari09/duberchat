@@ -202,11 +202,18 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     } else {
       userId = (String) emitter;
     }
-    
+    if (!this.clients.containsKey(userId)) {
+      return;
+    }
     this.clients.remove(userId);
     this.usersPanel.remove(this.userToCheckBox.get(userId));
     this.checkBoxToUser.remove(this.userToCheckBox.get(userId));
     this.userToCheckBox.remove(userId);
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.REMOVE_CLIENT_CONNECTION, 
+      2, 
+      userId
+    );
     this.repaint();
   }
 

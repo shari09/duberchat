@@ -57,22 +57,7 @@ public class ChannelUpdateHandler implements Subscribable {
     LinkedHashSet<ChannelMetadata> channels = GlobalServices.users.getChannels(userId);
     
     PayloadSender.send(userId, new ClientChannelsUpdate(1, channels));
-    for (ChannelMetadata data: channels) {
-      if (data instanceof GroupChannelMetadata) {
-        System.out.println(((GroupChannelMetadata)data).getOwnerId());
-      }
-    }
     GlobalServices.users.save();
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "sent %s payload to user:%s", 
-        PayloadType.CLIENT_CHANNELS_UPDATE,
-        userId
-      )
-    );
   }
 
 }

@@ -32,6 +32,9 @@ public class ClientConnections {
   }
 
   public void remove(String userId) {
+    if (!this.idToOutStream.containsKey(userId)) {
+      return;
+    }
     ObjectOutputStream client = this.idToOutStream.get(userId);
     this.idToOutStream.remove(userId);
     this.clientToId.remove(client);
@@ -39,6 +42,9 @@ public class ClientConnections {
   }
 
   public void remove(ObjectOutputStream client) {
+    if (!this.clientToId.containsKey(client)) {
+      return;
+    }
     String userId = this.clientToId.get(client);
     this.clientToId.remove(client);
     this.idToOutStream.remove(userId);

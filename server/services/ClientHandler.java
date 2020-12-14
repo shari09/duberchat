@@ -108,8 +108,11 @@ public class ClientHandler implements Runnable {
     }
     String username = GlobalServices.users.getUsername(userId);
     GlobalServices.serverEventQueue.emitEvent(
+      EventType.CLIENT_DISCONNECTED, 2, this.output
+    );
+    GlobalServices.serverEventQueue.emitEvent(
       EventType.NEW_LOG, 
-      1,
+      0,
       String.format(
         "User %s:%s at %s %s\n", 
         username, 
@@ -118,9 +121,7 @@ public class ClientHandler implements Runnable {
         disconnectMsg
       )
     );
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.CLIENT_DISCONNECTED, 2, this.output
-    );
+    
     this.running = false;
   }
 

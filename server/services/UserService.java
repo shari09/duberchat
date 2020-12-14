@@ -181,6 +181,7 @@ public class UserService {
     User user = this.users.get(userId);
     user.updateStatus(status);
     this.broadcastChanges(user);
+    this.save();
   }
 
   /**

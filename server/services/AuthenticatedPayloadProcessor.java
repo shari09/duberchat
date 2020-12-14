@@ -376,53 +376,33 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void addParticipant(AuthenticatedClientRequest client) {
     AddParticipant payload = (AddParticipant) client.getPayload();
-    if (
-      !GlobalServices.users.isFriend( //not friend
+    String errorMsg = "";
+    boolean success = true;
+    if (!GlobalServices.users.isFriend( //not friend
         payload.getUserId(), 
         payload.getParticipantId()
-      ) 
-      || 
-      !GlobalServices.channels.addParticipant( //blacklisted
+    )) {
+      errorMsg = "User is not your friend";
+      success = false;
+    } else if (!GlobalServices.channels.addParticipant( //blacklisted
         payload.getParticipantId(), 
         payload.getChannelId()
-      )
-    ) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Error adding user")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Error adding user:%s to channel:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getParticipantId(),
-          payload.getChannelId()
-        )
-      );
-      return;
+    )) {
+      errorMsg = "User blacklisted";
+      success = false;
     }
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    this.sendResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Added user:%s to channel:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
+        "Error adding user:%s to channel:%s",
         payload.getParticipantId(),
         payload.getChannelId()
-      )
+      ), 
+      errorMsg
     );
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
   }
 
   private void blockUser(AuthenticatedClientRequest client) {

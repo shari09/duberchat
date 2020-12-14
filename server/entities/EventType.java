@@ -28,6 +28,8 @@ public enum EventType {
   AUTHENTICATED_CLIENT,
   /** Once the client socket disconnects. */
   CLIENT_DISCONNECTED,
+  /** When the server is ready to remove the client from all its cache data */
+  REMOVE_CLIENT_CONNECTION,
   /** New message sent */
   NEW_MESSAGE,
   /** Message edited */

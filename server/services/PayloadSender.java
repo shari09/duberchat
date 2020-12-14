@@ -21,6 +21,7 @@ public class PayloadSender {
   public static void send(ObjectOutputStream client, Payload payload) {
     synchronized (client) {
       try {
+        client.reset();
         client.writeObject(payload);
         String userId = GlobalServices.clientConnections.getUserId(client);
         String msg = "";
@@ -70,6 +71,7 @@ public class PayloadSender {
     );
     synchronized (client) {
       try {
+        client.reset();
         client.writeObject(payload);
         client.flush();
       } catch (SocketException e) {

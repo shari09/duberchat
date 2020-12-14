@@ -39,14 +39,14 @@ public class SidePanel extends JPanel implements ActionListener {
     super();
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     this.setAlignmentX(CENTER_ALIGNMENT);
-    this.add(Components.getEmptyHeight(SidePanel.iconSize));
+    this.add(ServerGUIFactory.getEmptyHeight(SidePanel.iconSize));
     this.logs = this.getMenuItem("log-format");
     this.users = this.getMenuItem("user");
     this.admin = this.getMenuItem("gear");
     this.add(this.logs);  
     this.add(this.users);
     this.add(this.admin);
-    this.setBackground(Components.GRAY3);
+    this.setBackground(ServerGUIFactory.GRAY3);
   }
 
   public JButton getMenuItem(String iconName) {
@@ -68,7 +68,7 @@ public class SidePanel extends JPanel implements ActionListener {
     // button.setContentAreaFilled(false);
     // button.setBorder(BorderFactory.createEmptyBorder(10, 4, 10, 4));
     // button.setFocusable(false);
-    JButton button = Components.getIconButton(
+    JButton button = ServerGUIFactory.getIconButton(
       iconName, 
       SidePanel.iconSize, 
       4, 10

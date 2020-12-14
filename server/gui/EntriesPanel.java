@@ -53,7 +53,7 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
     this.defaultEntry = new JButton();
     this.setLayout(new BorderLayout());
 
-    JPanel titlePanel = Components.getHeader(title, Components.GRAY4);
+    JPanel titlePanel = ServerGUIFactory.getHeader(title, ServerGUIFactory.GRAY4);
     titlePanel.setPreferredSize(new Dimension(
       225, titlePanel.getPreferredSize().height
     ));
@@ -64,15 +64,15 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
 
     this.entriesPanel = new JPanel();
     this.entriesPanel.setLayout(new GridBagLayout());
-    this.entriesPanel.setBackground(Components.GRAY1);
+    this.entriesPanel.setBackground(ServerGUIFactory.GRAY1);
     this.entriesPanel.setBorder(BorderFactory.createEmptyBorder());
 
-    this.c = Components.getScrollConstraints();
+    this.c = ServerGUIFactory.getScrollConstraints();
     this.entriesPanel.add(Box.createVerticalGlue(), this.c, 0);
 
     this.c.weighty = 0;
 
-    this.scrollPane = Components.getScrollPane(this.entriesPanel, false);
+    this.scrollPane = ServerGUIFactory.getScrollPane(this.entriesPanel, false);
 
     this.fixedDefaultEntry = false;
     this.add(this.scrollPane);
@@ -80,11 +80,11 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
   }
 
   public JButton addEntry(String text, JPanel content) {
-    JButton tab = Components.getButton(
-      text, Components.LIGHT_TEXT_OVERLAY, 13, 
+    JButton tab = ServerGUIFactory.getButton(
+      text, ServerGUIFactory.LIGHT_TEXT_OVERLAY, 13, 
       4, 10, 
-      Components.GRAY1, 
-      Components.OVERLAY
+      ServerGUIFactory.GRAY1, 
+      ServerGUIFactory.OVERLAY
     );
     tab.addActionListener(this);
 

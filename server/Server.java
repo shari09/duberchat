@@ -1,11 +1,13 @@
 package server;
 
+import server.entities.EventType;
 import server.gui.MainFrame;
 import server.gui.StartFrame;
 import server.services.AuthenticatedClientHandler;
 import server.services.AuthenticatedPayloadProcessor;
 import server.services.ClientQueue;
 import server.services.FriendInfoUpdater;
+import server.services.GlobalServices;
 import server.services.LoggingHandler;
 import server.services.MessageQueue;
 import server.services.ChannelUpdateHandler;
@@ -48,6 +50,7 @@ public class Server {
     log.activate();
     socket.start();
     (new MainFrame()).activate();
+    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_LOG, 1, "Server started");
   }
 
   public static void main(String[] args) {

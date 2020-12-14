@@ -235,7 +235,7 @@ public class MessagingService {
    * @param participants
    * @param channelName
    * @param ownerId
-   * @return the channel's metadata
+   * @return                the channel's metadata
    */
   public ChannelMetadata createGroupChannel(
     LinkedHashSet<UserMetadata> participants, 
@@ -246,13 +246,16 @@ public class MessagingService {
     
     
     GroupChannel channel = new GroupChannel(participants, channelName, ownerId);
-    this.channels.put(channel.getId(), channel);
     for (UserMetadata user: participants) {
+      // if (!GlobalServices.users.isFriend(ownerId, user.getUserId())) {
+      //   return null;
+      // }
       GlobalServices.users.addChannel(
         user.getUserId(), 
         channel.getMetadata()
       ); 
     }
+    this.channels.put(channel.getId(), channel);
     this.hardSave(channel.getId());
     GlobalServices.serverEventQueue.emitEvent(
       EventType.CHANNEL_UPDATE, 

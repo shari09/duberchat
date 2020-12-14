@@ -83,8 +83,8 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
 
     this.setLayout(new GridBagLayout());
     
-    JPanel title = Components.getHeader(
-      "Broadcasting", Components.GRAY2
+    JPanel title = ServerGUIFactory.getHeader(
+      "Broadcasting", ServerGUIFactory.GRAY2
     );
     GridBagConstraints overallC = new GridBagConstraints();
     
@@ -101,14 +101,14 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
 
     //select all
     //TODO: get a better icon
-    this.selectAll = Components.getCheckBox(
+    this.selectAll = ServerGUIFactory.getCheckBox(
       "Select all", 
       40, 10,
-      Components.DARK_PURPLE,
-      Components.DARK_PURPLE_OVERLAY,
+      ServerGUIFactory.DARK_PURPLE,
+      ServerGUIFactory.DARK_PURPLE_OVERLAY,
       true
     );
-    this.selectAll.setForeground(Components.LIGHT_TEXT);
+    this.selectAll.setForeground(ServerGUIFactory.LIGHT_TEXT);
     this.selectAll.addActionListener(this);
 
     overallC.gridx = 0;
@@ -122,15 +122,15 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     this.usersPanel = new JPanel();
     this.usersPanel.setMinimumSize(this.usersPanel.getPreferredSize());
     this.usersPanel.setLayout(new GridBagLayout());
-    this.usersPanel.setBackground(Components.LIGHT_PURPLE);
+    this.usersPanel.setBackground(ServerGUIFactory.LIGHT_PURPLE);
     this.usersPanel.setAlignmentX(LEFT_ALIGNMENT);
     
-    this.c = Components.getScrollConstraints();
+    this.c = ServerGUIFactory.getScrollConstraints();
     this.usersPanel.add(Box.createVerticalGlue(), this.c);
 
     this.c.weighty = 0;
     
-    this.scrollPane = Components.getScrollPane(this.usersPanel, true);
+    this.scrollPane = ServerGUIFactory.getScrollPane(this.usersPanel, true);
 
 
     overallC.gridx = 0;
@@ -176,15 +176,15 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     Client client = (Client)emitter;
     String userId = client.getUserId();
     this.clients.put(userId, client);
-    JCheckBox box = Components.getCheckBox(
+    JCheckBox box = ServerGUIFactory.getCheckBox(
       GlobalServices.users.getUsername(userId),
       // userId,
       8, 5,
-      Components.LIGHT_PURPLE,
-      Components.LIGHT_PURPLE2,
+      ServerGUIFactory.LIGHT_PURPLE,
+      ServerGUIFactory.LIGHT_PURPLE2,
       false
     );
-    box.setFont(Components.getFont(13));
+    box.setFont(ServerGUIFactory.getFont(13));
     box.setHorizontalAlignment(SwingConstants.LEFT);
     box.addActionListener(this);
 
@@ -214,18 +214,18 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
   private JPanel getBroadcastingPane() {
     //msg
     this.msg = new JTextArea("");
-    this.msg.setFont(Components.getFont(15));
+    this.msg.setFont(ServerGUIFactory.getFont(15));
     this.msg.setLineWrap(true);
     this.msg.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     JScrollPane scroll = new JScrollPane(this.msg);
     scroll.setBorder(BorderFactory.createEmptyBorder());
     
     //button
-    this.actionButton = Components.getButton(
-      this.action, Components.LIGHT_TEXT, 20,
+    this.actionButton = ServerGUIFactory.getButton(
+      this.action, ServerGUIFactory.LIGHT_TEXT, 20,
       40, 30, 
-      Components.DARK_PURPLE, 
-      Components.DARK_PURPLE_OVERLAY
+      ServerGUIFactory.DARK_PURPLE, 
+      ServerGUIFactory.DARK_PURPLE_OVERLAY
     );
 
     this.actionButton.addActionListener(this);

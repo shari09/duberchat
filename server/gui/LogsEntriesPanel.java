@@ -44,7 +44,7 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
     this.totalLogs = GlobalServices.logging.getNumEntries();
     
     
-    this.more = Components.getIconButton("plus", 30, 10, 10);
+    this.more = ServerGUIFactory.getIconButton("plus", 30, 10, 10);
     this.more.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -88,11 +88,7 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
     this.addLogEntries(GlobalServices.logging.getEntries(this.numLogs, 5));
     this.numLogs += 5;
 
-    System.out.println(this.numLogs);
-    System.out.println(this.totalLogs);
-
     if (this.numLogs >= this.totalLogs) {
-      System.out.println("max");
       this.more.setVisible(false);
     }
   }

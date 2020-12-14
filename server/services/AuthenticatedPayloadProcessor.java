@@ -9,6 +9,7 @@ import common.entities.payload.AttachmentToClient;
 import common.entities.payload.AuthenticatablePayload;
 import common.entities.payload.BlacklistUser;
 import common.entities.payload.BlockUser;
+import common.entities.payload.CancelFriendRequest;
 import common.entities.payload.ChangeChannel;
 import common.entities.payload.ChangePassword;
 import common.entities.payload.ChangeProfile;
@@ -20,6 +21,7 @@ import common.entities.payload.FriendRequestToServer;
 import common.entities.payload.LeaveChannel;
 import common.entities.payload.MessageToServer;
 import common.entities.payload.MessagesToClient;
+import common.entities.payload.RemoveFriend;
 import common.entities.payload.RemoveMessage;
 import common.entities.payload.RemoveParticipant;
 import common.entities.payload.RequestAttachment;
@@ -40,11 +42,9 @@ import server.entities.EventType;
  */
 public class AuthenticatedPayloadProcessor implements Subscribable {
   private PriorityBlockingQueue<AuthenticatedClientRequest> payloadQueue;
-  // private boolean running;
 
   public AuthenticatedPayloadProcessor() {
     this.payloadQueue = new PriorityBlockingQueue<>();
-    // this.running = false;
   }
 
   public void activate() {
@@ -56,20 +56,12 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     this.payloadQueue.add((AuthenticatedClientRequest) newPayload);
     //log
     AuthenticatablePayload payload = ((AuthenticatedClientRequest)newPayload).getPayload();
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Received authenticated payload:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
-        payload.getType()
-      )
-    );
-    // if (this.running) {
-    // return;
-    // }
-    // this.running = true;
+    this.log(String.format(
+      "%s:%s: Sent authenticated payload:%s", 
+      this.getUsername(payload),
+      payload.getUserId(),
+      payload.getType()
+    ));
     while (!this.payloadQueue.isEmpty()) {
       AuthenticatedClientRequest client = this.payloadQueue.poll();
       switch (client.getPayload().getType()) {
@@ -91,8 +83,14 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         case FRIEND_REQUEST:
           this.sendFriendRequest(client);
           break;
+        case CANCEL_FRIEND_REQUEST:
+          this.cancelFriendRequest(client);
+          break;
         case FRIEND_REQUEST_RESPONSE:
           this.respondFriendRequest(client);
+          break;
+        case REMOVE_FRIEND:
+          this.removeFriend(client);
           break;
         case REQUEST_ATTACHMENT:
           this.requestAttachment(client);
@@ -129,19 +127,14 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           break;
         default:
           //log
-          GlobalServices.serverEventQueue.emitEvent(
-            EventType.NEW_LOG, 
-            1,
-            String.format(
-              "Incorrect payload: %s", 
-              client.getPayload().getType()
-            )
-          );
+          this.log(String.format(
+            "Incorrect payload: %s", 
+            client.getPayload().getType()
+          ));
           break;
       }
 
     }
-    // this.running = false;
   }
 
   private void transferOwnership(AuthenticatedClientRequest client) {
@@ -151,38 +144,11 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Transfer failed")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Ownership transfer failed",
-          this.getUsername(payload), 
-          payload.getType()
-        )
-      );
-      return;
-    }
-
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Ownership transfer succeeded", 
-        this.getUsername(payload),
-        payload.getUserId()
-      )
-    );
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+    this.sendResponse(
+      client, 
+      success, 
+      String.format("Transferring ownership to user:%s", payload.getRecipientId()),
+      "Transfer failed"
     );
 
   }
@@ -193,39 +159,12 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getUserId(), 
       payload.getChannelId()
     );
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Error leaving channel")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Error leaving channel", 
-          this.getUsername(payload),
-          payload.getUserId()
-        )
-      );
-      return;
-    }
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Left channel %s", 
-        this.getUsername(payload),
-        GlobalServices.users.getUsername(payload.getUserId()),
-        payload.getUserId(),
-        payload.getChannelId()
-      )
-    );
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+    this.sendResponse(
+      client, 
+      success, 
+      "Leaving channel", 
+      "Error leaving channel"
     );
 
   }
@@ -237,42 +176,12 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getFieldToChange(), 
       payload.getNewValue()
     );
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(
-          1, payload.getId(), "Error changing channel settings"
-        )
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Error changing channel:%s settings", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getChannelId()
-        )
-      );
-      return;
-    }
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Changed channel:%s settings", 
-        this.getUsername(payload),
-        payload.getUserId(),
-        payload.getChannelId()
-      )
-    );
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+    this.sendResponse(
+      client, 
+      success, 
+      String.format("Changing channel %s", payload.getFieldToChange()), 
+      "Error changing channel settings"
     );
   }
 
@@ -287,51 +196,26 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           payload.getUserId(), 
           payload.getNewValue()
         );
+        this.sendResponse(
+          client, 
+          success, 
+          String.format("Changing %s", payload.getFieldToChange()), 
+          "Failed to change description"
+        );
         break;
       case USERNAME:
         success = GlobalServices.users.changeUsername(
           payload.getUserId(), 
           payload.getNewValue()
         );
+        this.sendResponse(
+          client, 
+          success, 
+          String.format("Changing %s", payload.getFieldToChange()), 
+          "Username taken"
+        );
         break;
     }
-
-    if (!success) {
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Failed to change %s ",
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getFieldToChange()
-        )
-      );
-
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Change failed")
-      );
-      return;
-    }
-
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Changed %s", 
-        this.getUsername(payload),
-        payload.getUserId(),
-        payload.getFieldToChange()
-      )
-    );
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
 
   }
 
@@ -341,22 +225,12 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getUserId(), 
       payload.getStatus()
     );
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Changed %s", 
-        this.getUsername(payload),
-        payload.getUserId(),
-        payload.getStatus()
-      )
+    this.sendResponse(
+      client, 
+      true, 
+      String.format("Updating status to %s", payload.getStatus()), 
+      "Failed to update status"
     );
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
-
   }
 
   private void requestAttachment(AuthenticatedClientRequest client) {
@@ -558,144 +432,69 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getUserId(), 
       toBeBlockedId
     );
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(
-          1, 
-          payload.getId(), 
-          "Invalid user"
-        )
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Failed to block %s:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getBlockUsername()
-        )
-      );
-      return;
-    }
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Blocked %s:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
-        payload.getBlockUsername()
-      )
-    );
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+    this.sendResponse(
+      client, 
+      success, 
+      String.format("Blocking %s", payload.getBlockUsername()), 
+      "Invalid username"
     );
 
   }
 
   private void editMessage(AuthenticatedClientRequest client) {
     EditMessage payload = (EditMessage) client.getPayload();
-    if (
-      !GlobalServices.channels.isMessageSender(
-        payload.getUserId(), 
-        payload.getChannelId(),
-        payload.getMessageId()
-      )
-    ) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Cannot edit message")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Failed to edit msg:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getMessageId()
-        )
-      );
-      return;
-    }
-    GlobalServices.channels.editMessage(
-      payload.getChannelId(), 
-      payload.getMessageId(), 
-      payload.getNewContent()
+    boolean success = GlobalServices.channels.isMessageSender(
+      payload.getUserId(), 
+      payload.getChannelId(),
+      payload.getMessageId()
     );
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    if (success) {
+      GlobalServices.channels.editMessage(
+        payload.getChannelId(), 
+        payload.getMessageId(), 
+        payload.getNewContent()
+      );
+    }
+
+    this.sendResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Edited msg:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
+        "Editing message:%s",
         payload.getMessageId()
-      )
+      ), 
+      "Cannot edit message"
     );
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    
   }
 
   private void removeMessage(AuthenticatedClientRequest client) {
     RemoveMessage payload = (RemoveMessage) client.getPayload();
-    if (
-      !GlobalServices.channels.isMessageSender(
-        payload.getUserId(), 
-        payload.getChannelId(),
-        payload.getMessageId()
-      )
-    ) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Cannot remove message")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Failed to remove msg:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getMessageId()
-        )
-      );
-      return;
-    }
-    GlobalServices.channels.removeMessage(
-      payload.getChannelId(), 
+    boolean success = GlobalServices.channels.isMessageSender(
+      payload.getUserId(), 
+      payload.getChannelId(),
       payload.getMessageId()
     );
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Removed msg:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
+    if (success) {
+      GlobalServices.channels.removeMessage(
+        payload.getChannelId(), 
         payload.getMessageId()
-      )
-    );
+      );
+    }
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+    this.sendResponse(
+      client, 
+      success, 
+      String.format(
+        "Removing message:%s", 
+        payload.getMessageId()
+      ), 
+      "Cannot remove message"
     );
+    
   }
 
   private void changePassword(AuthenticatedClientRequest client) {
@@ -705,43 +504,14 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getOriginalPassword(), 
       payload.getNewPassword()
     );
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(
-          1, 
-          payload.getId(), 
-          "Incorrect original password"
-        )
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Failed to change password",
-          this.getUsername(payload), 
-          payload.getUserId()
-        )
-      );
-      return;
-    }
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: Changed password", 
-        this.getUsername(payload),
-        payload.getUserId()
-      )
+    this.sendResponse(
+      client, 
+      success, 
+      "Changing password",
+      "Incorrect original password"
     );
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+    
   }
 
   private void sendMessage(AuthenticatedClientRequest client) {
@@ -753,86 +523,67 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getAttachment(), 
       payload.getAttachmentName()
     );
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(), 
-        new ClientRequestStatus(1, payload.getId(), "Message sending failure")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Failed to send message to channel:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getChannelId()
-        )
-      );
-      return;
-    }
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    this.sendResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Sent message to channel:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
+        "Sending message to channel:%s", 
         payload.getChannelId()
-      )
+      ),
+      "Message sending failure"
     );
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
-    );
+  
   }
 
   private void sendFriendRequest(AuthenticatedClientRequest client) {
     FriendRequestToServer payload = (FriendRequestToServer) client.getPayload();
     String recipientId = GlobalServices.users.getUserId(payload.getRecipientName());
-    boolean success = GlobalServices.users.sendFriendRequest(
-      payload.getUserId(), 
-      recipientId,
-      payload.getRequestMessage()
-    );
-
-    // sending request to a nonexistent user
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Recipient does not exist")
+    boolean success = false;
+    String msg = "";
+    if (recipientId == null) {
+      msg = "Recipient does not exist";
+    } else {
+      success = GlobalServices.users.sendFriendRequest(
+        payload.getUserId(), 
+        recipientId,
+        payload.getRequestMessage()
       );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Failed to send friend req to user:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getRecipientName()
-        )
-      );
-      return;
+      if (!success) {
+        msg = "Duplicate friend request";
+      }
     }
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    
+    this.sendResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Sent friend req to user:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
+        "Sending friend request to user:%s",
         payload.getRecipientName()
-      )
-    );
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+      ),
+      msg
     );
   }
+
+  private void cancelFriendRequest(AuthenticatedClientRequest client) {
+    CancelFriendRequest payload = (CancelFriendRequest)client.getPayload();
+    boolean success = GlobalServices.users.cancelFriendRequest(
+      payload.getUserId(), 
+      payload.getRecipientId()
+    );
+
+    this.sendResponse(
+      client, 
+      success, 
+      String.format(
+        "Cancelling friend request to user:%s",
+        payload.getRecipientId()
+      ), 
+      "Error cancelling friend request"
+    );
+
+  }
+
+  
 
   private void respondFriendRequest(AuthenticatedClientRequest client) {
     FriendRequestResponse payload = (FriendRequestResponse) client.getPayload();
@@ -848,44 +599,18 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         payload.getRequesterId()
       );
     }
-    if (!success) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Error responding to friend request")
-      );
 
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Error responding to friend req from user:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getRequesterId()
-        )
-      );
-      return;
-    }
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    this.sendResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Responded to friend req from user:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
+        "Responding to friend request from user:%s",
         payload.getRequesterId()
-      )
-    );
-    
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+      ),
+      "Error responding to friend request"
     );
   }
 
-  // TODO: make sure the owner/invited user aren't blocked
   private void createChannel(AuthenticatedClientRequest client) {
     CreateChannel payload = (CreateChannel) client.getPayload();
     GlobalServices.channels.createGroupChannel(
@@ -894,20 +619,11 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getUserId()
     );
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
-      String.format(
-        "%s:%s: created a new group channel", 
-        this.getUsername(payload),
-        payload.getUserId()
-      )
-    );
-
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+    this.sendResponse(
+      client, 
+      true, 
+      "Creating a new group channel",
+      "Error creating a new group channel"
     );
   }
 
@@ -919,44 +635,40 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getQuantity()
     );
 
+    boolean success;
     if (msgs == null) {
-      PayloadSender.send(
-        client.getClientOut(),
-        new ClientRequestStatus(1, payload.getId(), "Error retrieving messages")
-      );
-      //log
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "%s:%s: Error retrieving messages for channel:%s", 
-          this.getUsername(payload),
-          payload.getUserId(),
-          payload.getChannelId()
-        )
-      );
-      return;
+      success = false;
+    } else {
+      success = true;
     }
 
-    //log
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      1,
+    this.sendResponse(
+      client, 
+      success, 
       String.format(
-        "%s:%s: Retrieved messages for channel:%s", 
-        this.getUsername(payload),
-        payload.getUserId(),
+        "Retrieving messages for channel:%s",
         payload.getChannelId()
-      )
-    );
-    PayloadSender.send(
-      client.getClientOut(), 
-      new ClientRequestStatus(1, payload.getId(), null)
+      ),
+      "Error retrieving messages"
     );
 
-    PayloadSender.send(
-      client.getClientOut(), 
-      new MessagesToClient(1, payload.getChannelId(), msgs)
+    if (success) {
+      PayloadSender.send(
+        client.getClientOut(), 
+        new MessagesToClient(1, payload.getChannelId(), msgs)
+      );
+    }
+
+  }
+
+  private void removeFriend(AuthenticatedClientRequest client) {
+    RemoveFriend payload = (RemoveFriend)client.getPayload();
+    GlobalServices.users.removeFriend(payload.getUserId(), payload.getFriendId());
+    this.sendResponse(
+      client, 
+      true, 
+      String.format("Removing friend:%s", payload.getFriendId()),
+      "Error removing friend"
     );
 
   }
@@ -964,6 +676,59 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private String getUsername(AuthenticatablePayload payload) {
     return GlobalServices.users.getUsername(payload.getUserId());
+  }
+
+
+  /**
+   * 
+   * @param client
+   * @param success
+   * @param logSuccess
+   * @param logError
+   * @param errorMsgToClient
+   */
+  private void sendResponse(
+    AuthenticatedClientRequest client,
+    boolean success,
+    String log,
+    String errorMsgToClient
+  ) {
+    AuthenticatablePayload payload = (AuthenticatablePayload)client.getPayload();
+    if (!success) {
+      this.sendError(client, errorMsgToClient);
+      this.log(String.format(
+        "|ERROR| %s:%s: %s", 
+        this.getUsername(payload),
+        payload.getUserId(),
+        log
+      ));
+      return;
+    }
+    this.log(String.format(
+      "|SUCCESS| %s:%s: %s", 
+      this.getUsername(payload),
+      payload.getUserId(),
+      log
+    ));
+    this.sendSuccess(client);
+  }
+
+  private void sendSuccess(AuthenticatedClientRequest client) {
+    PayloadSender.send(
+      client.getClientOut(), 
+      new ClientRequestStatus(1, client.getPayload().getId(), null)
+    );
+  }
+
+  private void sendError(AuthenticatedClientRequest client, String errorMsg) {
+    PayloadSender.send(
+      client.getClientOut(), 
+      new ClientRequestStatus(1, client.getPayload().getId(), errorMsg)
+    );
+  }
+
+  private void log(String msg) {
+    GlobalServices.serverEventQueue.emitEvent(EventType.NEW_LOG, 1, msg);
   }
 
 }

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 import common.entities.ChannelMetadata;
+import common.entities.GroupChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.payload.ClientChannelsUpdate;
 import common.entities.payload.PayloadType;
@@ -56,6 +57,12 @@ public class ChannelUpdateHandler implements Subscribable {
     LinkedHashSet<ChannelMetadata> channels = GlobalServices.users.getChannels(userId);
     
     PayloadSender.send(userId, new ClientChannelsUpdate(1, channels));
+    for (ChannelMetadata data: channels) {
+      if (data instanceof GroupChannelMetadata) {
+        System.out.println(((GroupChannelMetadata)data).getOwnerId());
+      }
+    }
+    GlobalServices.users.save();
     //log
     GlobalServices.serverEventQueue.emitEvent(
       EventType.NEW_LOG, 

@@ -27,7 +27,7 @@ public class RemoveMessage extends AuthenticatablePayload {
     String messageId
   ) {
     super(
-      PayloadType.EDIT_MESSAGE,
+      PayloadType.REMOVE_MESSAGE,
       priority,
       userId,
       token

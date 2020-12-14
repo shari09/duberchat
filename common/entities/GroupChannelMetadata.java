@@ -44,7 +44,12 @@ public class GroupChannelMetadata extends ChannelMetadata {
   }
 
   public String getOwnerId() {
+
     return this.ownerId;
+  }
+
+  public void updateOwnerId(String ownerId) {
+    this.ownerId = ownerId;
   }
 
 }

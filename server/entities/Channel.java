@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import common.entities.ChannelMetadata;
+import common.entities.GroupChannelMetadata;
 import common.entities.Identifiable;
 import common.entities.Message;
 import common.entities.UserMetadata;
@@ -31,7 +32,6 @@ public abstract class Channel implements Identifiable, Serializable {
   private static final long serialVersionUID = 1L;
   private String channelId;
   private LinkedHashSet<UserMetadata> participants;
-  private LinkedHashSet<String> blacklist;
   private ConcurrentSkipListMap<Message, Message> messages;
   private ConcurrentHashMap<String, Message> idToMsgMapping;
   private int size;
@@ -52,13 +52,7 @@ public abstract class Channel implements Identifiable, Serializable {
     return this.lastModified;
   }
 
-  public synchronized void blacklistUser(String userId) {
-    this.blacklist.add(userId);
-  }
-
-  public synchronized boolean isBlacklisted(String userId) {
-    return this.blacklist.contains(userId);
-  }
+  
 
   @Override
   public String getId() {
@@ -75,12 +69,14 @@ public abstract class Channel implements Identifiable, Serializable {
 
   public synchronized boolean addParticipant(UserMetadata user) {
     this.participants.add(user);
+    this.metadata.updateParticipants(this.participants);
     this.size++;
     return true;
   }
 
   public synchronized boolean removeParticipant(UserMetadata user) {
     this.participants.remove(user);
+    this.metadata.updateParticipants(this.participants);
     this.size--;
     return true;
   }
@@ -95,6 +91,10 @@ public abstract class Channel implements Identifiable, Serializable {
 
   public void updateMetadata(ChannelMetadata metadata) {
     this.metadata = metadata;
+    if (this.metadata instanceof GroupChannelMetadata) {
+
+      System.out.println("updated"+((GroupChannelMetadata)this.metadata).getOwnerId());
+    }
   }
 
   /**

@@ -35,14 +35,14 @@ public class ChannelServices {
   public static void addMessages(String channelId, Message[] messages) {
     synchronized (GlobalClient.clientData) {
       ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
-      if (channelMessages != null) {
+      // if (channelMessages != null) {
         for (Message msg: messages) {
           System.out.println("message: " + msg);
           if (msg != null) {
             channelMessages.add(msg);
           }
         }
-      }
+      // }
     }
   }
 

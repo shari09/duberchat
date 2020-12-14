@@ -23,6 +23,7 @@ public abstract class ChannelMetadata implements Serializable, Comparable<Channe
   private String channelId;
   private Timestamp lastModified;
   private LinkedHashSet<UserMetadata> participants;
+  
 
   public ChannelMetadata(
     String channelId, 
@@ -54,7 +55,21 @@ public abstract class ChannelMetadata implements Serializable, Comparable<Channe
     return this.lastModified;
   }
 
- public void updateLastModified(Timestamp now) {
+  public void updateLastModified(Timestamp now) {
     this.lastModified = now;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof ChannelMetadata)) {
+      return false;
+    }
+    ChannelMetadata channel = (ChannelMetadata)other;
+    return (this.channelId.equals(channel.getChannelId()));
+  }
+
+  @Override
+  public int hashCode() {
+    return this.channelId.hashCode();
   }
 }

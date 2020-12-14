@@ -38,6 +38,8 @@ public enum EventType {
   FRIEND_UPDATE,
   /** Any updates relating to channels (updating, removing users, etc) */
   CHANNEL_UPDATE,
+  /** When an user leaves a channel */
+  LEFT_CHANNEL,
 
   /** New information for logging */
   NEW_LOG,

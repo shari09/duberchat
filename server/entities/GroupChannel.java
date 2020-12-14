@@ -32,6 +32,7 @@ public class GroupChannel extends Channel {
     super(participants);
     this.ownerId = ownerId;
     this.channelName = channelName;
+    this.blacklist = new LinkedHashSet<>();
     this.updateMetadata(this.getNewMetadata());
   }
 
@@ -45,6 +46,10 @@ public class GroupChannel extends Channel {
 
   public synchronized void removeFromBlacklist(UserMetadata user) {
     this.blacklist.remove(user);
+  }
+
+  public synchronized boolean isBlacklisted(UserMetadata user) {
+    return this.blacklist.contains(user);
   }
 
   public String getOwnerId() {
@@ -61,6 +66,7 @@ public class GroupChannel extends Channel {
 
   public void updateOwner(String userId) {
     this.ownerId = userId;
+    ((GroupChannelMetadata)this.getMetadata()).updateOwnerId(userId);
   }
 
   public ChannelMetadata getNewMetadata() {

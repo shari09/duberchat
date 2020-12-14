@@ -67,4 +67,18 @@ public class UserMetadata implements Serializable, Comparable<UserMetadata> {
     return other.getUsername().compareTo(this.getUsername());
   }
   
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof UserMetadata)) {
+      return false;
+    }
+    UserMetadata user = (UserMetadata)other;
+    return (this.userId.equals(user.getUserId()));
+  }
+
+  public int hashCode() {
+    return this.userId.hashCode();
+  }
+
+
 }

@@ -140,6 +140,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   private void transferOwnership(AuthenticatedClientRequest client) {
     TransferOwnership payload = (TransferOwnership) client.getPayload();
     boolean success = GlobalServices.channels.transferOwnership(
+      payload.getUserId(),
       payload.getRecipientId(), 
       payload.getChannelId()
     );
@@ -282,6 +283,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   private void removeParticipant(AuthenticatedClientRequest client) {
     RemoveParticipant payload = (RemoveParticipant) client.getPayload();
     boolean success = GlobalServices.channels.removeParticipant(
+      payload.getUserId(),
       payload.getParticipantId(),
       payload.getChannelId()
     );
@@ -328,6 +330,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   private void blacklistUser(AuthenticatedClientRequest client) {
     BlacklistUser payload = (BlacklistUser) client.getPayload();
     boolean success = GlobalServices.channels.blacklistUser(
+      payload.getUserId(),
       payload.getParticipantId(), 
       payload.getChannelId()
     );
@@ -393,7 +396,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         EventType.NEW_LOG, 
         1,
         String.format(
-          "%s:%s: Error adding %s:%s to channel:%s", 
+          "%s:%s: Error adding user:%s to channel:%s", 
           this.getUsername(payload),
           payload.getUserId(),
           payload.getParticipantId(),
@@ -408,7 +411,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       EventType.NEW_LOG, 
       1,
       String.format(
-        "%s:%s: Added %s:%s to channel:%s", 
+        "%s:%s: Added user:%s to channel:%s", 
         this.getUsername(payload),
         payload.getUserId(),
         payload.getParticipantId(),
@@ -424,13 +427,10 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void blockUser(AuthenticatedClientRequest client) {
     BlockUser payload = (BlockUser) client.getPayload();
-    String toBeBlockedId = GlobalServices.users.getUserId(
-      payload.getBlockUsername()
-    );
 
     boolean success = GlobalServices.users.blockUser(
       payload.getUserId(), 
-      toBeBlockedId
+      payload.getBlockUsername()
     );
 
     this.sendResponse(
@@ -516,13 +516,27 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
 
   private void sendMessage(AuthenticatedClientRequest client) {
     MessageToServer payload = (MessageToServer) client.getPayload();
-    boolean success = GlobalServices.channels.addMessage(
-      payload.getUserId(), 
-      payload.getChannelId(),
-      payload.getContent(), 
-      payload.getAttachment(), 
-      payload.getAttachmentName()
+
+    boolean success = GlobalServices.channels.allowMessaging(
+      payload.getUserId(),
+      payload.getChannelId()
     );
+    String msg = "";
+    if (success) {
+      success = GlobalServices.channels.addMessage(
+        payload.getUserId(), 
+        payload.getChannelId(),
+        payload.getContent(), 
+        payload.getAttachment(), 
+        payload.getAttachmentName()
+      );
+      if (!success) {
+        msg = "Channel not found";
+      }
+    } else {
+      msg = "You have been blocked/blacklisted";
+    }
+    
     this.sendResponse(
       client, 
       success, 
@@ -530,7 +544,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         "Sending message to channel:%s", 
         payload.getChannelId()
       ),
-      "Message sending failure"
+      msg
     );
   
   }
@@ -542,6 +556,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     String msg = "";
     if (recipientId == null) {
       msg = "Recipient does not exist";
+    } else if (GlobalServices.users.isBlocked(recipientId, payload.getUserId())) {
+      msg = "You are blocked";
     } else {
       success = GlobalServices.users.sendFriendRequest(
         payload.getUserId(), 

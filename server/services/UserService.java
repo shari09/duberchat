@@ -213,7 +213,7 @@ public class UserService {
    * 
    * @param blockerId
    * @param toBeBlockedId
-   * @return whether the blocker blocked the blockee or not
+   * @return                  whether the blocker blocked the blockee or not
    */
   public boolean isBlocked(String blockerId, String toBeBlockedId) {
     UserMetadata blockee = this.getUserMetadata(toBeBlockedId);
@@ -331,15 +331,15 @@ public class UserService {
   /**
    * 
    * @param blockerId
-   * @param toBeBlockedId
+   * @param blockeeUsername
    * @return false if the blockee doesn't exist
    */
-  public boolean blockUser(String blockerId, String toBeBlockedId) {
-    if (!this.usernameExist(toBeBlockedId)) {
+  public boolean blockUser(String blockerId, String blockeeUsername) {
+    if (!this.usernameExist(blockeeUsername)) {
       return false;
     }
     User user = this.users.get(blockerId);
-    User blocked = this.users.get(this.usernameToId.get(toBeBlockedId));
+    User blocked = this.users.get(this.usernameToId.get(blockeeUsername));
     user.removeFriend(blocked.getMetdata());
     blocked.removeFriend(user.getMetdata());
     user.addBlocked(blocked.getMetdata());

@@ -32,7 +32,8 @@ public class FriendInfoUpdater implements Subscribable {
         1, 
         user.getFriends(), 
         user.getIncomingFriendRequests(),
-        user.getOutgoingFriendRequests()
+        user.getOutgoingFriendRequests(),
+        user.getBlocked()
       )
     );
   }

@@ -26,6 +26,7 @@ public class ClientFriendsUpdate extends Payload {
   private final LinkedHashSet<UserMetadata> friends;
   private final ConcurrentHashMap<UserMetadata, String> incomingFriendRequests;
   private final ConcurrentHashMap<UserMetadata, String> outgoingFriendRequests;
+  private final LinkedHashSet<UserMetadata> blocked;
 
   /**
    * 
@@ -38,13 +39,15 @@ public class ClientFriendsUpdate extends Payload {
     int priority,
     LinkedHashSet<UserMetadata> friends,
     ConcurrentHashMap<UserMetadata, String> incomingFriendRequests,
-    ConcurrentHashMap<UserMetadata, String> outgoingFriendRequests
+    ConcurrentHashMap<UserMetadata, String> outgoingFriendRequests,
+    LinkedHashSet<UserMetadata> blocked
   ) {
     super(PayloadType.CLIENT_FRIENDS_UPDATE, priority);
 
     this.friends = friends;
     this.incomingFriendRequests = incomingFriendRequests;
     this.outgoingFriendRequests = outgoingFriendRequests;
+    this.blocked = blocked;
   }
 
   public LinkedHashSet<UserMetadata> getFriends() {
@@ -57,6 +60,10 @@ public class ClientFriendsUpdate extends Payload {
 
   public ConcurrentHashMap<UserMetadata, String> getOutgoingFriendRequests() {
     return this.outgoingFriendRequests;
+  }
+
+  public LinkedHashSet<UserMetadata> getBlocked() {
+    return this.blocked;
   }
 
 

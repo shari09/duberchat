@@ -24,8 +24,7 @@ public class RemoveMessage extends AuthenticatablePayload {
     String userId,
     Token token,
     String channelId,
-    String messageId,
-    String newContent
+    String messageId
   ) {
     super(
       PayloadType.EDIT_MESSAGE,

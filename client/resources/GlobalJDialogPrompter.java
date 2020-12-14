@@ -33,7 +33,7 @@ import common.entities.UserMetadata;
  * [description]
  * <p>
  * Created on 2020.12.13.
- * @author Candice Zhang
+ * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -301,7 +301,7 @@ public class GlobalJDialogPrompter {
     UserMetadata metadata,
     ClientSocket clientSocket
   ) {
-    String userId = GlobalClient.clientData.getUsername();
+    String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
     String[] choices = new String[] {
       "block",
@@ -567,7 +567,7 @@ public class GlobalJDialogPrompter {
       null
     ));
 
-    return choice;
+    return participantsIds[Arrays.asList(participantsUsernames).indexOf(choice)];
   }
 
   public static synchronized boolean confirmAction(Component parentComponent) {

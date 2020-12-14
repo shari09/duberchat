@@ -184,6 +184,7 @@ public class ClientSocket implements Runnable {
       case CLIENT_CHANNELS_UPDATE:
         ClientChannelsUpdate channelsUpdate = (ClientChannelsUpdate)payload;
         GlobalClient.clientData.setChannels(channelsUpdate.getChannels());
+        System.out.println(channelsUpdate.getChannels());
         this.notifyClientDataUpdate();
         break;
 

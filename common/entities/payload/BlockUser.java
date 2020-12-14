@@ -25,7 +25,7 @@ public class BlockUser extends AuthenticatablePayload {
     String blockUsername
   ) {
     super(
-      PayloadType.EDIT_MESSAGE,
+      PayloadType.BLOCK_USER,
       priority,
       userId,
       token

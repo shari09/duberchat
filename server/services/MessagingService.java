@@ -8,8 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import common.entities.Attachment;
 import common.entities.ChannelField;
 import common.entities.ChannelMetadata;
+import common.entities.GroupChannelMetadata;
 import common.entities.Message;
 import common.entities.UserMetadata;
+import common.entities.payload.ClientChannelsUpdate;
 import server.entities.Channel;
 import server.entities.EventType;
 import server.entities.GroupChannel;
@@ -97,11 +99,40 @@ public class MessagingService {
   private void addMsgToChannel(String channelId, Message message) {
     Channel channel = this.getChannel(channelId);
     if (channel == null) {
-      System.out.println(channelId + " channel doesn't exist");
       return;
     }
     channel.addMessage(message);
     this.updateChannel(channelId);
+  }
+
+  /**
+   * If it's a private channel, and one of the users block the other,
+   * they can't send messages.
+   * For group channels, if they are blacklisted, they also can't send messages
+   * @param senderId
+   * @param channelId
+   * @return
+   */
+  public boolean allowMessaging(String senderId, String channelId) {
+    Channel channel = this.getChannel(channelId);
+    if (channel instanceof PrivateChannel) {
+      LinkedHashSet<UserMetadata> participants = ((PrivateChannel)channel).getParticipants();
+      for (UserMetadata user: participants) {
+        if (!user.getUserId().equals(senderId)) {
+          if (
+            GlobalServices.users.isBlocked(user.getUserId(), senderId)
+            || GlobalServices.users.isBlocked(senderId, user.getUserId())
+          ) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    
+    GroupChannel gc = (GroupChannel)channel;
+    return !gc.isBlacklisted(GlobalServices.users.getUserMetadata(senderId));
+
   }
 
   /**
@@ -121,11 +152,11 @@ public class MessagingService {
     byte[] attachment,
     String attachmentName
   ) {
-    if (this.getChannel(channelId) == null) {
+    if (this.getChannel(channelId) == null || !this.allowMessaging(senderId, channelId)) {
       return false;
     }
     Message msg;
-    if (attachment == null) {
+    if (attachment != null) {
       String attachmentId = this.saveAttatchment(attachmentName, attachment);
       msg = new Message(content, senderId, channelId, attachmentId, attachmentName);
     } else {
@@ -145,7 +176,7 @@ public class MessagingService {
    * @return the messages/null
    */
   public Message[] getMessages(String channelId, Timestamp before, int numMessages) {
-    Channel channel = getChannel(channelId);
+    Channel channel = this.getChannel(channelId);
     if (channel == null) {
       return null;
     }
@@ -282,8 +313,8 @@ public class MessagingService {
    * @return if the user is blacklisted
    */
   public boolean addParticipant(String userId, String channelId) {
-    Channel channel = this.getChannel(channelId);
-    if (channel.isBlacklisted(userId)) {
+    GroupChannel channel = (GroupChannel)this.getChannel(channelId);
+    if (channel.isBlacklisted(GlobalServices.users.getUserMetadata(userId))) {
       return false;
     }
     channel.addParticipant(GlobalServices.users.getUserMetadata(userId));
@@ -301,19 +332,31 @@ public class MessagingService {
    * 
    * @param userId
    * @param channelId
+   * @param authorized     they're removing themself
    * @return if the participant is removed or not
    */
-  public boolean removeParticipant(String userId, String channelId) {
+  public boolean removeParticipant(
+    String userId, 
+    String removedId,
+    String channelId
+  ) {
     if (!this.hasAdminPermission(userId, channelId)) {
       return false;
     }
+
     GroupChannel gc = (GroupChannel) this.getChannel(channelId);
-    gc.removeParticipant(GlobalServices.users.getUserMetadata(userId));
-    GlobalServices.users.leaveChannel(userId, gc.getMetadata());
+    gc.removeParticipant(GlobalServices.users.getUserMetadata(removedId));
+    
+    GlobalServices.users.leaveChannel(removedId, gc.getMetadata());
     GlobalServices.serverEventQueue.emitEvent(
       EventType.CHANNEL_UPDATE, 
       1, 
       gc.getMetadata()
+    );
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.LEFT_CHANNEL, 
+      1, 
+      GlobalServices.users.getUserMetadata(removedId)
     );
     this.updateChannel(channelId);
     return true;
@@ -340,18 +383,19 @@ public class MessagingService {
   /**
    * 
    * @param userId
+   * @param blacklistedId
    * @param channelId
    * @return whether the user is blacklisted or not
    */
-  public boolean blacklistUser(String userId, String channelId) {
+  public boolean blacklistUser(String userId, String blacklistedId, String channelId) {
     if (!this.hasAdminPermission(userId, channelId)) {
       return false;
     }
-    Channel channel = this.getChannel(channelId);
-    UserMetadata user = GlobalServices.users.getUserMetadata(userId);
+    GroupChannel channel = (GroupChannel)this.getChannel(channelId);
+    UserMetadata user = GlobalServices.users.getUserMetadata(blacklistedId);
     channel.removeParticipant(user);
-    GlobalServices.users.leaveChannel(userId, channel.getMetadata());
-    channel.blacklistUser(userId);
+    GlobalServices.users.leaveChannel(blacklistedId, channel.getMetadata());
+    channel.addToBlacklist(GlobalServices.users.getUserMetadata(blacklistedId));
     GlobalServices.serverEventQueue.emitEvent(
       EventType.CHANNEL_UPDATE, 
       1, 
@@ -372,7 +416,24 @@ public class MessagingService {
       return false;
     }
     GroupChannel channel = (GroupChannel) this.getChannel(channelId);
-    this.removeParticipant(userId, channelId);
+    channel.removeParticipant(GlobalServices.users.getUserMetadata(userId));
+    
+    GlobalServices.users.leaveChannel(userId, channel.getMetadata());
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.CHANNEL_UPDATE, 
+      1, 
+      channel.getMetadata()
+    );
+    GlobalServices.serverEventQueue.emitEvent(
+      EventType.LEFT_CHANNEL, 
+      1, 
+      GlobalServices.users.getUserMetadata(userId)
+    );
+    this.updateChannel(channelId);
+
+
+    //owner
+
     if (!channel.getOwnerId().equals(userId)) {
       return true;
     }
@@ -392,16 +453,17 @@ public class MessagingService {
   /**
    * 
    * @param userId
+   * @param recipientId
    * @param channelId
    * @return true if successfully transferred
    */
-  public boolean transferOwnership(String userId, String channelId) {
+  public boolean transferOwnership(String userId, String recipientId, String channelId) {
     if (!this.hasAdminPermission(userId, channelId)) {
       return false;
     }
 
     GroupChannel gc = (GroupChannel) this.getChannel(channelId);
-    gc.updateOwner(userId);
+    gc.updateOwner(recipientId);
     GlobalServices.serverEventQueue.emitEvent(
       EventType.CHANNEL_UPDATE, 1, gc.getMetadata()
     );

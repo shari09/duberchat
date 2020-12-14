@@ -263,8 +263,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
 
     // private channels
     } else if (e.getSource() == this.privateChannelsList) {
-      int row = this.privateChannelsList.locationToIndex(e.getPoint());
-      this.privateChannelsList.setSelectedIndex(row);
       PrivateChannelMetadata metadata = this.privateChannelsList.getSelectedValue();
       if (metadata == null) {
         return;
@@ -277,14 +275,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
         this.chatFrame.setVisible(true);
         this.chatFrame.requestFocus();
         this.privateChannelsList.setSelectedValue(null, false);
-
-      // friend actions
-      } else if (SwingUtilities.isRightMouseButton(e)) {
-        GlobalJDialogPrompter.promptFriendAction(
-          this,
-          ChannelServices.getOtherUserInPrivateChannel(metadata),
-          this.getClientSocket()
-        );
       }
     }
   }

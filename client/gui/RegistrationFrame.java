@@ -136,6 +136,9 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     if (e.getSource() == this.registerButton) {
       String username = this.usernameField.getText();
       String description = this.descriptionField.getText();
+      if (description == null) {
+        description = "";
+      }
       String password = String.valueOf(this.passwordField.getPassword());
       String confirmPassword = String.valueOf(this.confirmPasswordField.getPassword());
       

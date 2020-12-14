@@ -13,8 +13,11 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Dimension;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
@@ -26,6 +29,7 @@ import javax.swing.JScrollPane;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
+import client.resources.GlobalJDialogPrompter;
 import client.services.ChannelServices;
 import common.entities.Token;
 import common.entities.ChannelMetadata;
@@ -38,7 +42,7 @@ import common.entities.payload.MessageToServer;
 import common.entities.payload.RequestMessages;
 
 @SuppressWarnings("serial")
-public class ChannelPanel extends JPanel implements ActionListener {
+public class ChannelPanel extends JPanel implements ActionListener, MouseListener {
   public static final Dimension SIZE = new Dimension(600, 800);
 
   private static final int MESSAGE_REQUEST_QUANTITY = 50;
@@ -68,6 +72,7 @@ public class ChannelPanel extends JPanel implements ActionListener {
     this.clientSocket = clientSocket;
 
     this.messagesList = new JList<Message>();
+    this.messagesList.addMouseListener(this);
     this.participantsList = new JList<UserMetadata>();
     this.requestMessages();
     this.syncClientData();
@@ -107,7 +112,7 @@ public class ChannelPanel extends JPanel implements ActionListener {
 
     this.setVisible(true);
   }
-
+  
   @Override
   public void actionPerformed(ActionEvent e) {
     String userId;
@@ -165,6 +170,35 @@ public class ChannelPanel extends JPanel implements ActionListener {
     }
   }
   
+  @Override
+  public void mouseReleased(MouseEvent e) {
+    if (e.getSource() == this.messagesList) {
+      if (SwingUtilities.isRightMouseButton(e)) {
+        int row = this.messagesList.locationToIndex(e.getPoint());
+        this.messagesList.setSelectedIndex(row);
+        Message msg = this.messagesList.getSelectedValue();
+        GlobalJDialogPrompter.promptMessageAction(
+          this,
+          msg,
+          this.clientSocket
+        );
+      }
+    }
+  }
+
+  @Override
+  public void mousePressed(MouseEvent e) {
+  }
+  @Override
+  public void mouseClicked(MouseEvent e) {
+  }
+  @Override
+  public void mouseEntered(MouseEvent e) {
+  }
+  @Override
+  public void mouseExited(MouseEvent e) {
+  }
+
   public void syncClientData() {
     System.out.println("syncing..");
     this.updateJLists();
@@ -200,7 +234,6 @@ public class ChannelPanel extends JPanel implements ActionListener {
       this.messagesList.setModel(messagesListModel);
       this.messagesList.revalidate();
     }
-    //System.out.println(Integer.toString(this.messagesList.getModel().getSize()) + " messages in channel " + this.getChannelTitle());
     LinkedHashSet<UserMetadata> participants = ChannelServices.getChannelByChannelId(this.channelId).getParticipants();
     if (participants != null) {
       DefaultListModel<UserMetadata> participantsListModel = new DefaultListModel<>();

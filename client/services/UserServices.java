@@ -28,16 +28,16 @@ public class UserServices {
     return false;
   }
 
-  public static synchronized boolean isOwned(String channelId) {
-    String userId = GlobalClient.clientData.getUserId();
-    LinkedHashSet<ChannelMetadata> channels = GlobalClient.clientData.getChannels();
-    for (ChannelMetadata channel: channels) {
-      if (channel instanceof GroupChannelMetadata) {
-        if(((GroupChannelMetadata)channel).getOwnerId().equals(userId)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
+  // public static synchronized boolean isOwned(String channelId) {
+  //   String userId = GlobalClient.clientData.getUserId();
+  //   LinkedHashSet<ChannelMetadata> channels = GlobalClient.clientData.getChannels();
+  //   for (ChannelMetadata channel: channels) {
+  //     if (channel instanceof GroupChannelMetadata) {
+  //       if(((GroupChannelMetadata)channel).getOwnerId().equals(userId)) {
+  //         return true;
+  //       }
+  //     }
+  //   }
+  //   return false;
+  // }
 }

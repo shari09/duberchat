@@ -196,6 +196,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
           GlobalJDialogPrompter.promptRespondFriendRequest(
             this,
             selected.getSenderMetadata(),
+            selected.getRequestMessage(),
             this.getClientSocket()
           );
         }
@@ -220,6 +221,25 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
         UserMetadata metadata = this.onlineFriends.getSelectedValue();
         if (metadata != null) {
           GlobalJDialogPrompter.displayUserMetadata(this, metadata);
+        }
+      }
+
+    // friend actions
+    } else if (SwingUtilities.isRightMouseButton(e)) {
+      if (e.getSource() == this.friends) {
+        int row = this.friends.locationToIndex(e.getPoint());
+        this.friends.setSelectedIndex(row);
+        UserMetadata metadata = this.onlineFriends.getSelectedValue();
+        if (metadata != null) {
+          GlobalJDialogPrompter.promptFriendAction(this, metadata, this.getClientSocket());
+        }
+
+      } else if (e.getSource() == this.onlineFriends) {
+        int row = this.onlineFriends.locationToIndex(e.getPoint());
+        this.onlineFriends.setSelectedIndex(row);
+        UserMetadata metadata = this.onlineFriends.getSelectedValue();
+        if (metadata != null) {
+          GlobalJDialogPrompter.promptFriendAction(this, metadata, this.getClientSocket());
         }
       }
     }

@@ -68,15 +68,7 @@ public class UserChatFrame extends UserFrame {
 
   @Override
   public void clientDataUpdated(ClientData updatedClientData) {
-    for(int i = 0; i < this.tabbedPane.getTabCount(); i++) {
-      Component comp = this.tabbedPane.getComponentAt(i);
-      if (comp instanceof ChannelPanel) {
-        ChannelPanel panel = ((ChannelPanel)comp);
-        this.tabbedPane.setTitleAt(i, panel.getChannelTitle());
-        panel.syncClientData();
-        System.out.println("data synced for channel " + panel.getChannelTitle());
-      }
-    }
+    this.syncTabs();
     this.repaint();
   }
 
@@ -90,6 +82,7 @@ public class UserChatFrame extends UserFrame {
       this.getClientSocket()
     );
     this.tabbedPane.addTab(panel.getChannelTitle(), panel);
+    this.syncTabs();
     this.requestFocus();
   }
 
@@ -106,4 +99,16 @@ public class UserChatFrame extends UserFrame {
     return false;
   }
 
+  private void syncTabs() {
+    for(int i = 0; i < this.tabbedPane.getTabCount(); i++) {
+      Component comp = this.tabbedPane.getComponentAt(i);
+      if (comp instanceof ChannelPanel) {
+        ChannelPanel panel = ((ChannelPanel)comp);
+        this.tabbedPane.setTitleAt(i, panel.getChannelTitle());
+        panel.syncClientData();
+        System.out.println("data synced for channel " + panel.getChannelTitle());
+      }
+    }
+    this.repaint();
+  }
 }

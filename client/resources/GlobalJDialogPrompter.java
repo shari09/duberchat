@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.BoxLayout;
 import client.entities.ClientSocket;
 import client.services.UserServices;
@@ -15,6 +16,9 @@ import java.awt.Component;
 import java.beans.Expression;
 import java.util.LinkedHashSet;
 
+import common.entities.payload.RequestAttachment;
+import common.entities.payload.EditMessage;
+import common.entities.payload.RemoveMessage;
 import common.entities.payload.ChangeProfile;
 import common.entities.payload.ChangePassword;
 import common.entities.payload.LeaveChannel;
@@ -27,13 +31,14 @@ import common.entities.payload.FriendRequestResponse;
 import common.entities.ProfileField;
 import common.entities.Constants;
 import common.entities.GroupChannelMetadata;
+import common.entities.Message;
 import common.entities.Token;
 import common.entities.UserMetadata;
 /**
  * [description]
  * <p>
  * Created on 2020.12.13.
- * @author Candice Zhang, Shari Sun
+ * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -219,15 +224,21 @@ public class GlobalJDialogPrompter {
   public static synchronized void promptRespondFriendRequest(
     Component parentComponent,
     UserMetadata sender,
+    String requestMessage,
     ClientSocket clientSocket
   ) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
 
+    String strToShow = "Accept friend request from " + sender.getUsername() + "?";
+    if ((requestMessage != null) || (requestMessage.length() > 0)) {
+      strToShow += "\n" + requestMessage;
+    }
+
     String[] options = new String[] {"Accept", "Decline", "Cancel"};
     int choice = JOptionPane.showOptionDialog(
       parentComponent,
-      "Accept friend request from " + sender.getUsername() + "?",
+      strToShow,
       "Friend request response",
       JOptionPane.YES_NO_CANCEL_OPTION,
       JOptionPane.QUESTION_MESSAGE,
@@ -339,6 +350,101 @@ public class GlobalJDialogPrompter {
     }
   }
 
+  public static synchronized void promptMessageAction(
+    Component parentComponent,
+    Message message,
+    ClientSocket clientSocket
+  ) {
+    String userId = GlobalClient.clientData.getUserId();
+    Token token = GlobalClient.clientData.getToken();
+    String[] choices;
+    System.out.println(message.hasAttachment());
+    if (message.getSenderId().equals(userId)) {
+      if (message.hasAttachment()) {
+        choices = new String[] {
+          "edit message", "remove message", "download attachment"
+        };
+      } else {
+        choices = new String[] {
+          "edit message", "remove message"
+        };
+      }
+    } else if (message.hasAttachment()) {
+      choices = new String[] {
+        "download attachment"
+      };
+    } else {
+      return;
+    }
+    String title = message.getContent();
+    if (title.length() >= 10) {
+      title = title.substring(0, 7) + "...";
+    }
+    String choice = (String)(JOptionPane.showInputDialog(
+      parentComponent,
+      "Select an operation",
+      title,
+      JOptionPane.PLAIN_MESSAGE,
+      null,
+      choices,
+      null
+    ));
+    if ((choice == null) || (choice.length() == 0)) {
+      return;
+    }
+
+    if (choice.equals("edit message")) {
+      JTextArea area = new JTextArea(5,20);
+      area.setText(message.getContent());
+      area.setEditable(true);
+      int result = JOptionPane.showConfirmDialog(
+        parentComponent,
+        area,
+        "Edit message",
+        JOptionPane.OK_CANCEL_OPTION,
+        JOptionPane.PLAIN_MESSAGE
+      );
+      if (result != JOptionPane.OK_OPTION) {
+        return;
+      }
+      String newContent = area.getText();
+      if ((newContent != null) && (newContent.length() > 0)) {
+        clientSocket.sendPayload(
+          new EditMessage(
+            1,
+            userId,
+            token,
+            message.getChannelId(),
+            message.getId(),
+            newContent
+          )
+        );
+      }
+    } else if (choice.equals("remove message")) {
+      if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
+        clientSocket.sendPayload(
+          new RemoveMessage(
+            1,
+            userId,
+            token,
+            message.getChannelId(),
+            message.getId()
+          )
+        );
+      }
+
+    } else if (choice.equals("download attachment")) {
+      clientSocket.sendPayload(
+        new RequestAttachment(
+          1,
+          userId,
+          token,
+          message.getAttachmentId()
+        )
+      );
+    }
+  }
+
   public static synchronized void promptGroupChannelAction(
     Component parentComponent,
     GroupChannelMetadata metadata,
@@ -349,7 +455,7 @@ public class GlobalJDialogPrompter {
 
     String[] options;
     // admin options
-    if (UserServices.isOwned(metadata.getChannelId())) {
+    if (metadata.getOwnerId().equals(userId)) {
       options = new String[] {
         "add participant",
         "remove participant",

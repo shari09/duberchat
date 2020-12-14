@@ -32,17 +32,17 @@ public class ChannelServices {
     return null;
   }
 
-  public static void addMessages(String channelId, Message[] messages) {
-    synchronized (GlobalClient.clientData) {
-      ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
-      // if (channelMessages != null) {
-        for (Message msg: messages) {
-          System.out.println("message: " + msg);
-          if (msg != null) {
-            channelMessages.add(msg);
-          }
-        }
-      // }
+  public static synchronized void addMessages(String channelId, Message[] messages) {
+    ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
+    if (channelMessages == null) {
+      GlobalClient.messagesData.put(channelId, new ConcurrentSkipListSet<Message>());
+      channelMessages = GlobalClient.messagesData.get(channelId);
+    }
+    for (Message msg: messages) {
+      if (msg != null) {
+        channelMessages.add(msg);
+        System.out.println("message: " + msg + "added");
+      }
     }
   }
 

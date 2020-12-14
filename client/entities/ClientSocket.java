@@ -190,9 +190,7 @@ public class ClientSocket implements Runnable {
 
       case MESSAGES_TO_CLIENT:
         MessagesToClient messagesUpdate = (MessagesToClient)payload;
-        System.out.println("messages received");
         ChannelServices.addMessages(messagesUpdate.getChannelId(), messagesUpdate.getMessages());
-        System.out.println("messages added");
         this.notifyClientDataUpdate();
         break;
 

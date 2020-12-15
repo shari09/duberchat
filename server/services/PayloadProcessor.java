@@ -16,13 +16,20 @@ import server.entities.EventType;
 import server.entities.User;
 
 /**
- * [insert description]
+ * All the client payload comes here first.
+ * This is subscribed to {@code PAYLOAD} event.
+ * <p>
+ * This authenticate clients differently depending on whether or not
+ * they are creating a new user, logging in, or sending another request
+ * that needs to be authenticated (token).
  * <p>
  * Created on 2020.12.05.
  * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
+ * @see Token
+ * @see AuthenticatedPayloadProcessor
  */
 
 public class PayloadProcessor implements Subscribable {
@@ -32,9 +39,7 @@ public class PayloadProcessor implements Subscribable {
     this.payloadQueue = new PriorityBlockingQueue<>();
   }
 
-  /**
-   * Subscribes to all the events
-   */
+  @Override
   public void activate() {
     GlobalServices.serverEventQueue.subscribe(EventType.PAYLOAD, this);
   }
@@ -43,8 +48,7 @@ public class PayloadProcessor implements Subscribable {
   public void onEvent(Object emitter, EventType eventType) {
     ClientRequest clientReq = (ClientRequest) emitter;
     this.payloadQueue.add(clientReq);
-    // authenticate clients differently depending on whether or not
-    // they are creating a new user, logging in, or sending another request
+    
     while (!this.payloadQueue.isEmpty()) {
       ClientRequest client = this.payloadQueue.poll();
       if (client.getPayload().getType() == PayloadType.LOGIN) {
@@ -59,7 +63,15 @@ public class PayloadProcessor implements Subscribable {
   }
 
   /**
-   * @param client
+   * Authenticates a returning user for logging in 
+   * and sends corresponding responses/events based on whether the user
+   * successfully logs in or not.
+   * <p>
+   * Then, this will send the client data about their profile.
+   * <p>
+   * This also emits an {@code AUTHENTICATED_CLIENT} event.
+   * @param client   the client request data
+   * @see            AuthenticatedClientHandler
    */
   private void authenticateLogin(ClientRequest client) {
     Login payload = (Login) client.getPayload();
@@ -80,7 +92,7 @@ public class PayloadProcessor implements Subscribable {
     }
 
     
-    PayloadService.sendResponse(
+    CommunicationService.sendResponse(
       client, 
       success, 
       String.format("Logging in username:%s", payload.getUsername()), 
@@ -95,13 +107,16 @@ public class PayloadProcessor implements Subscribable {
         1,
         new Client(user.getId(), client.getClientOut(), client.getSocket())
       );
-      PayloadService.send(client.getClientOut(), this.getClientInfo(user));
+      CommunicationService.send(client.getClientOut(), this.getClientInfo(user));
     }
     
   }
 
   /**
-   * @param client
+   * Authentiate the client's token to make sure they are authorized.
+   * If they are, the payload will be thrown into {@link AuthenticatedPayloadProcessor}
+   * and continue from there. If not, it will stop here and do nothing.
+   * @param client     the client request data
    */
   private void authenticateToken(ClientRequest client) {
     AuthenticatablePayload payload = (AuthenticatablePayload) client.getPayload();
@@ -111,10 +126,10 @@ public class PayloadProcessor implements Subscribable {
       payload.getToken()
     );
 
-    PayloadService.sendResponse(
+    CommunicationService.sendResponse(
       client, 
       authenticated, 
-      String.format("Authenticating user:%s", payload.getUserId()), 
+      String.format("Authenticating request from user:%s", payload.getUserId()), 
       "Unauthorized"
     );
 
@@ -133,7 +148,16 @@ public class PayloadProcessor implements Subscribable {
   }
 
   /**
-   * @param client
+   * Creates a new user and send responses depending the status
+   * of this request.
+   * <p>
+   * Then, this will send the client data about their profile,
+   * which is just the information they put when registering 
+   * an account.
+   * <p>
+   * This also emits an {@code AUTHENTICATED_CLIENT} event.
+   * @param client     the client request data
+   * @see              AuthenticatedClientHandler
    */
   private void newUser(ClientRequest client) {
     NewUser payload = (NewUser) client.getPayload();
@@ -148,7 +172,7 @@ public class PayloadProcessor implements Subscribable {
       success = true;
     }
 
-    PayloadService.sendResponse(
+    CommunicationService.sendResponse(
       client, 
       success, 
       String.format("New user with username:%s", payload.getUsername()), 
@@ -162,11 +186,19 @@ public class PayloadProcessor implements Subscribable {
         1,
         new Client(user.getId(), client.getClientOut(), client.getSocket())
       );
-      PayloadService.send(client.getClientOut(), this.getClientInfo(user));
+      CommunicationService.send(client.getClientOut(), this.getClientInfo(user));
     }   
 
   }
 
+  /**
+   * When a new/returning user logs in, the server updates them
+   * with their profile data.
+   * @param user  the user
+   * @return      the ClientInfo
+   * @see         ClientInfo
+   * @see         ClientData
+   */
   private ClientInfo getClientInfo(User user) {
     Token token = TokenService.generateToken();
     GlobalServices.tokens.put(user.getId(), token);

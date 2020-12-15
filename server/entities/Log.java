@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * 
+ * One log that contains the log message and timestamp.
  * <p>
  * Created on 2020.12.12.
  * @author Shari Sun
@@ -19,10 +19,12 @@ public class Log implements Serializable, Comparable<Log> {
   private static final long serialVersionUID = 1L;
   private Timestamp created;
   private String log;
+  private LogType type;
 
-  public Log(String log) {
+  public Log(String log, LogType type) {
     this.created = new Timestamp(System.currentTimeMillis());
     this.log = log;
+    this.type = type;
   }
 
   public Timestamp getCreated() {
@@ -33,10 +35,9 @@ public class Log implements Serializable, Comparable<Log> {
     return this.log;
   }
 
-  // @Override
-  // public int compareTo(Log other) {
-  //   return other.getCreated().compareTo(this.created);
-  // }
+  public LogType getType() {
+    return this.type;
+  }
 
   @Override
   public int compareTo(Log other) {

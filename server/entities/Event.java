@@ -1,7 +1,7 @@
 package server.entities;
 
 /**
- * [insert description]
+ * An event used for {@link EventQueueService}.
  * <p>
  * Created on 2020.12.06.
  * @author Shari Sun
@@ -14,6 +14,13 @@ public class Event implements Comparable<Event> {
   private EventType type;
   private Object emitter;
   
+  /**
+   * Creates a new event.
+   * @param type          the event type
+   * @param priority      the event priority/importance
+   * @param emitter       the emitter/source of event
+   * @see                 EventType
+   */
   public Event(EventType type, int priority, Object emitter) {
     this.type = type;
     this.priority = priority;

@@ -6,7 +6,7 @@ import common.entities.UserStatus;
 import server.entities.EventType;
 
 /**
- * [insert description]
+ * Clears the client's cache data off the server once they disconnect.
  * <p>
  * Created on 2020.12.07.
  * 
@@ -18,7 +18,7 @@ public class ClientDisconnectHandler implements Subscribable {
   public ClientDisconnectHandler() {
 
   }
-
+  @Override
   public void activate() {
     GlobalServices.serverEventQueue.subscribe(EventType.REMOVE_CLIENT_CONNECTION, this);
   }

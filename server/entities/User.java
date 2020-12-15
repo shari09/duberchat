@@ -13,7 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
- * [insert description]
+ * Creates a {@code User} data object that has getters/setters
+ * and can be saved to database.
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun, Candice Zhang

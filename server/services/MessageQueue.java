@@ -9,9 +9,11 @@ import common.entities.MessageUpdateType;
 import common.entities.UserMetadata;
 import common.entities.payload.server_to_client.MessageUpdateToClient;
 import server.entities.EventType;
+import server.entities.LogType;
 
 /**
- * A queue that handles message changes and updates connected relevant clients.
+ * A queue that listens for new/edit/remove of messages.
+ * It sends the message to all the connected clients in the channel.
  * <p>
  * Created on 2020.12.08.
  * 
@@ -21,11 +23,9 @@ import server.entities.EventType;
  */
 public class MessageQueue implements Subscribable {
   private ConcurrentLinkedQueue<Message> queue;
-  private boolean running;
 
   public MessageQueue() {
     this.queue = new ConcurrentLinkedQueue<>();
-    this.running = false;
   }
 
   @Override
@@ -39,17 +39,19 @@ public class MessageQueue implements Subscribable {
   public void onEvent(Object emitter, EventType eventType) {
     Message message = (Message) emitter;
     this.queue.add(message);
-    // if (this.running) {
-    // return;
-    // }
-    // this.running = true;
     while (!this.queue.isEmpty()) {
       Message msg = this.queue.poll();
       this.sendMessage(msg, eventType);
     }
-    // this.running = false;
   }
 
+  /**
+   * Iterates through all the participants in the channel
+   * and send corresponding payloads to each participant.
+   * @param message        the updated message
+   * @param eventType      the message update type
+   * @see                  MessageUpdateType
+   */
   private void sendMessage(Message message, EventType eventType) {
     String channelId = message.getChannelId();
     MessageUpdateType type = null;
@@ -65,7 +67,10 @@ public class MessageQueue implements Subscribable {
         type = MessageUpdateType.REMOVE;
         break;
       default:
-        System.out.println("Wrong event");
+        CommunicationService.log(String.format(
+          "Wrong event: %s", 
+          eventType 
+        ), LogType.ERROR);
         return;
     }
 
@@ -74,9 +79,8 @@ public class MessageQueue implements Subscribable {
     while (itr.hasNext()) {
       UserMetadata user = itr.next();
       String userId = user.getUserId();
-      // TODO: fix the consistency of where to check client existence
       if (GlobalServices.clientConnections.hasClient(userId)) {
-        PayloadService.send(
+        CommunicationService.send(
           GlobalServices.clientConnections.getClient(userId),
           new MessageUpdateToClient(1, channelId, message, type)
         );

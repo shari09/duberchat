@@ -6,8 +6,10 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import server.entities.LogType;
+
 /**
- * [insert description]
+ * Loading/saving data.
  * <p>
  * Created on 2020.12.08.
  * @author Shari Sun
@@ -17,9 +19,9 @@ import java.io.ObjectOutputStream;
 public class DataService {
   /**
    * Loads a file from the specified path.
-   * @param <T>
-   * @param filePath
-   * @return           file data or null
+   * @param <T>        the type of object
+   * @param filePath   the file path
+   * @return           file data or null (file does not exist)
    */
   @SuppressWarnings("unchecked")
   public synchronized static <T> T loadData(String filePath) {
@@ -31,12 +33,22 @@ public class DataService {
       fileIn.close();
       objIn.close();
     } catch (Exception e) {
-      System.out.println("Error loading " + filePath);
-      e.printStackTrace();
+      CommunicationService.log(String.format(
+        "Loading %s: %s \n%s",
+        filePath, 
+        e.getMessage(),
+        CommunicationService.getStackTrace(e)
+      ), LogType.ERROR);
     }
     return data;
   }
 
+  /**
+   * Serializes and saves data to a specific path.
+   * @param <T>        the type of object
+   * @param data       the object/data being saved
+   * @param filePath   the file path to save the data to
+   */
   public synchronized static <T> void saveData(T data, String filePath) {
     try {
       new File(filePath).getParentFile().mkdirs();
@@ -47,8 +59,12 @@ public class DataService {
       fileOut.close();
       objOut.close();
     } catch (Exception e) {
-      System.out.println("Error saving " + filePath);
-      e.printStackTrace();
+      CommunicationService.log(String.format(
+        "Saving %s: %s \n%s",
+        filePath, 
+        e.getMessage(),
+        CommunicationService.getStackTrace(e)
+      ), LogType.ERROR);
     }
   }
 }

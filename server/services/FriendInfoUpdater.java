@@ -5,13 +5,16 @@ import server.entities.EventType;
 import server.entities.User;
 
 /**
- * [insert description]
+ * Updates the user about new friend related data.
+ * This includes sending/cancelling/accepting/reject friend requests
+ * and blocking/removing friend.
  * <p>
  * Created on 2020.12.08.
  * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
+ * @see EventType.FRIEND_UPDATE
  */
 public class FriendInfoUpdater implements Subscribable {
   public FriendInfoUpdater() {
@@ -26,7 +29,7 @@ public class FriendInfoUpdater implements Subscribable {
   @Override
   public void onEvent(Object emitter, EventType eventType) {
     User user = (User) emitter;
-    PayloadService.send(
+    CommunicationService.send(
       user.getId(), 
       new ClientFriendsUpdate(
         1, 

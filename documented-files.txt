@@ -1,0 +1,21 @@
+Server - entry point: Server.java:
+
+I didn't document what I found repetitive so not all methods/class variables
+are documented in the following files.
+
+UserService.java
+Token.java
+Subscribable.java
+
+
+
+Client - entry point: ClientMain.java:
+
+
+
+
+
+
+Common:
+
+PayloadType.java - all our payload types

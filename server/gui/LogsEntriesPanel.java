@@ -33,11 +33,12 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
   private JButton more;
   private int numLogs;
   private int totalLogs;
+  private int loadNumLogs = 5;
 
   public LogsEntriesPanel() {
     super("Logs");
-    this.curPanel = new LogsPanel("Current");
-    this.numLogs = 5;
+    this.curPanel = new LogsPanel("Current Session");
+    this.numLogs = this.loadNumLogs;
     this.totalLogs = GlobalServices.logging.getNumEntries();
     
     
@@ -61,7 +62,7 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
       
     Button current = super.addEntry("Current", this.curPanel);
     this.setFixedDefaultEntry(current);
-    this.addLogEntries(GlobalServices.logging.getEntries(1, 5));
+    this.addLogEntries(GlobalServices.logging.getEntries(1, this.loadNumLogs-1));
 
     this.activate();
   }
@@ -69,12 +70,13 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
   private void addLogEntries(CopyOnWriteArrayList<LogEntrySet> logEntries) {
     for (int i = 0; i < logEntries.size(); i++) {
       LogEntrySet entrySet = logEntries.get(i);
-      LogsPanel panel = new LogsPanel(entrySet.getLastModified().toString());
+      String time = entrySet.getLastModified().toString();
+      LogsPanel panel = new LogsPanel("Log from "+time);
       for (Log log: entrySet) {
         panel.addLog(log);
       }
       super.addEntry(
-        entrySet.getLastModified().toString(),
+        time.substring(0, time.length()-4),
         panel
       );
     }
@@ -82,8 +84,8 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
 
 
   private void loadMore() {
-    this.addLogEntries(GlobalServices.logging.getEntries(this.numLogs, 5));
-    this.numLogs += 5;
+    this.addLogEntries(GlobalServices.logging.getEntries(this.numLogs, this.loadNumLogs));
+    this.numLogs += this.loadNumLogs;
 
     if (this.numLogs >= this.totalLogs) {
       this.more.setVisible(false);
@@ -97,7 +99,7 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
-    this.curPanel.addLog(new Log((String)emitter));
+    this.curPanel.addLog((Log)emitter);
   }
   
 }

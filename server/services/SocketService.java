@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import common.entities.Constants;
 import server.entities.EventType;
+import server.entities.LogType;
 
 /**
  * The main server socket for handling client socket connections and receiving
@@ -20,27 +21,41 @@ import server.entities.EventType;
 public class SocketService implements Runnable {
   private ServerSocket server;
   private boolean running = true;
+  private int port;
 
   public SocketService() {
 
   }
 
-  public void start() {
+  /**
+   * Starts the socket at a new thread so the main thread can return to its tasks.
+   * @param port   the port at which to start the socket at
+   */
+  public void start(int port) {
     Thread thread = new Thread(this);
+    this.port = port;
     thread.start();
   }
 
+  /**
+   * Starts the socket that looks out for client connections.
+   * Once a client is connected, it will emit a {@code NEW_CLIENT}
+   * event and pass the client to the client handler queue.
+   * <p>
+   * This also sets a timeout on the client socket to disconnect
+   * them on inactivity.
+   * @see ClientHandler
+   * @see Constants#SOCKET_TIMEOUT
+   */
+  @Override
   public void run() {
     try {
-      this.server = new ServerSocket(5000);
+      this.server = new ServerSocket(port);
 
       while (running) {
         Socket client = server.accept();
-        //TODO: add timeout back
         client.setSoTimeout(Constants.SOCKET_TIMEOUT);
-        GlobalServices.serverEventQueue.emitEvent(
-          EventType.NEW_LOG, 1, "[SUCCESS] Client accepted: " + client.toString()
-        );
+        CommunicationService.log("Client accepted: " + client.toString(), LogType.SUCCESS);
         GlobalServices.serverEventQueue.emitEvent(
           EventType.NEW_CLIENT,
           1, 
@@ -48,9 +63,11 @@ public class SocketService implements Runnable {
         );
       }
     } catch (Exception e) {
-      System.out.println("Error accepting connection");
-      e.printStackTrace();
-      // this.running = false;
+      CommunicationService.log(String.format(
+        "Accepting connection: %s \n %s", 
+        e.getMessage(),
+        CommunicationService.getStackTrace(e)
+      ), LogType.ERROR);
     }
   }
 }

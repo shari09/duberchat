@@ -11,15 +11,27 @@ import common.entities.payload.Payload;
 import common.entities.payload.PayloadType;
 import server.entities.ClientRequest;
 import server.entities.EventType;
+import server.entities.LogType;
 
 /**
- * [insert description]
+ * Handles client sockets.
+ * This server implements parallel blocking threads
+ * where a thread will be blocked while waiting for client input.
+ * <p>
+ * This waits for a request to come, then throws the payload
+ * into the payload processor for it to process.
+ * <p>
+ * It also checks to see if a client disconnected.
+ * If so, it emits a {@code CLIENT_DISCONNECTED} event
+ * and subscribers can handle the disconnection of a client.
  * <p>
  * Created on 2020.12.07.
  * 
  * @author Shari Sun
- * @version 1.1.0
+ * @version 1.0.0
  * @since 1.0.0
+ * @see PayloadProcessor
+ * @see ClientDisconnectHandler
  */
 public class ClientHandler implements Runnable {
   private Socket socket;
@@ -34,21 +46,15 @@ public class ClientHandler implements Runnable {
       this.input = new ObjectInputStream(client.getInputStream());
       this.running = true;
 
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        "[SUCCESS] Client connected: " + client.toString()
-      );
+      CommunicationService.log("Client connected: " + client.toString(), LogType.SUCCESS);
     } catch (Exception e) {
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        "[ERROR] Client connection"
-      );
-      e.printStackTrace();
+      CommunicationService.log(String.format(
+        "Client connection: \n%s", CommunicationService.getStackTrace(e)
+      ), LogType.ERROR);
     }
   }
 
+  @Override
   public void run() {
     try {
       // accepts payload from clients
@@ -59,15 +65,11 @@ public class ClientHandler implements Runnable {
         }
         Payload payload = (Payload) obj;
         if (payload.getType() != PayloadType.KEEP_ALIVE) {
-          GlobalServices.serverEventQueue.emitEvent(
-            EventType.NEW_LOG, 
-            1,
-            String.format(
-              "[SUCCESS] Socket:%s sent %s payload",
-              payload.getType().toString(),
-              this.socket.toString()
-            )
-          );
+          CommunicationService.log(String.format(
+            "Socket:%s sent %s payload",
+            this.socket.toString(),
+            payload.getType().toString()
+          ), LogType.SUCCESS);
           GlobalServices.serverEventQueue.emitEvent(
             EventType.PAYLOAD, 
             1, 
@@ -83,50 +85,45 @@ public class ClientHandler implements Runnable {
     } catch (SocketException e) { // if the client just exited without closing the socket
       this.handleDisconnection(" has reset their connection");
     } catch (Exception e) {
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format(
-          "[ERROR] Failed to receive payload from the client\n%s", 
-          e.getMessage()
-        )
-      );
-      e.printStackTrace();
+      CommunicationService.log(String.format(
+        "Failed to receive payload from the client\n%s\n%s", 
+        e.getMessage(),
+        CommunicationService.getStackTrace(e)
+      ), LogType.ERROR);
     }
     this.close();
   }
 
+  /**
+   * Sends the appropriate logs and events once a client disconnected.
+   */
   private void handleDisconnection(String disconnectMsg) {
     String userId = GlobalServices.clientConnections.getUserId(this.output);
     if (userId == null) {
-      GlobalServices.serverEventQueue.emitEvent(
-        EventType.NEW_LOG, 
-        1,
-        String.format("[CONNECTION] %s %s\n", this.socket, disconnectMsg)
-      );
+      CommunicationService.log(String.format(
+        "%s %s\n", this.socket, disconnectMsg
+      ), LogType.CONNECTION);
       return;
     }
     String username = GlobalServices.users.getUsername(userId);
     GlobalServices.serverEventQueue.emitEvent(
       EventType.CLIENT_DISCONNECTED, 2, this.output
     );
-    GlobalServices.serverEventQueue.emitEvent(
-      EventType.NEW_LOG, 
-      0,
-      String.format(
-        "[CONNECTION] User %s:%s at %s %s\n", 
-        username, 
-        userId, 
-        this.socket, 
-        disconnectMsg
-      )
-    );
+    CommunicationService.log(String.format(
+      "User %s:%s at %s %s\n", 
+      username, 
+      userId, 
+      this.socket, 
+      disconnectMsg
+    ), LogType.CONNECTION);
     
     this.running = false;
   }
 
+  /**
+   * close the sockets after the client disconnected.
+   */
   private void close() {
-    // closing after client is no longer running
     try {
       this.input.close();
       this.output.close();
@@ -134,8 +131,11 @@ public class ClientHandler implements Runnable {
     } catch (SocketException e) {
 
     } catch (Exception e) {
-      System.out.println("Failed to close socket");
-      e.printStackTrace();
+      CommunicationService.log(String.format(
+        "Failed to close socket: %s \n%s", 
+        e.getMessage(),
+        CommunicationService.getStackTrace(e)
+      ), LogType.ERROR);
     }
   }
 }

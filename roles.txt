@@ -4,38 +4,19 @@ Include a readme.txt that identifies the work done by each student
 Shari - server
 - client/server connection
 - communications protocol
-- data storing
-- message/channel creation/interaction on server side
-- server gui/swing
-- sending all clients revelant info
-- admin power
+- server sending/receiving payloads
+- data storing/loading
+- server gui/swing/application (I actually spent lots of efforts trying to make it look nice)
+- admin power 
 
 
 Candice - client
 - communications protocol
-- client gui/swing
+- client gui/swing/application
 - client sending/receiving payloads
+- admin power (group chat)
 
 
-Features:
-- new user
-- login
-- status
-- friend request/cancel/accept/reject
-- send message
-- send attachement
-- download attachment
-- edit message
-- remove message
-- dm
-- block user
-
-- create group chat
-- add user to group chat
-- remove user from group chat
-- transfer ownership of group chat
-- blacklist user from group chat
-- leave group chat
 
 
-- server broadcasting to all connected clients (high priority)
+check features.pdf for details

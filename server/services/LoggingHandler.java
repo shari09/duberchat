@@ -1,6 +1,7 @@
 package server.services;
 
 import server.entities.EventType;
+import server.entities.Log;
 
 /**
  * 
@@ -19,7 +20,7 @@ public class LoggingHandler implements Subscribable {
 
   @Override
   public void onEvent(Object emitter, EventType eventType) {
-    GlobalServices.logging.addLog((String)emitter);
+    GlobalServices.logging.addLog((Log)emitter);
   }
   
 }

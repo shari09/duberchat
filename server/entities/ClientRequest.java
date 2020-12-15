@@ -6,8 +6,8 @@ import java.net.Socket;
 import common.entities.payload.Payload;
 
 /**
- * Stores the payload from the client and an output stream that writes
- * to the client socket.
+ * Stores the payload from the client, an output stream that writes
+ * to the client socket, and the actual socket itself.
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun

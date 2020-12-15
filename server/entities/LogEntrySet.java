@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import common.entities.Identifiable;
 
 /**
- * 
+ * A set of log entries from one session of the server.
  * <p>
  * Created on 2020.12.12.
  * @author Shari Sun

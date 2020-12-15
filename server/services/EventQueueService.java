@@ -8,9 +8,11 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import server.entities.Event;
 import server.entities.EventType;
+import server.entities.LogType;
 
 /**
- * [insert description]
+ * Creates an event queue that provides methods
+ * such as emitting/subscribing to events.
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun
@@ -29,6 +31,12 @@ public class EventQueueService {
     this.thread.start();
   }
 
+  /**
+   * Emits an event given a type, importance/priority, and the emitter/source.
+   * @param event       the event type
+   * @param priority    the priority
+   * @param emitter     the emitter/source
+   */
   public void emitEvent(EventType event, int priority, Object emitter) {
     this.queue.add(new Event(event, priority, emitter));
     synchronized(this.thread) {
@@ -36,6 +44,14 @@ public class EventQueueService {
     }
   }
 
+  /**
+   * Subscribes to an event.
+   * Once an object subscribes to an event, their {@code onEvent(source, eventType)}
+   * method will be called whenever something emits a event of the corresponding type.
+   * @param type            the event type
+   * @param subscriber      the object subscribing to the event
+   * @see                   Subscribable
+   */
   public void subscribe(EventType type, Subscribable subscriber) {
     if (this.eventSubscribers.containsKey(type)) {
       this.eventSubscribers.get(type).add(subscriber);
@@ -61,7 +77,11 @@ public class EventQueueService {
                                                 .get(event.getType());
           if (subscribers != null) {
             for (int i = 0; i < subscribers.size(); i++) {
-              pool.execute(new OnEvent(event.getEmitter(), subscribers.get(i), event.getType()));
+              pool.execute(new EventHandler(
+                event.getEmitter(), 
+                subscribers.get(i), 
+                event.getType()
+              ));
             }
           }
         }
@@ -72,8 +92,11 @@ public class EventQueueService {
               EventQueueService.this.thread.wait();
             }
           } catch (Exception e) {
-            System.out.println("Unable to pause event queue");
-            e.printStackTrace();
+            CommunicationService.log(String.format(
+              "Unable to pause event queue: %s \n%s", 
+              e.getMessage(),
+              CommunicationService.getStackTrace(e)
+            ), LogType.ERROR);
           }
         }  
       }
@@ -82,16 +105,21 @@ public class EventQueueService {
     
   }
 
-  private class OnEvent implements Runnable {
+  /**
+   * A {@code Runnable} inner class used to call the {@code Subscribable}'s
+   * {@code onEvent()} with corresponding information.
+   */
+  private class EventHandler implements Runnable {
     private Object emitter;
     private Subscribable subscriber;
     private EventType type;
-    public OnEvent(Object emitter, Subscribable subscriber, EventType type) {
+    public EventHandler(Object emitter, Subscribable subscriber, EventType type) {
       this.emitter = emitter;
       this.subscriber = subscriber;
       this.type = type;
     }
 
+    @Override
     public void run() {
       this.subscriber.onEvent(this.emitter, this.type);
     }

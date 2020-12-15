@@ -30,6 +30,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import common.gui.Theme;
+import server.entities.LogType;
+import server.services.CommunicationService;
 
 /**
  * 
@@ -77,6 +79,11 @@ public class ServerGUIFactory {
   public static final Color GENERAL_TEXT = ServerGUIFactory.getColour("E3E3E3");
   
   public static final Color SCROLL_BAR = ServerGUIFactory.getColour("474747");
+
+  public static final Color LOG_SUCCESS = ServerGUIFactory.getColour("6EAF55");
+  public static final Color LOG_ERROR = ServerGUIFactory.getColour("D14A4A");
+  public static final Color LOG_INFO = ServerGUIFactory.getColour("DED158");
+
 
 
   public static Color getColour(String hex) {
@@ -196,8 +203,11 @@ public class ServerGUIFactory {
       icon = img.getScaledInstance(textSize, textSize, Image.SCALE_SMOOTH);
       box.setSelectedIcon(new ImageIcon(icon));
     } catch (Exception e) {
-      System.out.println("Unable to add button icon");
-      e.printStackTrace();
+      CommunicationService.log(String.format(
+        "Unable to load checkbox icon: %s \n%s", 
+        e.getMessage(),
+        CommunicationService.getStackTrace(e)
+      ), LogType.ERROR);
     }
     box.setFont(Theme.getPlainFont(textSize));
     box.setForeground(textColor);
@@ -278,8 +288,11 @@ public class ServerGUIFactory {
       );
       button.setIcon(new ImageIcon(icon));
     } catch (Exception e) {
-      System.out.println("Unable to add button icon");
-      e.printStackTrace();
+      CommunicationService.log(String.format(
+        "Unable to add button icon: %s \n%s", 
+        e.getMessage(),
+        CommunicationService.getStackTrace(e)
+      ), LogType.ERROR);
     }
     button.setCursor(new Cursor(Cursor.HAND_CURSOR));
     button.setContentAreaFilled(false);

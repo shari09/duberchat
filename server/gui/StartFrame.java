@@ -130,7 +130,7 @@ public class StartFrame extends JFrame implements ActionListener {
       return;
     }
     this.dispose();
-    this.server.start();
+    this.server.start(Integer.parseInt(port));
   }
   
 }

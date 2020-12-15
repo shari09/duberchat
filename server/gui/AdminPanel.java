@@ -85,7 +85,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
 
     //select all
     this.selectAll = ServerGUIFactory.getCheckBox(
-      "SELECT ALL", ServerGUIFactory.EMPHASIS_TEXT, 18,
+      "Select all", ServerGUIFactory.EMPHASIS_TEXT, 18,
       50, 12,
       ServerGUIFactory.EMPHASIS,
       ServerGUIFactory.EMPHASIS_HOVER,
@@ -134,6 +134,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
 
     JScrollPane scroll = new JScrollPane(this.msg);
     scroll.setBorder(BorderFactory.createEmptyBorder());
+    scroll.getVerticalScrollBar().setUI(ServerGUIFactory.getScrollbarUI());
     
     overallC.weightx = 1;
     overallC.gridx = 1;

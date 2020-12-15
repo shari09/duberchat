@@ -51,7 +51,7 @@ public class LogsPanel extends JPanel {
 
     this.logPane = new JPanel();
     this.logPane.setLayout(new GridBagLayout());
-    this.logPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    this.logPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 20));
     this.logPane.setAlignmentX(LEFT_ALIGNMENT);
     this.logPane.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
     this.logPane.setForeground(ServerGUIFactory.GENERAL_TEXT);
@@ -79,14 +79,26 @@ public class LogsPanel extends JPanel {
   }
 
   public synchronized void addLog(Log log) {
+    Color textColor = null;
+    switch (log.getType()) {
+      case SUCCESS:
+        textColor = ServerGUIFactory.LOG_SUCCESS;
+        break;
+      case ERROR:
+        textColor = ServerGUIFactory.LOG_ERROR;
+        break;
+      default:
+        textColor = ServerGUIFactory.LOG_INFO;
+        break;
+    }
     JLabel timeLabel = new JLabel(log.getCreated().toString());
     timeLabel.setFont(Theme.getPlainFont(12));
     timeLabel.setForeground(ServerGUIFactory.GENERAL_TEXT);
     timeLabel.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
-    JTextArea msgLabel = new JTextArea(log.getMsg());
+    JTextArea msgLabel = new JTextArea(String.format("[%s] %s", log.getType(), log.getMsg()));
     msgLabel.setFont(Theme.getPlainFont(15));
     msgLabel.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
-    msgLabel.setForeground(ServerGUIFactory.GENERAL_TEXT);
+    msgLabel.setForeground(textColor);
     msgLabel.setLineWrap(true);
     msgLabel.setEditable(false);
 

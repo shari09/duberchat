@@ -18,6 +18,10 @@ public class TokenService {
   private static final SecureRandom rand = new SecureRandom();
   private static final Base64.Encoder encoder = Base64.getEncoder();
 
+  /**
+   * Generates a random string in base64 encoding with 32 chars.
+   * @return   the token
+   */
   public static Token generateToken() {
     byte[] randomBytes = new byte[24];
     rand.nextBytes(randomBytes);

@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import common.entities.Token;
 
 /**
- * [insert description]
+ * Stores the user ID to token map for connected users.
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun

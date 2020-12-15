@@ -6,7 +6,7 @@ import common.entities.Token;
 import server.entities.ClientConnections;
 
 /**
- * [insert description]
+ * A global service handling global events/listener.
  * <p>
  * Created on 2020.12.11.
  * 

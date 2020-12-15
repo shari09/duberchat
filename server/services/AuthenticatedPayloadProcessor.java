@@ -28,15 +28,25 @@ import common.entities.payload.server_to_client.AttachmentToClient;
 import common.entities.payload.server_to_client.MessagesToClient;
 import server.entities.AuthenticatedClientRequest;
 import server.entities.EventType;
+import server.entities.LogType;
 
 /**
- * [insert description]
+ * Deals with authenticated payloads.
+ * See {@link AuthenticatedPayloadProcessor#onEvent(Object, EventType)}
+ * for all the payload this processor accepts.
+ * <p>
+ * Depending on what {@link PayloadType} this is, it will
+ * either use appropriate services from {@link GlobalServices}
+ * and handle the requests properly.
+ * <p>
+ * [It will take too long to Javadoc each method and is pretty pointless]
  * <p>
  * Created on 2020.12.06.
  * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
+ * @see PayloadProcessor
  */
 public class AuthenticatedPayloadProcessor implements Subscribable {
   private PriorityBlockingQueue<AuthenticatedClientRequest> payloadQueue;
@@ -117,10 +127,10 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           break;
         default:
           //log
-          PayloadService.log(String.format(
+          CommunicationService.log(String.format(
             "Incorrect payload: %s", 
             client.getPayload().getType()
-          ));
+          ), LogType.ERROR);
           break;
       }
 
@@ -135,7 +145,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format("Transferring ownership to user:%s", payload.getRecipientId()),
@@ -151,7 +161,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       "Leaving channel", 
@@ -168,7 +178,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getNewValue()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format("Changing channel %s", payload.getFieldToChange()), 
@@ -187,7 +197,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           payload.getUserId(), 
           payload.getNewValue()
         );
-        PayloadService.sendAuthenticatedResponse(
+        CommunicationService.sendAuthenticatedResponse(
           client, 
           success, 
           String.format("Changing %s", payload.getFieldToChange()), 
@@ -199,7 +209,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           payload.getUserId(), 
           payload.getNewValue()
         );
-        PayloadService.sendAuthenticatedResponse(
+        CommunicationService.sendAuthenticatedResponse(
           client, 
           success, 
           String.format("Changing %s", payload.getFieldToChange()), 
@@ -216,7 +226,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getUserId(), 
       payload.getStatus()
     );
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       true, 
       String.format("Updating status to %s", payload.getStatus()), 
@@ -233,7 +243,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       success = true;
     } 
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -244,7 +254,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     );
 
     if (success) {
-      PayloadService.send(
+      CommunicationService.send(
         client.getClientOut(), 
         new AttachmentToClient(1, attachment)
       );
@@ -260,7 +270,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -281,7 +291,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getChannelId()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -311,7 +321,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       success = false;
     }
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -332,7 +342,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getBlockUsername()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format("Blocking %s", payload.getBlockUsername()), 
@@ -349,7 +359,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getMessageId()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -376,7 +386,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getMessageId()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -403,7 +413,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getNewPassword()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       "Changing password",
@@ -435,7 +445,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       msg = "You have been blocked/blacklisted";
     }
     
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -467,7 +477,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       }
     }
     
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -485,7 +495,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getRecipientId()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -514,7 +524,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       );
     }
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -533,7 +543,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       payload.getUserId()
     );
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       true, 
       "Creating a new group channel",
@@ -556,7 +566,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       success = true;
     }
 
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
       String.format(
@@ -567,7 +577,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     );
 
     if (success) {
-      PayloadService.send(
+      CommunicationService.send(
         client.getClientOut(), 
         new MessagesToClient(1, payload.getChannelId(), msgs)
       );
@@ -578,7 +588,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   private void removeFriend(AuthenticatedClientRequest client) {
     RemoveFriend payload = (RemoveFriend)client.getPayload();
     GlobalServices.users.removeFriend(payload.getUserId(), payload.getFriendId());
-    PayloadService.sendAuthenticatedResponse(
+    CommunicationService.sendAuthenticatedResponse(
       client, 
       true, 
       String.format("Removing friend:%s", payload.getFriendId()),

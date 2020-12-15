@@ -52,8 +52,9 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   private JRadioButton offlineButton;
   private JRadioButton doNotDisturbButton;
 
-  public UserSettingsFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public UserSettingsFrame(ClientSocket clientSocket) {
+    super(clientSocket);
+    this.setTitle("Settings");
 
     this.setSize(UserSettingsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserSettingsFrame.PREFERRED_DIMENSION);
@@ -196,6 +197,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
 
   private synchronized void updateUserStatus(UserStatus status) {
+    System.out.println(status);
     switch (status) {
       case ACTIVE:
         this.activeButton.setSelected(true);

@@ -38,7 +38,7 @@
 ./common/entities/payload/CreateChannel.java
 ./common/entities/payload/EditMessage.java
 ./common/entities/payload/FriendRequestResponse.java
-./common/entities/payload/FriendRequestToServer.java
+./common/entities/payload/FriendRequest.java
 ./common/entities/payload/KeepAlive.java
 ./common/entities/payload/LeaveChannel.java
 ./common/entities/payload/Login.java

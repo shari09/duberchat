@@ -202,7 +202,7 @@ public class PayloadProcessor implements Subscribable {
   private ClientInfo getClientInfo(User user) {
     Token token = TokenService.generateToken();
     GlobalServices.tokens.put(user.getId(), token);
-    return new ClientInfo(1,
+    return new ClientInfo(5,
       new ClientData(
         user.getId(), 
         token, 

@@ -9,7 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedHashSet;
-
+import javax.swing.ImageIcon;
+import java.awt.GridBagLayout;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -19,7 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-
+import javax.swing.SwingConstants;
+import java.awt.GridBagConstraints;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
@@ -32,6 +34,7 @@ import common.entities.UserMetadata;
 import common.entities.payload.PayloadType;
 import common.entities.payload.client_to_server.CreateChannel;
 import common.entities.payload.server_to_client.ServerBroadcast;
+import common.gui.Theme;
 
 /**
  * The frame to display the GUI for the client.
@@ -46,7 +49,7 @@ import common.entities.payload.server_to_client.ServerBroadcast;
 public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListener,
                                                                      MouseListener {
 
-  public static final Dimension DIMENSION = new Dimension(400, 800);
+  public static final Dimension DIMENSION = new Dimension(450, 850);
   
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
     PayloadType.CREATE_CHANNEL
@@ -60,7 +63,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   private UserFriendsFrame friendsFrame;
   private UserSettingsFrame settingsFrame;
 
-  private UserProfilePanel userProfilePanel;
+  private JPanel userProfilePanel;
 
   private JList<PrivateChannelMetadata> privateChannelsList;
   private JList<GroupChannelMetadata> groupChannelsList;
@@ -69,38 +72,51 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   private JButton friendsFrameButton;
   private JButton settingsButton;
 
-  public UserMainFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public UserMainFrame(ClientSocket clientSocket) {
+    super(clientSocket);
 
     this.setSize(UserMainFrame.DIMENSION);
     this.setResizable(false);
 
-    this.chatFrame = new UserChatFrame("Chat Window", clientSocket);
+    this.chatFrame = new UserChatFrame(clientSocket);
     this.chatFrame.setVisible(false);
 
-    this.friendsFrame = new UserFriendsFrame("Friends", clientSocket);
+    this.friendsFrame = new UserFriendsFrame(clientSocket);
     this.friendsFrame.setVisible(false);
 
-    this.settingsFrame = new UserSettingsFrame("Settings", clientSocket);
+    this.settingsFrame = new UserSettingsFrame(clientSocket);
     this.settingsFrame.setVisible(false);
 
-    Container contentPane = this.getContentPane();
-    contentPane.setLayout(new BorderLayout());
-    
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+
     // user's profile section
     this.updateUserProfilePanel();
-    contentPane.add(this.userProfilePanel, BorderLayout.NORTH);
-    
-    // card layout for private / group chats display
+    constraints.weightx = 1;
+    constraints.weighty = 0;
+    constraints.gridwidth = 5;
+    constraints.gridheight = 2;
+    panel.add(this.userProfilePanel, constraints);
+    constraints.weighty = 1;
+    // tabbed pane for channels
     this.privateChannelsList = new JList<PrivateChannelMetadata>();
+    this.privateChannelsList.setCellRenderer(new ChannelThumbnailRenderer());
     this.privateChannelsList.addMouseListener(this);
     this.groupChannelsList = new JList<GroupChannelMetadata>();
+    this.groupChannelsList.setCellRenderer(new ChannelThumbnailRenderer());
     this.groupChannelsList.addMouseListener(this);
     this.updateChannelsJLists();
 
     JPanel privateChannelPanel = new JPanel(new BorderLayout());
     // friends page button
-    this.friendsFrameButton = new JButton("manage friends");
+    this.friendsFrameButton = ClientGUIFactory.getTextButton(
+      "manage friends",
+      Theme.getPlainFont(20),
+      ClientGUIFactory.BLUE_SHADE_3,
+      ClientGUIFactory.BLUE_SHADE_1
+    );
+    this.friendsFrameButton.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
     this.friendsFrameButton.addActionListener(this);
     privateChannelPanel.add(this.friendsFrameButton, BorderLayout.NORTH);
     // a scrollable list of private channels
@@ -111,7 +127,13 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
 
     JPanel groupChannelPanel = new JPanel(new BorderLayout());
     // new group chat button
-    this.createGroupChannelButton = new JButton("new group chat");
+    this.createGroupChannelButton = ClientGUIFactory.getTextButton(
+      "+ new group chat",
+      Theme.getPlainFont(20),
+      ClientGUIFactory.BLUE_SHADE_3,
+      ClientGUIFactory.BLUE_SHADE_1
+    );
+    this.createGroupChannelButton.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
     this.createGroupChannelButton.addActionListener(this);
     groupChannelPanel.add(this.createGroupChannelButton, BorderLayout.NORTH);
     // a scrollable list of group channels
@@ -120,32 +142,41 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     gcScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     groupChannelPanel.add(gcScrollPane, BorderLayout.CENTER);
 
-    JTabbedPane tabbedPane = new JTabbedPane();
+    JTabbedPane tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(20));
     tabbedPane.addTab("friends", privateChannelPanel);
     tabbedPane.addTab("group chats", groupChannelPanel);
-    contentPane.add(tabbedPane, BorderLayout.CENTER);
+    constraints.gridx = 0;
+    constraints.gridy = 2;
+    constraints.gridwidth = 6;
+    constraints.gridheight = 12;
+    panel.add(tabbedPane, constraints);
 
-    // buttons, at the bottom
-    // TODO: replace text with icon
-    this.settingsButton = new JButton("settings");
+    // button
+    constraints.weightx = 0;
+    constraints.weighty = 0;
+    this.settingsButton = ClientGUIFactory.getImageButton(new ImageIcon(ClientGUIFactory.getSettingsIcon()));
     this.settingsButton.addActionListener(this);
 
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.add(this.settingsButton);
+    constraints.gridx = 5;
+    constraints.gridy = 0;
+    constraints.gridwidth = 1;
+    constraints.gridheight = 1;
+    panel.add(this.settingsButton, constraints);
 
-    JButton test = new JButton("test");
-    test.addActionListener(
-      new ActionListener() {
-        @Override
-        public synchronized void actionPerformed(ActionEvent e) {
-          GlobalClient.displayClientData();
-        }
-      }
-    );
-    buttonPanel.add(test);
+    // JButton test = new JButton("test");
+    // test.addActionListener(
+    //   new ActionListener() {
+    //     @Override
+    //     public synchronized void actionPerformed(ActionEvent e) {
+    //       GlobalClient.displayClientData();
+    //     }
+    //   }
+    // );
+    // buttonPanel.add(test);
 
-    contentPane.add(buttonPanel, BorderLayout.PAGE_END);
-  
+    // panel.add(buttonPanel, BorderLayout.PAGE_END);
+
+    this.getContentPane().add(panel);
     this.setVisible(true);
   }
 
@@ -290,10 +321,12 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
 
   private void updateUserProfilePanel() {
-    this.userProfilePanel = new UserProfilePanel();
-    this.userProfilePanel.setMaximumSize(new Dimension(UserMainFrame.WIDTH, UserMainFrame.HEIGHT/10));
-    this.userProfilePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-    this.userProfilePanel.revalidate();
+    this.userProfilePanel = ClientGUIFactory.getUserThumbnailPanel(
+      GlobalClient.getClientUserMetadata(),
+      Theme.getBoldFont(20),
+      Theme.getItalicFont(15),
+      ClientGUIFactory.PURPLE_SHADE_3
+    );
   }
 
   private synchronized void updateChannelsJLists() {

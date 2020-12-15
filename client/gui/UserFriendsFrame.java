@@ -7,7 +7,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.awt.Component;
+import javax.swing.ListCellRenderer;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -28,8 +29,9 @@ import common.entities.ClientData;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 import common.entities.payload.PayloadType;
-import common.entities.payload.client_to_server.FriendRequestToServer;
+import common.entities.payload.client_to_server.FriendRequest;
 import common.entities.payload.server_to_client.ServerBroadcast;
+import common.gui.Theme;
 
 @SuppressWarnings("serial")
 public class UserFriendsFrame extends UserFrame implements ActionListener, MouseListener {
@@ -56,26 +58,31 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   private JTextField requestMessageField;
   private JButton sendFriendRequestButton;
 
-  public UserFriendsFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public UserFriendsFrame(ClientSocket clientSocket) {
+    super(clientSocket);
+    this.setTitle("Friends");
 
     this.setSize(UserFriendsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserFriendsFrame.PREFERRED_DIMENSION);
     this.setResizable(true);
     
     this.friends = new JList<UserMetadata>();
+    this.friends.setCellRenderer(new UserMetadataRenderer());
     this.friends.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     this.friends.addMouseListener(this);
 
     this.onlineFriends = new JList<UserMetadata>();
+    this.onlineFriends.setCellRenderer(new UserMetadataRenderer());
     this.onlineFriends.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     this.onlineFriends.addMouseListener(this);
 
     this.incomingFriendRequests = new JList<IncomingFriendRequest>();
+    this.incomingFriendRequests.setCellRenderer(new IncomingFriendRequestRenderer());
     this.incomingFriendRequests.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     this.incomingFriendRequests.addMouseListener(this);
 
     this.outgoingFriendRequests = new JList<OutgoingFriendRequest>();
+    this.outgoingFriendRequests.setCellRenderer(new OutgoingFriendRequestRenderer());
     this.outgoingFriendRequests.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     this.outgoingFriendRequests.addMouseListener(this);
 
@@ -85,7 +92,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
     this.updateJLists(GlobalClient.clientData);
 
-    this.tabbedPane = new JTabbedPane();
+    this.tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(15));
     this.tabbedPane.addTab(
       "Online",
       new JScrollPane(this.onlineFriends)
@@ -165,7 +172,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
         );
       } else {
         this.getClientSocket().sendPayload(
-          new FriendRequestToServer(
+          new FriendRequest(
             1,
             GlobalClient.clientData.getUserId(),
             GlobalClient.clientData.getToken(),
@@ -350,6 +357,45 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
     public String getRequestMessage() {
       return this.requestMessage;
+    }
+  }
+
+  private class IncomingFriendRequestRenderer implements ListCellRenderer<IncomingFriendRequest> {
+    @Override
+    public Component getListCellRendererComponent(
+      JList<? extends IncomingFriendRequest> requests,
+      IncomingFriendRequest req,
+      int index,
+      boolean isSelected,
+      boolean hasFocus
+    ) {
+      JPanel panel = ClientGUIFactory.getIncomingFriendRequestPanel(
+        req.getSenderMetadata(),
+        req.getRequestMessage(),
+        Theme.getBoldFont(15),
+        Theme.getPlainFont(15),
+        ClientGUIFactory.BLUE_SHADE_3
+      );
+      return panel;
+    }
+  }
+
+  private class OutgoingFriendRequestRenderer implements ListCellRenderer<OutgoingFriendRequest> {
+    @Override
+    public Component getListCellRendererComponent(
+      JList<? extends OutgoingFriendRequest> requests,
+      OutgoingFriendRequest req,
+      int index,
+      boolean isSelected,
+      boolean hasFocus
+    ) {
+      JPanel panel = ClientGUIFactory.getOutgoingFriendRequestPanel(
+        req.getRecipientMetadata(),
+        Theme.getBoldFont(15),
+        Theme.getPlainFont(15),
+        ClientGUIFactory.BLUE_SHADE_3
+      );
+      return panel;
     }
   }
 }

@@ -13,7 +13,7 @@ import common.entities.payload.client_to_server.ChangeProfile;
 import common.entities.payload.client_to_server.CreateChannel;
 import common.entities.payload.client_to_server.EditMessage;
 import common.entities.payload.client_to_server.FriendRequestResponse;
-import common.entities.payload.client_to_server.FriendRequestToServer;
+import common.entities.payload.client_to_server.FriendRequest;
 import common.entities.payload.client_to_server.LeaveChannel;
 import common.entities.payload.client_to_server.MessageToServer;
 import common.entities.payload.client_to_server.RemoveFriend;
@@ -23,7 +23,7 @@ import common.entities.payload.client_to_server.RequestAttachment;
 import common.entities.payload.client_to_server.RequestMessages;
 import common.entities.payload.client_to_server.TransferOwnership;
 import common.entities.payload.client_to_server.UpdateStatus;
-import common.entities.payload.server_to_client.Attachment;
+import common.entities.Attachment;
 import common.entities.payload.server_to_client.AttachmentToClient;
 import common.entities.payload.server_to_client.MessagesToClient;
 import server.entities.AuthenticatedClientRequest;
@@ -458,7 +458,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
   }
 
   private void sendFriendRequest(AuthenticatedClientRequest client) {
-    FriendRequestToServer payload = (FriendRequestToServer) client.getPayload();
+    FriendRequest payload = (FriendRequest) client.getPayload();
     String recipientId = GlobalServices.users.getUserId(payload.getRecipientName());
     boolean success = false;
     String msg = "";

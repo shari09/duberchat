@@ -47,7 +47,7 @@ public class MainFrame extends JFrame implements Subscribable {
   private GridBagConstraints c;
 
   public MainFrame() {
-    super("DQ Server");
+    super(Theme.APPLICATION_NAME + " Server");
     this.setIconImage(Theme.getIcon());
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(MainFrame.WIDTH, MainFrame.HEIGHT);

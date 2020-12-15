@@ -18,8 +18,10 @@ import common.entities.Constants;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class Theme {
 
+public class Theme {
+  
+  public static String APPLICATION_NAME = "DQ";
   public static BufferedImage getIcon() {
     BufferedImage icon = null;
     try {

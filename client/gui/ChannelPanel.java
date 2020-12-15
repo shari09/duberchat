@@ -21,11 +21,14 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
-
+import javax.swing.BorderFactory;
+import javax.swing.border.LineBorder;
+import common.gui.Theme;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
@@ -74,6 +77,7 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
     this.messagesList.addMouseListener(this);
     this.messagesList.setCellRenderer(new MessageRenderer());
     this.participantsList = new JList<UserMetadata>();
+    this.participantsList.setCellRenderer(new ParticipantRenderer());
     this.requestMessages();
     this.syncClientData();
 
@@ -276,7 +280,7 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
     System.out.println("messages requested");
   }
 
-  private class MessageRenderer extends JLabel implements ListCellRenderer<Message> {
+  private class MessageRenderer implements ListCellRenderer<Message> {
     @Override
     public Component getListCellRendererComponent(
       JList<? extends Message> messages,
@@ -298,6 +302,28 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
         strToSend += "\n(Edited at" + msg.getEditedTime().toString() + ")";
       }
       return new JTextArea(strToSend + "\n");
+    }
+  }
+
+  private class ParticipantRenderer implements ListCellRenderer<UserMetadata> {
+    @Override
+    public Component getListCellRendererComponent(
+      JList<? extends UserMetadata> participants,
+      UserMetadata metadata,
+      int index,
+      boolean isSelected,
+      boolean hasFocus
+    ) {
+      JPanel panel = ClientGUIFactory.getUserThumbnailPanel(
+        metadata,
+        Theme.getBoldFont(15),
+        Theme.getItalicFont(10),
+        ClientGUIFactory.BLUE_SHADE_3
+      );
+      LineBorder border = new LineBorder(ClientGUIFactory.GRAY_SHADE_3, 1);
+      panel.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 15)));
+      panel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+      return panel;
     }
   }
 }

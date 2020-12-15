@@ -1,23 +1,25 @@
 package client.gui;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
+import javax.swing.SwingConstants;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import common.entities.payload.PayloadType;
+import common.entities.ClientData;
+import common.gui.Theme;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
-import common.entities.ClientData;
-import common.entities.payload.PayloadType;
 import common.entities.payload.client_to_server.Login;
 import common.entities.payload.server_to_client.ServerBroadcast;
 
@@ -32,8 +34,8 @@ import common.entities.payload.server_to_client.ServerBroadcast;
 
 @SuppressWarnings("serial")
 public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener {
-  public static final int WIDTH = 800;
-  public static final int HEIGHT = 600;
+  public static final int WIDTH = 600;
+  public static final int HEIGHT = 800;
 
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
     PayloadType.LOGIN
@@ -47,56 +49,110 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   private JButton loginButton;
   private JButton registerButton;
                               
-  public LoginFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public LoginFrame(ClientSocket clientSocket) {
+    super(clientSocket);
 
     this.setSize(LoginFrame.WIDTH, LoginFrame.HEIGHT);
     this.setResizable(false);
 
     JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-    panel.setAlignmentX(CENTER_ALIGNMENT);
+    panel.setLayout(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+
+    GridBagConstraints constraints = ClientGUIFactory.getGridBagConstraints(
+      0, 0, 1, 1,
+      0.5, 0.5,
+      10, 10, 
+      GridBagConstraints.BOTH,
+      GridBagConstraints.CENTER
+    );
+    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
 
     // title
-    JLabel titleLabel = new JLabel("User Login");
-    titleLabel.setAlignmentX(CENTER_ALIGNMENT);
-    titleLabel.setFont(new Font("Serif", Font.PLAIN, 30));
+    JLabel titleLabel = ClientGUIFactory.getTextLabel(
+      "User Login",
+      Theme.getBoldFont(35),
+      ClientGUIFactory.PURPLE_SHADE_4
+    );
+    titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    constraints.gridx = 1;
+    constraints.gridy = 1;
+    constraints.gridwidth = 3;
+    panel.add(titleLabel, constraints);
+
+    constraints.gridy = 2;
+    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
     
-    panel.add(titleLabel);
-    panel.add(Box.createRigidArea(new Dimension(0, 50)));
-
     // fields
-    this.usernameField = new JTextField(20);
-    JLabel usernameLabel = new JLabel("Username: ");
-    usernameLabel.setFont(new Font("Serif", Font.PLAIN, 20));
-    usernameLabel.setLabelFor(this.usernameField);
-    JPanel usernamePanel = new JPanel();
-    usernamePanel.add(usernameLabel);
-    usernamePanel.add(this.usernameField);
-    panel.add(usernamePanel);
+    JLabel usernameLabel = ClientGUIFactory.getTextLabel(
+      "Username: ",
+      Theme.getPlainFont(20),
+      ClientGUIFactory.PURPLE_SHADE_4
+    );
+    constraints.gridy = 3;
+    panel.add(usernameLabel, constraints);
+    this.usernameField = ClientGUIFactory.getTextField(
+      20,
+      Theme.getPlainFont(20),
+      ClientGUIFactory.GRAY_SHADE_4,
+      ClientGUIFactory.GRAY_SHADE_1
+    );
+    constraints.gridy = 4;
+    panel.add(this.usernameField, constraints);
 
-    this.passwordField = new JPasswordField(20);
-    JLabel passwordLabel = new JLabel("Password: ");
-    passwordLabel.setFont(new Font("Serif", Font.PLAIN, 20));
-    passwordLabel.setLabelFor(this.passwordField);
-    JPanel passwordPanel = new JPanel();
-    passwordPanel.add(passwordLabel);
-    passwordPanel.add(this.passwordField);
-    panel.add(passwordPanel);
+    constraints.gridy = 5;
+    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
+
+    JLabel passwordLabel = ClientGUIFactory.getTextLabel(
+      "Password: ",
+      Theme.getPlainFont(20),
+      ClientGUIFactory.PURPLE_SHADE_4
+    );
+    constraints.gridy = 6;
+    panel.add(passwordLabel, constraints);
+    this.passwordField = ClientGUIFactory.getPasswordField(
+      20,
+      Theme.getPlainFont(15),
+      ClientGUIFactory.GRAY_SHADE_4,
+      ClientGUIFactory.GRAY_SHADE_1
+    );
+    constraints.gridy = 7;
+    panel.add(this.passwordField,constraints);
+
+    constraints.gridy = 8;
+    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
 
     // login button
-    this.loginButton = new JButton("Login");
-    this.loginButton.setAlignmentX(CENTER_ALIGNMENT);
+    this.loginButton = ClientGUIFactory.getTextButton(
+      "Login",
+      Theme.getBoldFont(25),
+      ClientGUIFactory.PURPLE_SHADE_4,
+      ClientGUIFactory.PURPLE_SHADE_1
+    );
     this.loginButton.addActionListener(this);
-    panel.add(this.loginButton);
+    constraints.gridy = 9;
+    panel.add(this.loginButton,constraints);
+
+    constraints.gridy = 10;
+    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
 
     // register account button
-    panel.add(Box.createRigidArea(new Dimension(0, 10)));
-    this.registerButton = new JButton("Register for an account");
-    this.registerButton.setAlignmentX(CENTER_ALIGNMENT);
+    this.registerButton = ClientGUIFactory.getTextButton(
+      "Register for an account",
+      Theme.getBoldFont(20),
+      ClientGUIFactory.BLUE_SHADE_3,
+      ClientGUIFactory.BLUE_SHADE_1
+    );
     this.registerButton.addActionListener(this);
-    panel.add(this.registerButton);
+    constraints.gridy = 11;
+    panel.add(this.registerButton,constraints);
 
+    constraints.gridy = 12;
+    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
+    constraints.gridx = 4;
+    constraints.gridwidth = 1;
+    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
+    
     this.getContentPane().add(panel);
     this.setVisible(true);
   }
@@ -137,10 +193,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
 
     } else if (e.getSource() == this.registerButton) {
       this.dispose();
-      RegistrationFrame nextFrame = new RegistrationFrame(
-        this.getTitle(),
-        this.getClientSocket()
-      );
+      RegistrationFrame nextFrame = new RegistrationFrame(this.getClientSocket());
     }
   }
 
@@ -148,14 +201,12 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   public void clientDataUpdated(ClientData updatedClientData) {
     // user successfully logged in
     if (GlobalClient.hasData()) {
-      UserMainFrame nextFrame = new UserMainFrame(
-        this.getTitle(),
-        this.getClientSocket()
-      );
+      this.dispose();
+      UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());
     } else {
       System.out.println("failed to initialize client data");
     }
-    this.dispose();
+    
   }
 
   @Override

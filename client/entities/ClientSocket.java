@@ -21,16 +21,15 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import client.resources.GlobalClient;
 import client.services.ChannelServices;
+import client.services.ClientSocketServices;
 import common.entities.Constants;
 import common.entities.Message;
 import common.entities.payload.Payload;
 import common.entities.payload.PayloadType;
-import common.entities.payload.client_to_server.BlockUser;
 import common.entities.payload.client_to_server.ChangeProfile;
-import common.entities.payload.client_to_server.CreateChannel;
 import common.entities.payload.client_to_server.KeepAlive;
 import common.entities.payload.client_to_server.UpdateStatus;
-import common.entities.payload.server_to_client.Attachment;
+import common.entities.Attachment;
 import common.entities.payload.server_to_client.AttachmentToClient;
 import common.entities.payload.server_to_client.ClientChannelsUpdate;
 import common.entities.payload.server_to_client.ClientFriendsUpdate;
@@ -169,12 +168,21 @@ public class ClientSocket implements Runnable {
 
   private synchronized void processPayload(Payload payload) {
     switch (payload.getType()) {
+      // response from client_to_server payloads
       case CLIENT_REQUEST_STATUS:
         this.processRequestStatus((ClientRequestStatus)payload);
         break;
 
-      case CLIENT_INFO:
-        GlobalClient.clientData = ((ClientInfo)payload).getClientData();
+      // server to client payloads
+      case ATTACHMENT_TO_CLIENT:
+        AttachmentToClient attachmentPayload = (AttachmentToClient)payload;
+        Attachment attachment = attachmentPayload.getAttachment();
+        this.saveAttachment(attachment);
+        break;
+
+      case CLIENT_CHANNELS_UPDATE:
+        ClientChannelsUpdate channelsUpdate = (ClientChannelsUpdate)payload;
+        GlobalClient.clientData.setChannels(channelsUpdate.getChannels());
         this.notifyClientDataUpdate();
         break;
 
@@ -190,9 +198,8 @@ public class ClientSocket implements Runnable {
         this.notifyClientDataUpdate();
         break;
 
-      case CLIENT_CHANNELS_UPDATE:
-        ClientChannelsUpdate channelsUpdate = (ClientChannelsUpdate)payload;
-        GlobalClient.clientData.setChannels(channelsUpdate.getChannels());
+      case CLIENT_INFO:
+        GlobalClient.clientData = ((ClientInfo)payload).getClientData();
         this.notifyClientDataUpdate();
         break;
 
@@ -202,20 +209,15 @@ public class ClientSocket implements Runnable {
         this.notifyClientDataUpdate();
         break;
 
-      case ATTACHMENT_TO_CLIENT:
-        AttachmentToClient attachmentPayload = (AttachmentToClient)payload;
-        Attachment attachment = attachmentPayload.getAttachment();
-        this.saveAttachment(attachment);
-        break;
-
       case MESSAGE_UPDATE_TO_CLIENT:
         this.processMessageUpdate((MessageUpdateToClient)payload);
         this.notifyClientDataUpdate();
         break;
-
+      
       case SERVER_BROADCAST:
         this.notifyServerBroadcast((ServerBroadcast)payload);
         break;
+
       default:
         System.out.println("unknown payload type");
         break;
@@ -272,36 +274,14 @@ public class ClientSocket implements Runnable {
       System.out.println("original client request not found");
 
     } else if (errorMessage != null) {
+      // notify listeners
       this.notifyRequestStatus(originalPayload.getType(), false, errorMessage);
       System.out.println("An error has occurred! (" + errorMessage + ")");
 
     } else {
-      // error message is null: request success
+      // error message is null: request successful
+      // update data locally for certain types of payloads
       switch (originalPayload.getType()) {
-        case NEW_USER:
-          this.notifyRequestStatus(
-            PayloadType.NEW_USER,
-            true,
-            "Successfully created account and logged in"
-          );
-          break;
-
-        case LOGIN:
-          this.notifyRequestStatus(
-            PayloadType.LOGIN,
-            true,
-            "Successfully logged in"
-          );
-          break;
-
-        case CHANGE_PASSWORD:
-          this.notifyRequestStatus(
-            PayloadType.CHANGE_PASSWORD,
-            true,
-            "Successfully changed password"
-          );
-          break;
-
         case CHANGE_PROFILE:
           this.changeProfile((ChangeProfile)originalPayload);
           break;
@@ -310,137 +290,15 @@ public class ClientSocket implements Runnable {
           this.updateUserStatus((UpdateStatus)originalPayload);
           break;
 
-        case CHANGE_CHANNEL:
-          this.notifyRequestStatus(
-            PayloadType.CHANGE_CHANNEL,
-            true,
-            "Successfully changed channel field"
-          );
-          break;
-
-        case MESSAGE_TO_SERVER:
-          this.notifyRequestStatus(
-            PayloadType.MESSAGE_TO_SERVER,
-            true,
-            "Successfully sent message"
-          );
-          break;
-
-        // case REMOVE_MESSAGE:
-        //   this.notifyRequestStatus(
-        //     PayloadType.REMOVE_MESSAGE,
-        //     true,
-        //     "Successfully removed message"
-        //   );
-        //   break;
-        
-        // case EDIT_MESSAGE:
-        //   this.notifyRequestStatus(
-        //     PayloadType.EDIT_MESSAGE,
-        //     true,
-        //     "Successfully edited message"
-        //   );
-        //   break;
-
-        case REQUEST_MESSAGES:
-          this.notifyRequestStatus(
-            PayloadType.REQUEST_MESSAGES,
-            true,
-            "Successfully received requested messages"
-          );
-          break;
-        
-        case FRIEND_REQUEST:
-          this.notifyRequestStatus(
-            PayloadType.FRIEND_REQUEST,
-            true,
-            "Successfully sent friend request"
-          );
-          break;
-
-        case FRIEND_REQUEST_RESPONSE:
-          this.notifyRequestStatus(
-            PayloadType.FRIEND_REQUEST_RESPONSE,
-            true,
-            "Successfully sent friend request response"
-          );
-          break;
-
-        case REQUEST_ATTACHMENT:
-          this.notifyRequestStatus(
-            PayloadType.REQUEST_ATTACHMENT,
-            true,
-            "Successfully received attachment"
-          );
-          break;
-
-        case CREATE_CHANNEL:
-          this.notifyRequestStatus(
-            PayloadType.CREATE_CHANNEL,
-            true,
-            "Successfully created channel: " + ((CreateChannel)originalPayload).getName()
-          );
-          break;
-
-        case BLOCK_USER:
-          this.notifyRequestStatus(
-            PayloadType.BLOCK_USER,
-            true,
-            "Successfully blocked " + ((BlockUser)originalPayload).getBlockUsername()
-          );
-          break;
-
-        case ADD_PARTICIPANT:
-          this.notifyRequestStatus(
-            PayloadType.ADD_PARTICIPANT,
-            true,
-            "Successfully added participant to channel"
-          );
-          break;
-
-        case REMOVE_PARTICIPANT:
-          this.notifyRequestStatus(
-            PayloadType.ADD_PARTICIPANT,
-            true,
-            "Successfully added participant to channel"
-          );
-          break;
-
-        case BLACKLIST_USER:
-          this.notifyRequestStatus(
-            PayloadType.BLACKLIST_USER,
-            true,
-            "Successfully blacklisted user"
-          );
-          break;
-
-        case LEAVE_CHANNEL:
-          this.notifyRequestStatus(
-            PayloadType.LEAVE_CHANNEL,
-            true,
-            "Successfully left channel"
-          );
-          break;
-
-        case TRANSFER_OWNERSHIP:
-          this.notifyRequestStatus(
-            PayloadType.TRANSFER_OWNERSHIP,
-            true,
-            "Successfully transferred ownership"
-          );
-
-        case KEEP_ALIVE:
-          this.notifyRequestStatus(
-            PayloadType.KEEP_ALIVE,
-            true,
-            "Successfully refreshed inactivity timing"
-          );
-
         default:
-          System.out.println("unknown payload type");
           break;
-        
       }
+      // notify listeners
+      this.notifyRequestStatus(
+        originalPayload.getType(),
+        true,
+        ClientSocketServices.getRequestSuccessNotifMessage(originalPayload)
+      );
     }
     
     this.pendingRequests.remove(originalPayloadId);
@@ -488,41 +346,21 @@ public class ClientSocket implements Runnable {
       case USERNAME:
         GlobalClient.clientData.setUsername(newValue);
         this.notifyClientDataUpdate();
-        this.notifyRequestStatus(
-          PayloadType.CHANGE_PROFILE,
-          true,
-          "Successfully updated username"
-        );
         break;
 
       case DESCRIPTION:
         GlobalClient.clientData.setDescription(newValue);
         this.notifyClientDataUpdate();
-        this.notifyRequestStatus(
-          PayloadType.CHANGE_PROFILE,
-          true,
-          "Successfully updated description"
-        );
         break;
 
       default:
-        this.notifyRequestStatus(
-          PayloadType.CHANGE_PROFILE, 
-          false,
-          "Unknown profile field"
-        );
-        System.out.println("unknown profile field");
+        break;
     }
   }
 
   private synchronized void updateUserStatus(UpdateStatus updateStatus) {
     GlobalClient.clientData.setStatus(updateStatus.getStatus());
     this.notifyClientDataUpdate();
-    this.notifyRequestStatus(
-      PayloadType.UPDATE_STATUS,
-      true,
-      "Successfully updated status"
-    );
   }
 
   private void notifyClientDataUpdate() {

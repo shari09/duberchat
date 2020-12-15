@@ -1,5 +1,5 @@
 package common.entities.payload.server_to_client;
-
+import common.entities.Attachment;
 import common.entities.payload.Payload;
 import common.entities.payload.PayloadType;
 

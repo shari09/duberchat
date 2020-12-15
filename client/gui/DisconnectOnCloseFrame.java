@@ -4,7 +4,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import javax.swing.JOptionPane;
-
+import common.gui.Theme;
 import client.entities.ClientSocket;
 
 /**
@@ -19,8 +19,8 @@ import client.entities.ClientSocket;
 @SuppressWarnings("serial")
 public abstract class DisconnectOnCloseFrame extends UserFrame implements WindowListener {
 
-  public DisconnectOnCloseFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public DisconnectOnCloseFrame(ClientSocket clientSocket) {
+    super(clientSocket);
     this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     this.addWindowListener(this);
   }

@@ -4,11 +4,11 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import common.entities.ClientData;
 import common.entities.Token;
-import common.entities.payload.AuthenticatablePayload;
-import common.entities.payload.ClientInfo;
-import common.entities.payload.Login;
-import common.entities.payload.NewUser;
 import common.entities.payload.PayloadType;
+import common.entities.payload.client_to_server.AuthenticatablePayload;
+import common.entities.payload.client_to_server.Login;
+import common.entities.payload.client_to_server.NewUser;
+import common.entities.payload.server_to_client.ClientInfo;
 import server.entities.AuthenticatedClientRequest;
 import server.entities.Client;
 import server.entities.ClientRequest;

@@ -2,7 +2,7 @@ package server.gui;
 
 import java.io.ObjectOutputStream;
 
-import common.entities.payload.ServerBroadcast;
+import common.entities.payload.server_to_client.ServerBroadcast;
 import server.entities.EventType;
 import server.services.GlobalServices;
 import server.services.PayloadService;

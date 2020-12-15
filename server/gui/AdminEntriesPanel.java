@@ -1,10 +1,6 @@
 package server.gui;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
-
-import server.entities.EventType;
-import server.services.Subscribable;
 
 /**
  * 
@@ -27,7 +23,7 @@ public class AdminEntriesPanel extends EntriesPanel {
 
     BroadcastingPanel broadcast = new BroadcastingPanel();
     DisconnectPanel disconnect = new DisconnectPanel();
-    JButton broadbastButton = super.addEntry("Broadcast", broadcast);
+    Button broadbastButton = super.addEntry("Broadcast", broadcast);
     super.addEntry("Disconnect", disconnect);
 
     this.setFixedDefaultEntry(broadbastButton);

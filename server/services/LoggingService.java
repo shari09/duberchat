@@ -1,7 +1,6 @@
 package server.services;
 
 import java.io.File;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import server.entities.Log;

@@ -5,13 +5,11 @@ import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import common.entities.Attachment;
 import common.entities.ChannelField;
 import common.entities.ChannelMetadata;
-import common.entities.GroupChannelMetadata;
 import common.entities.Message;
 import common.entities.UserMetadata;
-import common.entities.payload.ClientChannelsUpdate;
+import common.entities.payload.server_to_client.Attachment;
 import server.entities.Channel;
 import server.entities.EventType;
 import server.entities.GroupChannel;

@@ -5,13 +5,13 @@ import server.gui.MainFrame;
 import server.gui.StartFrame;
 import server.services.AuthenticatedClientHandler;
 import server.services.AuthenticatedPayloadProcessor;
+import server.services.ChannelUpdateHandler;
+import server.services.ClientDisconnectHandler;
 import server.services.ClientQueue;
 import server.services.FriendInfoUpdater;
 import server.services.GlobalServices;
 import server.services.LoggingHandler;
 import server.services.MessageQueue;
-import server.services.ChannelUpdateHandler;
-import server.services.ClientDisconnectHandler;
 import server.services.PayloadProcessor;
 import server.services.SocketService;
 

@@ -2,7 +2,7 @@ package client.entities;
 
 import common.entities.ClientData;
 import common.entities.payload.PayloadType;
-import common.entities.payload.ServerBroadcast;
+import common.entities.payload.server_to_client.ServerBroadcast;
 
 /**
  * An interface for objects that listens to the client's data change.

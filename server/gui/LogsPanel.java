@@ -3,20 +3,21 @@ package server.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 
+import common.gui.Theme;
 import server.entities.Log;
 
 /**
@@ -44,7 +45,7 @@ public class LogsPanel extends JPanel {
     this.setLayout(new BorderLayout());
 
     this.add(
-      ServerGUIFactory.getHeader(title, ServerGUIFactory.GRAY2), 
+      ServerGUIFactory.getHeader(title), 
       BorderLayout.PAGE_START
     );
 
@@ -52,7 +53,8 @@ public class LogsPanel extends JPanel {
     this.logPane.setLayout(new GridBagLayout());
     this.logPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     this.logPane.setAlignmentX(LEFT_ALIGNMENT);
-    this.logPane.setBackground(Color.WHITE);
+    this.logPane.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
+    this.logPane.setForeground(ServerGUIFactory.GENERAL_TEXT);
 
     this.c = ServerGUIFactory.getScrollConstraints();
     this.logPane.add(Box.createVerticalGlue(), this.c);
@@ -61,14 +63,16 @@ public class LogsPanel extends JPanel {
 
     this.scrollPane = new JScrollPane(this.logPane);
     this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    this.scrollPane.setBackground(Color.WHITE);
+    this.scrollPane.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
     this.scrollPane.setVerticalScrollBarPolicy(
       ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
     );
     this.scrollPane.setHorizontalScrollBarPolicy(
       JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
     );
-    // this.scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+
+    this.scrollPane.getVerticalScrollBar().setBackground(ServerGUIFactory.HEADING);
+    this.scrollPane.getVerticalScrollBar().setUI(ServerGUIFactory.getScrollbarUI());
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
     this.add(this.scrollPane);
@@ -76,13 +80,13 @@ public class LogsPanel extends JPanel {
 
   public synchronized void addLog(Log log) {
     JLabel timeLabel = new JLabel(log.getCreated().toString());
-    timeLabel.setFont(ServerGUIFactory.getFont(10));
-    timeLabel.setForeground(ServerGUIFactory.DIM_TEXT);
-    timeLabel.setBackground(Color.WHITE);
+    timeLabel.setFont(Theme.getPlainFont(12));
+    timeLabel.setForeground(ServerGUIFactory.GENERAL_TEXT);
+    timeLabel.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
     JTextArea msgLabel = new JTextArea(log.getMsg());
-    msgLabel.setFont(ServerGUIFactory.getFont(15));
-    msgLabel.setBackground(Color.WHITE);
-    msgLabel.setForeground(ServerGUIFactory.TEXT);
+    msgLabel.setFont(Theme.getPlainFont(15));
+    msgLabel.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
+    msgLabel.setForeground(ServerGUIFactory.GENERAL_TEXT);
     msgLabel.setLineWrap(true);
     msgLabel.setEditable(false);
 

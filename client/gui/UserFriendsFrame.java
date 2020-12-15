@@ -1,35 +1,35 @@
 package client.gui;
 
-import java.util.LinkedHashSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.BoxLayout;
-import javax.swing.JTabbedPane;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JLabel;
-import javax.swing.ListSelectionModel;
-import javax.swing.JList;
-import javax.swing.JTextField;
-import javax.swing.DefaultListModel;
+import java.util.LinkedHashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
-import client.resources.GlobalJDialogPrompter;
-import common.entities.ClientData;
-import common.entities.payload.ServerBroadcast;
-import common.entities.UserMetadata;
-import common.entities.UserStatus;
-import common.entities.payload.FriendRequestToServer;
-import common.entities.payload.PayloadType;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
+import client.resources.GlobalJDialogPrompter;
+import common.entities.ClientData;
+import common.entities.UserMetadata;
+import common.entities.UserStatus;
+import common.entities.payload.PayloadType;
+import common.entities.payload.client_to_server.FriendRequestToServer;
+import common.entities.payload.server_to_client.ServerBroadcast;
 
 @SuppressWarnings("serial")
 public class UserFriendsFrame extends UserFrame implements ActionListener, MouseListener {

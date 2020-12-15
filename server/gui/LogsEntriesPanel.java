@@ -1,14 +1,11 @@
 package server.gui;
 
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.GridBagConstraints;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
 
 import server.entities.EventType;
 import server.entities.Log;
@@ -62,7 +59,7 @@ public class LogsEntriesPanel extends EntriesPanel implements Subscribable {
     }
 
       
-    JButton current = super.addEntry("Current", this.curPanel);
+    Button current = super.addEntry("Current", this.curPanel);
     this.setFixedDefaultEntry(current);
     this.addLogEntries(GlobalServices.logging.getEntries(1, 5));
 

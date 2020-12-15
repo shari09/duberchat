@@ -1,32 +1,27 @@
 package client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Container;
+
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JOptionPane;
-import javax.swing.ButtonGroup;
-import javax.swing.JPasswordField;
-import javax.swing.JLabel;
 
-import client.resources.GlobalJDialogPrompter;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
-import common.entities.Constants;
-import common.entities.ProfileField;
-import common.entities.Token;
+import client.resources.GlobalJDialogPrompter;
 import common.entities.ClientData;
+import common.entities.Token;
 import common.entities.UserStatus;
-import common.entities.payload.ServerBroadcast;
-import common.entities.payload.ChangeProfile;
 import common.entities.payload.PayloadType;
-import common.entities.payload.ChangePassword;
-import common.entities.payload.UpdateStatus;
+import common.entities.payload.client_to_server.UpdateStatus;
+import common.entities.payload.server_to_client.ServerBroadcast;
 
 @SuppressWarnings("serial")
 public class UserSettingsFrame extends UserFrame implements ActionListener {

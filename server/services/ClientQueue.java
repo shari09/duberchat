@@ -15,7 +15,6 @@ import server.entities.EventType;
  */
 public class ClientQueue implements Subscribable {
   private ConcurrentLinkedQueue<ClientHandler> queue;
-  private boolean running = false;
 
   public ClientQueue() {
     this.queue = new ConcurrentLinkedQueue<>();
@@ -28,15 +27,9 @@ public class ClientQueue implements Subscribable {
   @Override
   public void onEvent(Object newClient, EventType eventType) {
     this.queue.add((ClientHandler) newClient);
-    // if (this.running) {
-    // return;
-    // }
-    // this.running = true;
     while (!this.queue.isEmpty()) {
       Thread thread = new Thread(queue.poll());
       thread.start();
     }
-
-    // this.running = false;
   }
 }

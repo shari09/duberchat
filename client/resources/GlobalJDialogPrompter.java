@@ -1,41 +1,38 @@
 package client.resources;
 
-import java.util.Iterator;
-import java.util.Arrays;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JPasswordField;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
-import javax.swing.BoxLayout;
-import client.entities.ClientSocket;
-import client.services.UserServices;
-
 import java.awt.Component;
-import java.beans.Expression;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 
-import common.entities.payload.RequestAttachment;
-import common.entities.payload.EditMessage;
-import common.entities.payload.RemoveMessage;
-import common.entities.payload.ChangeProfile;
-import common.entities.payload.ChangePassword;
-import common.entities.payload.LeaveChannel;
-import common.entities.payload.RemoveFriend;
-import common.entities.payload.AddParticipant;
-import common.entities.payload.BlacklistUser;
-import common.entities.payload.RemoveParticipant;
-import common.entities.payload.TransferOwnership;
-import common.entities.payload.BlockUser;
-import common.entities.payload.FriendRequestResponse;
-import common.entities.ProfileField;
-import common.entities.RegexValidator;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
+
+import client.entities.ClientSocket;
 import common.entities.Constants;
 import common.entities.GroupChannelMetadata;
 import common.entities.Message;
+import common.entities.ProfileField;
 import common.entities.Token;
 import common.entities.UserMetadata;
+import common.entities.payload.client_to_server.AddParticipant;
+import common.entities.payload.client_to_server.BlacklistUser;
+import common.entities.payload.client_to_server.BlockUser;
+import common.entities.payload.client_to_server.ChangePassword;
+import common.entities.payload.client_to_server.ChangeProfile;
+import common.entities.payload.client_to_server.EditMessage;
+import common.entities.payload.client_to_server.FriendRequestResponse;
+import common.entities.payload.client_to_server.LeaveChannel;
+import common.entities.payload.client_to_server.RemoveFriend;
+import common.entities.payload.client_to_server.RemoveMessage;
+import common.entities.payload.client_to_server.RemoveParticipant;
+import common.entities.payload.client_to_server.RequestAttachment;
+import common.entities.payload.client_to_server.TransferOwnership;
+import common.services.RegexValidator;
 /**
  * [description]
  * <p>

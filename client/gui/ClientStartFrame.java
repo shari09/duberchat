@@ -16,13 +16,14 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import common.entities.Constants;
+import common.gui.Theme;
 import client.entities.ClientSocket;
 
 /**
  * The frame to display the GUI for the client.
  * <p>
  * Created on 2020.12.05.
- * @author Candice Zhang
+ * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -42,11 +43,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
   public ClientStartFrame(String title) {
     super(title);
 
-    try {
-      this.setIconImage(ImageIO.read(new File(Constants.ICON_PATH)));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    this.setIconImage(Theme.getIcon());
 
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(ClientStartFrame.WIDTH, ClientStartFrame.HEIGHT);
@@ -62,7 +59,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
     // title
     JLabel titleLabel = ClientGUIFactory.getTextLabel(
       "Welcome",
-      ClientGUIFactory.getBoldFont(30),
+      Theme.getBoldFont(30),
       ClientGUIFactory.PURPLE_SHADE_4
     );
     titleLabel.setAlignmentX(CENTER_ALIGNMENT);
@@ -74,13 +71,13 @@ public class ClientStartFrame extends JFrame implements ActionListener {
     this.addressField = ClientGUIFactory.getTextField(
       20,
       ClientStartFrame.DEFAULT_ADDRESS,
-      ClientGUIFactory.getPlainFont(20),
+      Theme.getPlainFont(20),
       ClientGUIFactory.GRAY_SHADE_4,
       ClientGUIFactory.GRAY_SHADE_1
     );
     JLabel addressLabel = ClientGUIFactory.getTextLabel(
       "Server IP address: ",
-      ClientGUIFactory.getPlainFont(20),
+      Theme.getPlainFont(20),
       ClientGUIFactory.PURPLE_SHADE_4
     );
     JPanel addressPanel = new JPanel();
@@ -92,13 +89,13 @@ public class ClientStartFrame extends JFrame implements ActionListener {
     this.portField = ClientGUIFactory.getTextField(
       20,
       ClientStartFrame.DEFAULT_PORT,
-      ClientGUIFactory.getPlainFont(20),
+      Theme.getPlainFont(20),
       ClientGUIFactory.GRAY_SHADE_4,
       ClientGUIFactory.GRAY_SHADE_1
     );
     JLabel portLabel = ClientGUIFactory.getTextLabel(
       "Port number: ",
-      ClientGUIFactory.getPlainFont(20),
+      Theme.getPlainFont(20),
       ClientGUIFactory.PURPLE_SHADE_4
     );
     JPanel portPanel = new JPanel();
@@ -110,7 +107,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
     // confirmation button
     JButton button = ClientGUIFactory.getTextButton(
       "Connect",
-      ClientGUIFactory.getPlainFont(15),
+      Theme.getPlainFont(15),
       ClientGUIFactory.PURPLE_SHADE_4,
       ClientGUIFactory.PURPLE_SHADE_1
     );
@@ -121,7 +118,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
     // error message
     this.errorLabel = ClientGUIFactory.getTextLabel(
       "",
-      ClientGUIFactory.getPlainFont(20),
+      Theme.getPlainFont(20),
       ClientGUIFactory.RED_SHADE_1
     );
     this.errorLabel.setAlignmentX(CENTER_ALIGNMENT);

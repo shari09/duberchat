@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import common.entities.UserMetadata;
+import common.gui.Theme;
 
 /**
  * The main server window.
@@ -35,9 +36,10 @@ public class UserInfoPanel extends JPanel {
     this.setLayout(new BorderLayout());
 
     this.add(
-      ServerGUIFactory.getHeader(user.getUsername(), ServerGUIFactory.GRAY2),
+      ServerGUIFactory.getHeader(user.getUsername()),
       BorderLayout.PAGE_START
     );
+    this.setBackground(ServerGUIFactory.GENERAL_TEXT);
 
     JPanel panel = new JPanel();
     panel.setLayout(new GridBagLayout());
@@ -55,19 +57,20 @@ public class UserInfoPanel extends JPanel {
     ), c);
     c.weighty = 1;
     panel.add(Box.createVerticalGlue(), c);
+    panel.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
     this.add(panel);
   }
 
 
   public JPanel getSection(String labelMsg, String contentMsg) {
     JLabel label = new JLabel(labelMsg);
-    label.setFont(ServerGUIFactory.getFont(15));
-    label.setForeground(ServerGUIFactory.LIGHT_TEXT);    
+    label.setFont(Theme.getPlainFont(15));
+    label.setForeground(ServerGUIFactory.GENERAL_TEXT);    
 
     JTextArea content = new JTextArea(contentMsg);
     content.setLineWrap(true);
-    content.setFont(ServerGUIFactory.getFont(20));
-    content.setForeground(ServerGUIFactory.LIGHT_TEXT);
+    content.setFont(Theme.getPlainFont(20));
+    content.setForeground(ServerGUIFactory.GENERAL_TEXT);
     content.setOpaque(false);
     content.setEditable(false);
 
@@ -80,7 +83,7 @@ public class UserInfoPanel extends JPanel {
     panel.add(label, c);
     panel.add(content, c);
     panel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
-    panel.setBackground(Color.GRAY);
+    panel.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
 
     return panel;
   }

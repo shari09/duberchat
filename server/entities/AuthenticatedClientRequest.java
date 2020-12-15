@@ -3,7 +3,7 @@ package server.entities;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import common.entities.payload.AuthenticatablePayload;
+import common.entities.payload.client_to_server.AuthenticatablePayload;
 
 /**
  * Stores an authenticated payload (matching token) from the client 

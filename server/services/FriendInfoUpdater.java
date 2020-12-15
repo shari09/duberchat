@@ -1,6 +1,6 @@
 package server.services;
 
-import common.entities.payload.ClientFriendsUpdate;
+import common.entities.payload.server_to_client.ClientFriendsUpdate;
 import server.entities.EventType;
 import server.entities.User;
 

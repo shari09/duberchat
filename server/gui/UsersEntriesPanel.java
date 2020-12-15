@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
 
 import common.entities.UserMetadata;
 import server.entities.EventType;
-import server.entities.User;
 import server.services.GlobalServices;
 import server.services.Subscribable;
 
@@ -51,37 +49,9 @@ public class UsersEntriesPanel extends EntriesPanel implements Subscribable {
     }
   }
 
-  // private void removeClient(Object emitter) {
-  //   String userId;
-  //   if (emitter instanceof ObjectOutputStream) {
-  //     ObjectOutputStream toClient = (ObjectOutputStream) emitter;
-  //     userId = GlobalServices.clientConnections.getUserId(toClient);
-  //   } else {
-  //     userId = (String) emitter;
-  //   }
-  //   super.removeEntry(this.users.get(userId));
-  //   this.users.remove(userId);
-  // }
-
-
-
-  // @Override
-  // public void actionPerformed(ActionEvent e) {
-  //   JButton button = (JButton)e.getSource();
-  //   // button.setBackground(bg);
-
-  //   GlobalServerServices.guiEventQueue.emitEvent(
-  //     EventType.SELECT_ENTRY, 
-  //     2, 
-  //     super.getContent(button)
-  //   );
-
-  // }
-
   @Override
   public void activate() {
     GlobalServices.serverEventQueue.subscribe(EventType.NEW_USER, this);
-    // GlobalServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
   }
 
   @Override

@@ -1,36 +1,44 @@
 package client.entities;
 
-import java.nio.file.Path;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.io.InputStream;
 import java.io.File;
-import java.nio.file.Paths;
-import java.nio.file.Files;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Arrays;
+import java.net.SocketTimeoutException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.net.SocketTimeoutException;
+import java.util.concurrent.PriorityBlockingQueue;
 
-import client.services.ChannelServices;
 import client.resources.GlobalClient;
+import client.services.ChannelServices;
 import common.entities.Constants;
-import common.entities.Attachment;
 import common.entities.Message;
-import common.entities.PrivateChannelMetadata;
-import common.entities.UserStatus;
-import common.entities.ChannelMetadata;
-import common.entities.GroupChannelMetadata;
-import common.entities.payload.*;
+import common.entities.payload.Payload;
+import common.entities.payload.PayloadType;
+import common.entities.payload.client_to_server.BlockUser;
+import common.entities.payload.client_to_server.ChangeProfile;
+import common.entities.payload.client_to_server.CreateChannel;
+import common.entities.payload.client_to_server.KeepAlive;
+import common.entities.payload.client_to_server.UpdateStatus;
+import common.entities.payload.server_to_client.Attachment;
+import common.entities.payload.server_to_client.AttachmentToClient;
+import common.entities.payload.server_to_client.ClientChannelsUpdate;
+import common.entities.payload.server_to_client.ClientFriendsUpdate;
+import common.entities.payload.server_to_client.ClientInfo;
+import common.entities.payload.server_to_client.ClientRequestStatus;
+import common.entities.payload.server_to_client.MessageUpdateToClient;
+import common.entities.payload.server_to_client.MessagesToClient;
+import common.entities.payload.server_to_client.ServerBroadcast;
 
 /**
  * The client socket for handling socket connection and payloads.

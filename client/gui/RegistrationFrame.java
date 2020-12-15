@@ -1,27 +1,28 @@
 package client.gui;
 
-import java.awt.Font;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BoxLayout;
+
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
-import common.entities.payload.NewUser;
-import common.entities.payload.PayloadType;
-import common.entities.payload.ServerBroadcast;
-import common.entities.ClientData;
-import common.entities.Constants;
-import common.entities.RegexValidator;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
+import common.entities.ClientData;
+import common.entities.Constants;
+import common.entities.payload.PayloadType;
+import common.entities.payload.client_to_server.NewUser;
+import common.entities.payload.server_to_client.ServerBroadcast;
+import common.services.RegexValidator;
 
 /**
  * The frame to display the GUI for the client.

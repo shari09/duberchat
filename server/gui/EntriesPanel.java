@@ -1,16 +1,9 @@
 package server.gui;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import server.entities.EventType;
 import server.services.GlobalServices;
@@ -42,18 +35,20 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
   private JPanel entriesPanel;
   private JScrollPane scrollPane;
   private ConcurrentHashMap<JButton, JPanel> entries;
-  private JButton defaultEntry;
+  private Button defaultEntry;
   private boolean fixedDefaultEntry;
+  private Button focused;
 
   private GridBagConstraints c;
 
   public EntriesPanel(String title) {
     super();
     this.entries = new ConcurrentHashMap<>();
-    this.defaultEntry = new JButton();
+    this.defaultEntry = new Button();
+    this.focused = this.defaultEntry;
     this.setLayout(new BorderLayout());
 
-    JPanel titlePanel = ServerGUIFactory.getHeader(title, ServerGUIFactory.GRAY4);
+    JPanel titlePanel = ServerGUIFactory.getHeader(title);
     titlePanel.setPreferredSize(new Dimension(
       225, titlePanel.getPreferredSize().height
     ));
@@ -64,7 +59,7 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
 
     this.entriesPanel = new JPanel();
     this.entriesPanel.setLayout(new GridBagLayout());
-    this.entriesPanel.setBackground(ServerGUIFactory.GRAY1);
+    this.entriesPanel.setBackground(ServerGUIFactory.ENTRIES);
     this.entriesPanel.setBorder(BorderFactory.createEmptyBorder());
 
     this.c = ServerGUIFactory.getScrollConstraints();
@@ -72,25 +67,28 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
 
     this.c.weighty = 0;
 
-    this.scrollPane = ServerGUIFactory.getScrollPane(this.entriesPanel, false);
+    this.scrollPane = ServerGUIFactory.getScrollPane(this.entriesPanel);
 
     this.fixedDefaultEntry = false;
     this.add(this.scrollPane);
     this.setVisible(false);
   }
 
-  public JButton addEntry(String text, JPanel content) {
-    JButton tab = ServerGUIFactory.getButton(
-      text, ServerGUIFactory.LIGHT_TEXT_OVERLAY, 13, 
+  public Button addEntry(String text, JPanel content) {
+    Button tab = ServerGUIFactory.getButton(
+      text, 
+      ServerGUIFactory.ENTRY_TEXT, 
+      16, 
       4, 10, 
-      ServerGUIFactory.GRAY1, 
-      ServerGUIFactory.OVERLAY
+      ServerGUIFactory.ENTRIES, 
+      ServerGUIFactory.ENTRY_ACTIVE
     );
     tab.addActionListener(this);
 
     this.entriesPanel.add(tab, this.c, this.entries.size());
     if (!this.fixedDefaultEntry) {
       this.defaultEntry = tab;
+      this.setFocused(tab);
     }
     
     this.entriesPanel.revalidate();
@@ -104,10 +102,18 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
     return this.entriesPanel;
   }
 
+  private void setFocused(Button tab) {
+    this.focused.setFocused(false);
+    this.focused = tab;
+    this.focused.setFocused(true);
+    this.repaint();
+  }
 
-  public void setFixedDefaultEntry(JButton tab) {
+
+  public void setFixedDefaultEntry(Button tab) {
     this.defaultEntry = tab;
     this.fixedDefaultEntry = true;
+    this.setFocused(tab);
   }
 
   public void removeEntry(JButton tab) {
@@ -129,8 +135,8 @@ public abstract class EntriesPanel extends JPanel implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    JButton button = (JButton)e.getSource();
-    // button.setBackground(bg);
+    Button button = (Button)e.getSource();
+    this.setFocused(button);
 
     GlobalServices.guiEventQueue.emitEvent(
       EventType.ENTRY_SELECTED, 

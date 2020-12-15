@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import common.entities.ChannelMetadata;
-import common.entities.GroupChannelMetadata;
 import common.entities.Identifiable;
 import common.entities.Message;
 import common.entities.UserMetadata;

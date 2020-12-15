@@ -1,49 +1,44 @@
 package client.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.awt.Font;
-import java.awt.Color;
-import java.awt.BorderLayout;
-import java.awt.Graphics;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.Dimension;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
-import javax.swing.JPanel;
 
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JLabel;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
 import client.services.ChannelServices;
-import common.entities.Token;
 import common.entities.ChannelMetadata;
-import common.entities.Message;
-import common.entities.UserMetadata;
-import common.entities.ClientData;
 import common.entities.Constants;
-import common.entities.PrivateChannelMetadata;
 import common.entities.GroupChannelMetadata;
-import common.entities.payload.MessageToServer;
-import common.entities.payload.RequestMessages;
+import common.entities.Message;
+import common.entities.PrivateChannelMetadata;
+import common.entities.Token;
+import common.entities.UserMetadata;
+import common.entities.payload.client_to_server.MessageToServer;
+import common.entities.payload.client_to_server.RequestMessages;
 
 @SuppressWarnings("serial")
 public class ChannelPanel extends JPanel implements ActionListener, MouseListener {

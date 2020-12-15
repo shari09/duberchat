@@ -1,38 +1,37 @@
 package client.gui;
 
-import java.util.LinkedHashSet;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
-import java.awt.Container;
-import javax.swing.JTabbedPane;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JList;
-import javax.swing.SwingUtilities;
+import java.awt.event.MouseListener;
+import java.util.LinkedHashSet;
+
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
-
-import common.entities.ChannelMetadata;
-import common.entities.Constants;
-import common.entities.payload.ServerBroadcast;
-import common.entities.ClientData;
-import common.entities.PrivateChannelMetadata;
-import common.entities.UserMetadata;
-import common.entities.payload.CreateChannel;
-import common.entities.GroupChannelMetadata;
-import common.entities.payload.PayloadType;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
-import client.services.ChannelServices;
+import common.entities.ChannelMetadata;
+import common.entities.ClientData;
+import common.entities.Constants;
+import common.entities.GroupChannelMetadata;
+import common.entities.PrivateChannelMetadata;
+import common.entities.UserMetadata;
+import common.entities.payload.PayloadType;
+import common.entities.payload.client_to_server.CreateChannel;
+import common.entities.payload.server_to_client.ServerBroadcast;
 
 /**
  * The frame to display the GUI for the client.

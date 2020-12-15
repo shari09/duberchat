@@ -4,7 +4,12 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -13,10 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
+import common.entities.Constants;
+import common.gui.Theme;
 import server.Server;
-import server.entities.EventType;
-import server.services.GlobalServices;
 
 /**
  * The start up server window.
@@ -40,68 +44,75 @@ public class StartFrame extends JFrame implements ActionListener {
   private Server server;
 
   public StartFrame(Server socket) {
-    super("Duberchat Server");
+    super("DQ Server");
+    this.setIconImage(Theme.getIcon());
+    
     this.server = socket;
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(StartFrame.INITIAL_WIDTH, StartFrame.INITIAL_HEIGHT);
     this.setResizable(false);
 
     JPanel panel = new JPanel();
-    panel.setBackground(Color.WHITE);
-    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-    panel.setAlignmentX(CENTER_ALIGNMENT);
+    panel.setBackground(ServerGUIFactory.START_BACKGROUND);
+    panel.setLayout(new GridBagLayout());
+    panel.setBorder(BorderFactory.createEmptyBorder(40, 30, 40, 30));
+
+    GridBagConstraints c = new GridBagConstraints();
+    c.weightx = 1;
+    c.weighty = 0;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.gridx = 0;
+    c.gridwidth = GridBagConstraints.REMAINDER;
     
     //title
-    JLabel title = new JLabel(
-      "<html><div style='text-align: center;'>DuberChat<br/>Server</div></html>",
-      SwingConstants.CENTER
-    );
-    title.setFont(ServerGUIFactory.getFont(30));
-    title.setForeground(ServerGUIFactory.BLUE);
+    JLabel title = new JLabel("Welcome", SwingConstants.CENTER);
+    title.setFont(Theme.getBoldFont(30));
+    title.setForeground(ServerGUIFactory.START_TITLE);
     title.setAlignmentX(CENTER_ALIGNMENT);
 
-    panel.add(ServerGUIFactory.getEmptyHeight(25));
-    panel.add(title);
-    panel.add(ServerGUIFactory.getEmptyHeight(60));
+    panel.add(ServerGUIFactory.getEmptyHeight(10), c);
+    panel.add(title, c);
+    panel.add(ServerGUIFactory.getEmptyHeight(60), c);
 
     //port number
     this.portField = new JTextField(StartFrame.DEFAULT_PORT, 20);
-    this.portField.setFont(ServerGUIFactory.getFont(15));
+    this.portField.setFont(Theme.getPlainFont(22));
     this.portField.setMaximumSize(this.portField.getPreferredSize());
-    this.portField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
-    
-    JLabel port = new JLabel("PORT");
-    port.setAlignmentX(CENTER_ALIGNMENT);
-    port.setFont(ServerGUIFactory.getFont(13));
+    this.portField.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
+    this.portField.setForeground(ServerGUIFactory.GENERAL_TEXT);
+    this.portField.setCaretColor(ServerGUIFactory.GENERAL_TEXT);
+    this.portField.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
 
-    panel.add(port);
-    panel.add(ServerGUIFactory.getEmptyHeight(10));
-    panel.add(this.portField);
+    JLabel port = new JLabel("Port number");
+    port.setFont(Theme.getPlainFont(18));
+    port.setForeground(ServerGUIFactory.START_PORT_LABEL);
 
-    panel.add(ServerGUIFactory.getEmptyHeight(60));
+    panel.add(port, c);
+    panel.add(ServerGUIFactory.getEmptyHeight(10), c);
+    panel.add(this.portField, c);
+
+    panel.add(ServerGUIFactory.getEmptyHeight(60), c);
 
     //error msg
-    this.error = new JLabel("");
+    this.error = new JLabel();
     this.error.setAlignmentX(CENTER_ALIGNMENT);
-    this.error.setFont(ServerGUIFactory.getFont(13));
-    this.error.setForeground(Color.RED);
+    this.error.setFont(Theme.getPlainFont(15));
+    this.error.setForeground(ServerGUIFactory.EMPHASIS_TEXT);
+    this.error.setVisible(false);
+    panel.add(this.error, c);
     
     //start button
-    JButton button = new JButton("START");
-    button.setFont(ServerGUIFactory.getFont(20));
-    button.setAlignmentX(CENTER_ALIGNMENT);
-    button.setForeground(ServerGUIFactory.BLUE);
-    button.setBorder(BorderFactory.createCompoundBorder(
-      BorderFactory.createLineBorder(ServerGUIFactory.BLUE, 1),
-      BorderFactory.createEmptyBorder(5, 10, 5, 10)
-    ));
-    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    button.setRolloverEnabled(false);
-    button.setFocusable(false);
-    button.setContentAreaFilled(false);
-    button.addActionListener(this);
+    JButton button = ServerGUIFactory.getButton(
+      "Host", 
+      ServerGUIFactory.EMPHASIS_TEXT, 
+      25, 
+      10, 10, 
+      ServerGUIFactory.EMPHASIS, 
+      ServerGUIFactory.EMPHASIS_HOVER
+    );
 
-    panel.add(button);
+    button.addActionListener(this);
+    panel.add(button, c);
     
 
     this.getContentPane().add(panel);
@@ -115,6 +126,7 @@ public class StartFrame extends JFrame implements ActionListener {
     String port = this.portField.getText();
     if (!port.matches("^[0-9]{1,5}$")) {
       this.error.setText("Invalid port");
+      this.error.setVisible(true);
       return;
     }
     this.dispose();

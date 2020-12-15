@@ -5,9 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import common.entities.Message;
+import common.entities.MessageUpdateType;
 import common.entities.UserMetadata;
-import common.entities.payload.MessageUpdateToClient;
-import common.entities.payload.MessageUpdateType;
+import common.entities.payload.server_to_client.MessageUpdateToClient;
 import server.entities.EventType;
 
 /**
@@ -76,8 +76,10 @@ public class MessageQueue implements Subscribable {
       String userId = user.getUserId();
       // TODO: fix the consistency of where to check client existence
       if (GlobalServices.clientConnections.hasClient(userId)) {
-        PayloadService.send(GlobalServices.clientConnections.getClient(userId),
-            new MessageUpdateToClient(1, channelId, message, type));
+        PayloadService.send(
+          GlobalServices.clientConnections.getClient(userId),
+          new MessageUpdateToClient(1, channelId, message, type)
+        );
       }
     }
   }

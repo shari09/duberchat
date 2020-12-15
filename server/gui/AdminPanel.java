@@ -1,43 +1,29 @@
 package server.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ObjectOutputStream;
-
-import javax.swing.JPanel;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-import javax.swing.JCheckBox;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
-import common.entities.payload.Payload;
-import common.entities.payload.ServerBroadcast;
+import common.gui.Theme;
 import server.entities.Client;
 import server.entities.EventType;
 import server.services.GlobalServices;
-import server.services.PayloadService;
 import server.services.Subscribable;
 
 /**
@@ -67,7 +53,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
   private JButton actionButton;
   private JTextArea msg;
 
-  private GridBagConstraints c;
+  private GridBagConstraints userC;
   private EventType eventType;
 
   private String action;
@@ -83,9 +69,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
 
     this.setLayout(new GridBagLayout());
     
-    JPanel titlePanel = ServerGUIFactory.getHeader(
-      title, ServerGUIFactory.GRAY2
-    );
+    JPanel titlePanel = ServerGUIFactory.getHeader(title);
     GridBagConstraints overallC = new GridBagConstraints();
     
     //title
@@ -100,15 +84,13 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     this.add(titlePanel, overallC);
 
     //select all
-    //TODO: get a better icon
     this.selectAll = ServerGUIFactory.getCheckBox(
-      "Select all", 
-      40, 10,
-      ServerGUIFactory.DARK_PURPLE,
-      ServerGUIFactory.DARK_PURPLE_OVERLAY,
+      "SELECT ALL", ServerGUIFactory.EMPHASIS_TEXT, 18,
+      50, 12,
+      ServerGUIFactory.EMPHASIS,
+      ServerGUIFactory.EMPHASIS_HOVER,
       true
     );
-    this.selectAll.setForeground(ServerGUIFactory.LIGHT_TEXT);
     this.selectAll.addActionListener(this);
 
     overallC.gridx = 0;
@@ -122,15 +104,15 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     this.usersPanel = new JPanel();
     this.usersPanel.setMinimumSize(this.usersPanel.getPreferredSize());
     this.usersPanel.setLayout(new GridBagLayout());
-    this.usersPanel.setBackground(ServerGUIFactory.LIGHT_PURPLE);
+    this.usersPanel.setBackground(ServerGUIFactory.USER_SELECTION);
     this.usersPanel.setAlignmentX(LEFT_ALIGNMENT);
     
-    this.c = ServerGUIFactory.getScrollConstraints();
-    this.usersPanel.add(Box.createVerticalGlue(), this.c);
+    this.userC = ServerGUIFactory.getScrollConstraints();
+    this.usersPanel.add(Box.createVerticalGlue(), this.userC);
 
-    this.c.weighty = 0;
+    this.userC.weighty = 0;
     
-    this.scrollPane = ServerGUIFactory.getScrollPane(this.usersPanel, true);
+    this.scrollPane = ServerGUIFactory.getScrollPane(this.usersPanel);
 
 
     overallC.gridx = 0;
@@ -141,16 +123,48 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     
     this.add(this.scrollPane, overallC);
 
-    //broadcasting panel
+    //message
+    this.msg = new JTextArea("");
+    this.msg.setFont(Theme.getPlainFont(15));
+    this.msg.setLineWrap(true);
+    this.msg.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    this.msg.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
+    this.msg.setForeground(ServerGUIFactory.GENERAL_TEXT);
+    this.msg.setCaretColor(ServerGUIFactory.GENERAL_TEXT);
+
+    JScrollPane scroll = new JScrollPane(this.msg);
+    scroll.setBorder(BorderFactory.createEmptyBorder());
+    
+    overallC.weightx = 1;
     overallC.gridx = 1;
     overallC.gridy = 1;
     overallC.gridheight = 2;
 
+    this.add(scroll, overallC);
 
-    this.add(this.getBroadcastingPane(), overallC);
 
+    //action button
+    this.actionButton = ServerGUIFactory.getButton(
+      this.action, ServerGUIFactory.ADMIN_BUTTON_TEXT, 30,
+      40, 30, 
+      ServerGUIFactory.ADMIN_BUTTON, 
+      ServerGUIFactory.ADMIN_BUTTON_HOVER
+    );
+    this.actionButton.setFont(Theme.getBoldFont(30));
+
+    this.actionButton.addActionListener(this);
+
+    overallC.gridx = 0;
+    overallC.gridy = 3;
+    overallC.gridwidth = 2;
+    overallC.weighty = 0;
+
+    this.add(this.actionButton, overallC);
+    
     this.activate();
   }
+
+  
 
   @Override
   public void activate() {
@@ -177,20 +191,21 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     String userId = client.getUserId();
     this.clients.put(userId, client);
     JCheckBox box = ServerGUIFactory.getCheckBox(
-      GlobalServices.users.getUsername(userId),
-      // userId,
+      GlobalServices.users.getUsername(userId), 
+      ServerGUIFactory.USER_TEXT,
+      15,
       8, 5,
-      ServerGUIFactory.LIGHT_PURPLE,
-      ServerGUIFactory.LIGHT_PURPLE2,
+      ServerGUIFactory.USER_SELECTION,
+      ServerGUIFactory.USER_ACTIVE,
       false
     );
-    box.setFont(ServerGUIFactory.getFont(13));
+    box.setFont(Theme.getPlainFont(13));
     box.setHorizontalAlignment(SwingConstants.LEFT);
     box.addActionListener(this);
 
     this.userToCheckBox.put(userId, box);
     this.checkBoxToUser.put(box, userId);
-    this.usersPanel.add(box, this.c, this.clients.size()-1);
+    this.usersPanel.add(box, this.userC, this.clients.size()-1);
     this.repaint();
   }
 
@@ -217,37 +232,6 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     this.repaint();
   }
 
-
-  private JPanel getBroadcastingPane() {
-    //msg
-    this.msg = new JTextArea("");
-    this.msg.setFont(ServerGUIFactory.getFont(15));
-    this.msg.setLineWrap(true);
-    this.msg.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    JScrollPane scroll = new JScrollPane(this.msg);
-    scroll.setBorder(BorderFactory.createEmptyBorder());
-    
-    //button
-    this.actionButton = ServerGUIFactory.getButton(
-      this.action, ServerGUIFactory.LIGHT_TEXT, 20,
-      40, 30, 
-      ServerGUIFactory.DARK_PURPLE, 
-      ServerGUIFactory.DARK_PURPLE_OVERLAY
-    );
-
-    this.actionButton.addActionListener(this);
-    
-
-    JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-    panel.setBackground(Color.WHITE);
-    panel.add(scroll, BorderLayout.CENTER);
-    panel.add(this.actionButton, BorderLayout.PAGE_END);
-    
-
-
-    return panel;
-  }
 
   public String getMessageText() {
     return this.msg.getText();

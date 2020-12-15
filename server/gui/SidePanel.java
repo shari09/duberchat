@@ -1,18 +1,13 @@
 package server.gui;
 
-import java.awt.Cursor;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
 
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import common.gui.Theme;
 import server.entities.EventType;
 import server.services.GlobalServices;
 
@@ -46,7 +41,7 @@ public class SidePanel extends JPanel implements ActionListener {
     this.add(this.logs);  
     this.add(this.users);
     this.add(this.admin);
-    this.setBackground(ServerGUIFactory.GRAY3);
+    this.setBackground(ServerGUIFactory.SIDE_PANEL);
   }
 
   public JButton getMenuItem(String iconName) {

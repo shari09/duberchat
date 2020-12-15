@@ -1,15 +1,11 @@
 package server.services;
 
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 import common.entities.ChannelMetadata;
-import common.entities.GroupChannelMetadata;
 import common.entities.UserMetadata;
-import common.entities.payload.ClientChannelsUpdate;
-import common.entities.payload.PayloadType;
+import common.entities.payload.server_to_client.ClientChannelsUpdate;
 import server.entities.EventType;
-import server.entities.GroupChannel;
 
 /**
  * [insert description]

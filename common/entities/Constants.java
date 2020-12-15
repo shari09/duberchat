@@ -1,9 +1,12 @@
 package common.entities;
 
+import common.services.RegexValidator;
+
 /**
  * [description]
  * <p>
  * Created on 2020.12.08.
+ * 
  * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.0.0

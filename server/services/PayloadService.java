@@ -3,10 +3,9 @@ package server.services;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
 
-import common.entities.payload.AuthenticatablePayload;
-import common.entities.payload.ClientChannelsUpdate;
-import common.entities.payload.ClientRequestStatus;
 import common.entities.payload.Payload;
+import common.entities.payload.client_to_server.AuthenticatablePayload;
+import common.entities.payload.server_to_client.ClientRequestStatus;
 import server.entities.AuthenticatedClientRequest;
 import server.entities.ClientRequest;
 import server.entities.EventType;

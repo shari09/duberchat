@@ -1,76 +1,86 @@
 package server.gui;
 
-import java.awt.Font;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-
-import javax.swing.Box;
-import java.awt.Image;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.ImageIcon;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.GridBagLayout;
-import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+
+import common.gui.Theme;
 
 /**
  * 
  * <p>
  * Created on 2020.12.12.
+ * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
 public class ServerGUIFactory {
-  public final static Color BLUE = ServerGUIFactory.getColour("4C69C7");
-  public final static Color OVERLAY = ServerGUIFactory.getColour("666666");
-  public final static Color STRONGER_OVERLAY = ServerGUIFactory.getColour("7F7F7F");
-  public final static Color GRAY1 = ServerGUIFactory.getColour("595959");
-  public final static Color GRAY2 = ServerGUIFactory.getColour("5A5A5A");
-  public final static Color GRAY3 = ServerGUIFactory.getColour("333333");
-  public final static Color GRAY4 = ServerGUIFactory.getColour("1F1F1F");
-  public final static Color TEXT = ServerGUIFactory.getColour("1A1A1A");
-  public final static Color DIM_TEXT = ServerGUIFactory.getColour("333333");
-  public final static Color LIGHT_TEXT = ServerGUIFactory.getColour("FFFFFF");
-  public final static Color LIGHT_TEXT_OVERLAY = ServerGUIFactory.getColour("FFFFFF", 60);
-  public final static Color LIGHT_PURPLE = ServerGUIFactory.getColour("EDE8EF");
-  public final static Color LIGHT_PURPLE2 = ServerGUIFactory.getColour("BCB3D2");
-  public final static Color DARK_PURPLE = ServerGUIFactory.getColour("4E3D6A");
-  public final static Color DARK_PURPLE_OVERLAY = ServerGUIFactory.getColour("705697");
 
-  public static Font getFont(int size) {
-    return new Font("Arial", Font.PLAIN, size);
-  }
-  public static Color getColour(String hex, int alpha) {
-    Color color = Color.decode("#"+hex);
-    return new Color(
-      color.getRed(),
-      color.getGreen(),
-      color.getBlue(),
-      (int)((100-alpha)/100.0*255)
-    );
-  }
+  // start frame
+  public static final Color START_BACKGROUND = ServerGUIFactory.getColour("1D1D1D");
+
+  public static final Color START_PORT_LABEL = ServerGUIFactory.getColour("A5A5A5");
+  public static final Color START_TITLE = ServerGUIFactory.getColour("8B68E2");
+
+  // the areas where the bg is purple and text is white
+  public static final Color EMPHASIS_HOVER = ServerGUIFactory.getColour("7941CD");
+  public static final Color EMPHASIS_TEXT = ServerGUIFactory.getColour("EEE6F9");
+  public static final Color EMPHASIS = ServerGUIFactory.getColour("663AA8");
+
+  // side panel
+  public static final Color SIDE_PANEL = ServerGUIFactory.getColour("121212");
+
+  // heading/title label
+  public static final Color HEADING = ServerGUIFactory.getColour("1F1F1F");
+  public static final Color HEADING_TEXT = ServerGUIFactory.getColour("E2E2E2");
+
+  // entry panel
+  public static final Color ENTRIES = ServerGUIFactory.getColour("1E1E1E");
+  public static final Color ENTRY_ACTIVE = ServerGUIFactory.getColour("292929");
+  public static final Color ENTRY_TEXT = ServerGUIFactory.getColour("A5A5A5");
+
+  public static final Color ADMIN_BUTTON = ServerGUIFactory.getColour("181818");
+  public static final Color ADMIN_BUTTON_HOVER = ServerGUIFactory.getColour("202020");
+  public static final Color ADMIN_BUTTON_TEXT = ServerGUIFactory.getColour("8A67E1");
+
+  public static final Color USER_SELECTION = ServerGUIFactory.getColour("232323");
+  public static final Color USER_ACTIVE = ServerGUIFactory.getColour("2E2E2E");
+  public static final Color USER_TEXT = ServerGUIFactory.getColour("5F81E4");
+
+  public static final Color GENERAL_TEXT_BG = ServerGUIFactory.getColour("282828");
+  public static final Color GENERAL_TEXT = ServerGUIFactory.getColour("E3E3E3");
+  
+  public static final Color SCROLL_BAR = ServerGUIFactory.getColour("474747");
+
 
   public static Color getColour(String hex) {
-    return Color.decode("#"+hex);
+    return Color.decode("#" + hex);
   }
 
   public static Component getEmptyHeight(int height) {
@@ -80,30 +90,57 @@ public class ServerGUIFactory {
   public static Component getEmptyWidth(int width) {
     return Box.createRigidArea(new Dimension(width, 0));
   }
-  
-  public static JScrollPane getScrollPane(JPanel panel, boolean visibleScrollBar) {
+
+  public static JScrollPane getScrollPane(JPanel panel) {
     JScrollPane scrollPane = new JScrollPane(panel);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    scrollPane.setVerticalScrollBarPolicy(
-      ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
-    );
-    scrollPane.setHorizontalScrollBarPolicy(
-      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-    );
-    if (!visibleScrollBar) {
-      scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-    }
+    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.getVerticalScrollBar().setBackground(ServerGUIFactory.HEADING);
+    scrollPane.getVerticalScrollBar().setUI(ServerGUIFactory.getScrollbarUI());    
     scrollPane.getVerticalScrollBar().setUnitIncrement(16);
     return scrollPane;
   }
 
-  public static JPanel getHeader(String title, Color bg) {
+  public static BasicScrollBarUI getScrollbarUI() {
+    return (new BasicScrollBarUI() {
+      @Override
+      public void configureScrollBarColors() {
+        this.thumbColor = ServerGUIFactory.SCROLL_BAR;
+      }
+
+      @Override
+      public JButton createDecreaseButton(int orientation) {
+        JButton button = new JButton();
+        button.setMaximumSize(new Dimension(0 ,0));
+        button.setPreferredSize(new Dimension(0, 0));
+        button.setMinimumSize(new Dimension(0, 0));
+        return button;
+      }
+
+      @Override
+      public JButton createIncreaseButton(int orientation) {
+        JButton button = new JButton();
+        button.setMaximumSize(new Dimension(0 ,0));
+        button.setPreferredSize(new Dimension(0, 0));
+        button.setMinimumSize(new Dimension(0, 0));
+        return button;
+      }
+    });
+  }
+
+  /**
+   * 
+   * @param title
+   * @return
+   */
+  public static JPanel getHeader(String title) {
     JLabel titleLabel = new JLabel(title);
-    titleLabel.setFont(ServerGUIFactory.getFont(15));
-    titleLabel.setForeground(ServerGUIFactory.LIGHT_TEXT);
+    titleLabel.setFont(Theme.getPlainFont(15));
+    titleLabel.setForeground(ServerGUIFactory.HEADING_TEXT);
     JPanel titlePanel = new JPanel();
     titlePanel.add(titleLabel);
-    titlePanel.setBackground(bg);
+    titlePanel.setBackground(ServerGUIFactory.HEADING);
     titlePanel.setPreferredSize(titlePanel.getPreferredSize());
     return titlePanel;
   }
@@ -120,19 +157,26 @@ public class ServerGUIFactory {
 
   /**
    * 
-   * @param title
-   * @param px         padding x
-   * @param py         padding y
+   * @param text
+   * @param textColor
+   * @param textSize
+   * @param px
+   * @param py
+   * @param bg
+   * @param hover
+   * @param whiteIcon
    * @return
    */
   public static JCheckBox getCheckBox(
-    String title, 
+    String text, 
+    Color textColor, 
+    int textSize, 
     int px, int py, 
-    Color bg,
+    Color bg, 
     Color hover,
     boolean whiteIcon
   ) {
-    JCheckBox box = new JCheckBox(title);
+    JCheckBox box = new JCheckBox(text);
     try {
       String path;
       if (whiteIcon) {
@@ -141,10 +185,7 @@ public class ServerGUIFactory {
         path = "server/assets/unchecked_checkbox.png";
       }
       BufferedImage img = ImageIO.read(new File(path));
-      Image icon = img.getScaledInstance(
-        20, 20, 
-        Image.SCALE_SMOOTH
-      );
+      Image icon = img.getScaledInstance(textSize, textSize, Image.SCALE_SMOOTH);
       box.setIcon(new ImageIcon(icon));
       if (whiteIcon) {
         path = "server/assets/checked_checkbox_white.png";
@@ -152,22 +193,19 @@ public class ServerGUIFactory {
         path = "server/assets/checked_checkbox.png";
       }
       img = ImageIO.read(new File(path));
-      icon = img.getScaledInstance(
-        20, 20, 
-        Image.SCALE_SMOOTH
-      );
+      icon = img.getScaledInstance(textSize, textSize, Image.SCALE_SMOOTH);
       box.setSelectedIcon(new ImageIcon(icon));
     } catch (Exception e) {
       System.out.println("Unable to add button icon");
       e.printStackTrace();
     }
-    box.setFont(ServerGUIFactory.getFont(17));
-    box.setForeground(ServerGUIFactory.TEXT);
+    box.setFont(Theme.getPlainFont(textSize));
+    box.setForeground(textColor);
     box.setCursor(new Cursor(Cursor.HAND_CURSOR));
     box.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));
     box.setMinimumSize(new Dimension(
-      box.getPreferredSize().width+px*2,
-      box.getPreferredSize().height+py*2
+      box.getPreferredSize().width + px * 2, 
+      box.getPreferredSize().height + py * 2
     ));
     box.setFocusPainted(false);
     box.setHorizontalAlignment(SwingConstants.CENTER);
@@ -178,39 +216,47 @@ public class ServerGUIFactory {
       }
 
       public void mouseExited(MouseEvent evt) {
-        box.setBackground(bg);
+        if (!box.getModel().isSelected()) {
+          box.setBackground(bg);
+        }
+      }
+    });
+    box.addChangeListener(new ChangeListener(){
+      public void stateChanged(ChangeEvent e) {
+        if (box.getModel().isSelected()) {
+          box.setBackground(hover);
+        } else {
+          box.setBackground(bg);
+        }
       }
     });
     return box;
 
   }
 
-
-  public static JButton getButton(
+  /**
+   * 
+   * @param text
+   * @param textColor
+   * @param textSize
+   * @param px
+   * @param py
+   * @param bg
+   * @param hover
+   * @return
+   */
+  public static Button getButton(
     String text, 
-    Color textColor,
-    int textSize,
-    int px, 
-    int py,
-    Color bg,
+    Color textColor, 
+    int textSize, 
+    int px, int py, 
+    Color bg, 
     Color hover
   ) {
-    JButton button = new JButton(text);
-    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    button.setFont(ServerGUIFactory.getFont(textSize));
+    Button button = new Button(text, bg, hover);
+    button.setFont(Theme.getPlainFont(textSize));
     button.setForeground(textColor);
-    button.setBackground(bg);
     button.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));
-    button.setFocusPainted(false);
-    button.addMouseListener(new MouseAdapter() {
-      public void mouseEntered(MouseEvent evt) {
-        button.setBackground(hover);
-      }
-
-      public void mouseExited(MouseEvent evt) {
-        button.setBackground(bg);
-      }
-    });
 
     return button;
   }

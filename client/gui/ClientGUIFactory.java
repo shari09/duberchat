@@ -71,22 +71,6 @@ public class ClientGUIFactory {
   public final static Color BLUE_SHADE_2 = new Color(117, 191, 254);
   public final static Color BLUE_SHADE_3 = new Color( 76, 105, 199);
 
-  public static Color getAlphaColor(Color color, float alpha) {
-    return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
-  }
-
-  public static Font getPlainFont(int size) {
-    return new Font("Arial", Font.PLAIN, size);
-  }
-
-  public static Font getBoldFont(int size) {
-    return new Font("Arial", Font.BOLD, size);
-  }
-
-  public static Font getItalicFont(int size) {
-    return new Font("Arial", Font.ITALIC, size);
-  }
-
   public static JScrollPane getScrollPane(Component component, boolean visibleScrollBar) {
     JScrollPane scrollPane = new JScrollPane(component);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());

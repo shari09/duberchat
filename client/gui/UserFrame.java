@@ -1,17 +1,18 @@
 package client.gui;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
-import common.entities.ClientData;
-import common.entities.payload.PayloadType;
-import common.entities.payload.ServerBroadcast;
-import common.entities.Constants;
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import client.entities.ClientSocket;
 import client.entities.ClientSocketListener;
+import common.entities.ClientData;
+import common.entities.Constants;
+import common.entities.payload.PayloadType;
+import common.entities.payload.server_to_client.ServerBroadcast;
 
 /**
  * The frame to display the GUI for the client.

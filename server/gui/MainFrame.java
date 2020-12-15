@@ -1,25 +1,18 @@
 package server.gui;
 
 import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.ObjectOutputStream;
-import java.util.concurrent.ConcurrentHashMap;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.IOException;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
-import server.entities.Client;
+import common.entities.Constants;
+import common.gui.Theme;
 import server.entities.EventType;
 import server.services.GlobalServices;
 import server.services.Subscribable;
@@ -54,11 +47,12 @@ public class MainFrame extends JFrame implements Subscribable {
   private GridBagConstraints c;
 
   public MainFrame() {
-    super("DuberChat Server");
+    super("DQ Server");
+    this.setIconImage(Theme.getIcon());
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(MainFrame.WIDTH, MainFrame.HEIGHT);
     this.setResizable(false);
-    this.setBackground(Color.BLACK);
+    this.setBackground(ServerGUIFactory.START_BACKGROUND);
 
     this.setLayout(new GridBagLayout());
     this.c = new GridBagConstraints();

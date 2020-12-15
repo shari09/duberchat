@@ -13,6 +13,7 @@ import common.entities.ClientData;
 import common.entities.Constants;
 import common.entities.payload.PayloadType;
 import common.entities.payload.server_to_client.ServerBroadcast;
+import common.gui.Theme;
 
 /**
  * The frame to display the GUI for the client.
@@ -29,8 +30,8 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
 
   private ClientSocket clientSocket;
 
-  public UserFrame(String title, ClientSocket clientSocket) {
-    super(title);
+  public UserFrame(ClientSocket clientSocket) {
+    super(Theme.APPLICATION_NAME);
     
     this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 

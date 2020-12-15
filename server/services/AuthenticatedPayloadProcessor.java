@@ -23,7 +23,7 @@ import common.entities.payload.client_to_server.RequestAttachment;
 import common.entities.payload.client_to_server.RequestMessages;
 import common.entities.payload.client_to_server.TransferOwnership;
 import common.entities.payload.client_to_server.UpdateStatus;
-import common.entities.payload.server_to_client.Attachment;
+import common.entities.Attachment;
 import common.entities.payload.server_to_client.AttachmentToClient;
 import common.entities.payload.server_to_client.MessagesToClient;
 import server.entities.AuthenticatedClientRequest;

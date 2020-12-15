@@ -55,8 +55,8 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
   private JButton registerButton;
   private JButton backToLoginButton;
   
-  public RegistrationFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public RegistrationFrame(ClientSocket clientSocket) {
+    super(clientSocket);
 
     this.setSize(RegistrationFrame.WIDTH, RegistrationFrame.HEIGHT);
     this.setResizable(false);
@@ -269,7 +269,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
 
     } else if (e.getSource() == this.backToLoginButton) {
       this.dispose();
-      LoginFrame nextFrame = new LoginFrame(this.getTitle(), this.getClientSocket());
+      LoginFrame nextFrame = new LoginFrame(this.getClientSocket());
     }
   }
 
@@ -278,10 +278,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     // user successfully logged in
     if (GlobalClient.hasData()) {
       this.dispose();
-      UserMainFrame nextFrame = new UserMainFrame(
-        this.getTitle(),
-        this.getClientSocket()
-      );
+      UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());
     }
   }
 

@@ -18,6 +18,8 @@ public class Constants {
   
   public static final int SOCKET_TIMEOUT = 1000*60*100;
 
+  public static final String APPLICATION_NAME = "DQ";
+  
   public static final String ICON_PATH = "common/assets/icon.png";
   
   public static final RegexValidator NAME_VALIDATOR = new RegexValidator(

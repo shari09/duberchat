@@ -42,8 +42,8 @@ public class ClientStartFrame extends JFrame implements ActionListener {
   private JTextField portField;
   private JLabel errorLabel;
 
-  public ClientStartFrame(String title) {
-    super(title);
+  public ClientStartFrame() {
+    super(Theme.APPLICATION_NAME);
 
     this.setIconImage(Theme.getIcon());
 
@@ -167,10 +167,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
       Thread clientThread = new Thread(clientSocket);
       clientThread.start();
 
-      LoginFrame nextFrame = new LoginFrame(
-        this.getTitle(),
-        clientSocket
-      );
+      LoginFrame nextFrame = new LoginFrame(clientSocket);
       nextFrame.setIconImage(this.getIconImage());
       this.dispose();
       

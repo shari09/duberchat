@@ -44,7 +44,7 @@ public class StartFrame extends JFrame implements ActionListener {
   private Server server;
 
   public StartFrame(Server socket) {
-    super("DQ Server");
+    super(Theme.APPLICATION_NAME + " Server");
     this.setIconImage(Theme.getIcon());
     
     this.server = socket;

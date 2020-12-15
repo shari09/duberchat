@@ -46,8 +46,9 @@ public class UserChatFrame extends UserFrame {
 
   private JTabbedPane tabbedPane;
 
-  public UserChatFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public UserChatFrame(ClientSocket clientSocket) {
+    super(clientSocket);
+    this.setTitle("Chat Window");
     
     this.setSize(UserChatFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserChatFrame.PREFERRED_DIMENSION);

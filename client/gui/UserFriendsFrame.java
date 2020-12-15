@@ -58,8 +58,9 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   private JTextField requestMessageField;
   private JButton sendFriendRequestButton;
 
-  public UserFriendsFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public UserFriendsFrame(ClientSocket clientSocket) {
+    super(clientSocket);
+    this.setTitle("Friends");
 
     this.setSize(UserFriendsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserFriendsFrame.PREFERRED_DIMENSION);

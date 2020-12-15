@@ -9,7 +9,7 @@ import common.entities.ChannelField;
 import common.entities.ChannelMetadata;
 import common.entities.Message;
 import common.entities.UserMetadata;
-import common.entities.payload.server_to_client.Attachment;
+import common.entities.Attachment;
 import server.entities.Channel;
 import server.entities.EventType;
 import server.entities.GroupChannel;

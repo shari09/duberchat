@@ -49,8 +49,8 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   private JButton loginButton;
   private JButton registerButton;
                               
-  public LoginFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public LoginFrame(ClientSocket clientSocket) {
+    super(clientSocket);
 
     this.setSize(LoginFrame.WIDTH, LoginFrame.HEIGHT);
     this.setResizable(false);
@@ -193,10 +193,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
 
     } else if (e.getSource() == this.registerButton) {
       this.dispose();
-      RegistrationFrame nextFrame = new RegistrationFrame(
-        this.getTitle(),
-        this.getClientSocket()
-      );
+      RegistrationFrame nextFrame = new RegistrationFrame(this.getClientSocket());
     }
   }
 
@@ -204,14 +201,12 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   public void clientDataUpdated(ClientData updatedClientData) {
     // user successfully logged in
     if (GlobalClient.hasData()) {
-      UserMainFrame nextFrame = new UserMainFrame(
-        this.getTitle(),
-        this.getClientSocket()
-      );
+      this.dispose();
+      UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());
     } else {
       System.out.println("failed to initialize client data");
     }
-    this.dispose();
+    
   }
 
   @Override

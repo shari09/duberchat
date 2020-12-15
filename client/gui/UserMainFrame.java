@@ -72,19 +72,19 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   private JButton friendsFrameButton;
   private JButton settingsButton;
 
-  public UserMainFrame(String title, ClientSocket clientSocket) {
-    super(title, clientSocket);
+  public UserMainFrame(ClientSocket clientSocket) {
+    super(clientSocket);
 
     this.setSize(UserMainFrame.DIMENSION);
     this.setResizable(false);
 
-    this.chatFrame = new UserChatFrame("Chat Window", clientSocket);
+    this.chatFrame = new UserChatFrame(clientSocket);
     this.chatFrame.setVisible(false);
 
-    this.friendsFrame = new UserFriendsFrame("Friends", clientSocket);
+    this.friendsFrame = new UserFriendsFrame(clientSocket);
     this.friendsFrame.setVisible(false);
 
-    this.settingsFrame = new UserSettingsFrame("Settings", clientSocket);
+    this.settingsFrame = new UserSettingsFrame(clientSocket);
     this.settingsFrame.setVisible(false);
 
     JPanel panel = new JPanel(new GridBagLayout());
@@ -98,8 +98,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     constraints.gridwidth = 5;
     constraints.gridheight = 2;
     panel.add(this.userProfilePanel, constraints);
-    
-    //constraints.weightx = 1;
     constraints.weighty = 1;
     // tabbed pane for channels
     this.privateChannelsList = new JList<PrivateChannelMetadata>();
@@ -177,7 +175,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     // buttonPanel.add(test);
 
     // panel.add(buttonPanel, BorderLayout.PAGE_END);
-      
+
     this.getContentPane().add(panel);
     this.setVisible(true);
   }

@@ -21,7 +21,7 @@ public class ServerBroadcast extends Payload {
   private String message;
 
   public ServerBroadcast(String message) {
-    super(PayloadType.SERVER_BROADCAST, 5);
+    super(PayloadType.SERVER_BROADCAST, 100); // lol
     this.message = message;
 
   }

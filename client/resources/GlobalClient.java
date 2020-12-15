@@ -29,6 +29,17 @@ public class GlobalClient {
     return GlobalClient.clientData != null;
   }
 
+  public static UserMetadata getClientUserMetadata() {
+    synchronized (clientData) {
+      return new UserMetadata(
+        clientData.getUserId(), 
+        clientData.getUsername(),
+        clientData.getDescription(),
+        clientData.getStatus()
+      );
+    }
+  }
+  
   public static String getDownloadFolderPath() {
     if (!GlobalClient.hasData()) {
       return GlobalClient.DOWNLOAD_ROOT_FOLDER_PATH + GlobalClient.DEFAULT_DOWNLOAD_FOLDER_PATH;

@@ -19,7 +19,7 @@ import common.entities.Constants;
  * @since 1.0.0
  */
 public class Theme {
-
+  
   public static BufferedImage getIcon() {
     BufferedImage icon = null;
     try {

@@ -4,13 +4,13 @@ import java.awt.Font;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-
+import java.io.IOException;
 import javax.swing.Box;
 import java.awt.Image;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.ImageIcon;
-
+import javax.swing.border.LineBorder;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -18,20 +18,28 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.SwingConstants;
 import java.awt.GridBagConstraints;
+import javax.swing.ImageIcon;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+
+import common.entities.GroupChannelMetadata;
+import common.entities.UserMetadata;
+import common.entities.UserStatus;
+import common.gui.Theme;
 
 /**
  * 
@@ -67,9 +75,14 @@ public class ClientGUIFactory {
   public final static Color GREEN_SHADE_2 = new Color(154, 222, 209);
   public final static Color GREEN_SHADE_3 = new Color( 68, 140,  40);
 
-  public final static Color BLUE_SHADE_1 = new Color(154, 205, 250);
-  public final static Color BLUE_SHADE_2 = new Color(117, 191, 254);
+  public final static Color BLUE_SHADE_1 = new Color(239, 248, 255);
+  public final static Color BLUE_SHADE_2 = new Color(116, 190, 254);
   public final static Color BLUE_SHADE_3 = new Color( 76, 105, 199);
+  public final static Color BLUE_SHADE_4 = new Color( 58,  79, 146);
+
+  public final static String USER_ICON_PATH = "client/assets/2.png";
+  public final static String GROUP_CHANNEL_ICON_PATH = "client/assets/1.png";
+  public final static String SETTINGS_ICON_PATH = "client/assets/3.png";
 
   public static JScrollPane getScrollPane(Component component, boolean visibleScrollBar) {
     JScrollPane scrollPane = new JScrollPane(component);
@@ -89,6 +102,15 @@ public class ClientGUIFactory {
     return scrollPane;
   }
 
+  public static JTabbedPane getTabbedPane(Font font) {
+    JTabbedPane tabbedPane = new JTabbedPane();
+    tabbedPane.setBackground(ClientGUIFactory.BLUE_SHADE_1);
+    tabbedPane.setForeground(ClientGUIFactory.BLUE_SHADE_4);
+    tabbedPane.setFont(font);
+    tabbedPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    return tabbedPane;
+  }
+
   public static JLabel getTextLabel(String text, Font font, Color textColor) {
     JLabel label = new JLabel(text);
     label.setFont(font);
@@ -102,6 +124,31 @@ public class ClientGUIFactory {
     button.setFont(font);
     button.setForeground(textColor);
     button.setBackground(bgColor);
+    button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    return button;
+  }
+
+  public static JButton getImageButton(ImageIcon icon) {
+    JButton button = new JButton(icon);
+    button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    button.setOpaque(false);
+    button.setContentAreaFilled(false);
+    button.setBorderPainted(false);
+    return button;
+  }
+
+  public static JButton getTextButton(String text, Font font, Color textColor, Color bgColor, int hPad, int vPad) {
+    JButton button = new JButton(text);
+    button.setFont(font);
+    button.setForeground(textColor);
+    button.setBackground(bgColor);
+    button.setBorder(BorderFactory.createEmptyBorder(vPad, hPad, vPad, hPad));
+    return button;
+  }
+
+  public static JButton getTextButton(String text, Font font, Color textColor, Color bgColor, int hPad, int vPad, Color borderColor) {
+    JButton button = ClientGUIFactory.getTextButton(text, font, textColor, bgColor, hPad, vPad);
+    button.setBorder(new LineBorder(borderColor, 3));
     return button;
   }
 
@@ -116,7 +163,17 @@ public class ClientGUIFactory {
     textField.setFont(font);
     textField.setForeground(textColor);
     textField.setBackground(bgColor);
+    textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return textField;
+  }
+
+  public static JPasswordField getPasswordField(int columns, Font font, Color textColor, Color bgColor) {
+    JPasswordField passField = new JPasswordField(columns);
+    passField.setFont(font);
+    passField.setForeground(textColor);
+    passField.setBackground(bgColor);
+    passField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    return passField;
   }
 
   public static JTextArea getTextArea(int row, int columns, String initialText, Font font, Color textColor, Color bgColor) {
@@ -131,6 +188,267 @@ public class ClientGUIFactory {
     textField.setForeground(textColor);
     textField.setBackground(bgColor);
     return textField;
+  }
+
+  public static GridBagConstraints getDefaultGridBagConstraints() {
+    return ClientGUIFactory.getGridBagConstraints(
+      0, 0, 1, 1,
+      0.5, 0.5,
+      10, 10, 
+      GridBagConstraints.BOTH,
+      GridBagConstraints.CENTER
+    );
+  }
+  public static GridBagConstraints getGridBagConstraints(
+    int gridx, int gridy, int gridw, int gridh,
+    double weightx, double weighty,
+    int xPad, int yPad,
+    int fill,
+    int anchor
+  ) {
+    GridBagConstraints constraints = new GridBagConstraints();
+    constraints.weightx = weightx;
+    constraints.weighty = weighty;
+    constraints.gridx = gridx;
+    constraints.gridy = gridx;
+    constraints.gridwidth= gridw;
+    constraints.gridheight = gridh;
+    constraints.ipadx = xPad;
+    constraints.ipady = yPad;
+    constraints.fill = fill;
+    constraints.anchor = anchor;
+    return constraints;
+  }
+
+  public static JPanel getUserThumbnailPanel(
+    UserMetadata metadata,
+    Font nameFont,
+    Font statusFont,
+    Color textColor
+  ) {
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+
+    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    constraints.weightx = 0.3;
+    constraints.weighty = 0;
+    constraints.gridwidth = 2;
+    constraints.gridheight = 2;
+    constraints.ipadx = 2;
+    panel.add(iconLabel, constraints);
+
+    constraints.weightx = 1;
+    constraints.weighty = 0;
+    constraints.ipadx = 0;
+    constraints.gridx = 2;
+    constraints.gridwidth = 3;
+    constraints.gridheight = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    JLabel nameLabel = ClientGUIFactory.getTextLabel(
+      metadata.getUsername(),
+      nameFont,
+      textColor
+    );
+    panel.add(nameLabel, constraints);
+
+    JLabel statusLabel = ClientGUIFactory.getTextLabel(
+      ClientGUIFactory.getStatusText(metadata.getStatus()),
+      statusFont,
+      ClientGUIFactory.getStatusColor(metadata.getStatus())
+    );
+    constraints.gridy = 1;
+    panel.add(statusLabel, constraints);
+    
+    return panel;
+  }
+
+  public static JPanel getGroupChannelThumbnailPanel(
+    GroupChannelMetadata metadata,
+    Font titleFont,
+    Font numParticipantsFont,
+    Color textColor
+  ) {
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+
+    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getGroupChannelIcon()));
+    constraints.weightx = 0.3;
+    constraints.weighty = 0;
+    constraints.gridwidth = 2;
+    constraints.gridheight = 2;
+    constraints.ipadx = 2;
+    panel.add(iconLabel, constraints);
+
+    constraints.weightx = 1;
+    constraints.weighty = 0;
+    constraints.ipadx = 0;
+    constraints.gridx = 2;
+    constraints.gridwidth = 3;
+    constraints.gridheight = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    JLabel nameLabel = ClientGUIFactory.getTextLabel(
+      metadata.getChannelName(),
+      titleFont,
+      textColor
+    );
+    panel.add(nameLabel, constraints);
+
+    JLabel partLabel = ClientGUIFactory.getTextLabel(
+      metadata.getParticipants().size() + " participants",
+      numParticipantsFont,
+      textColor
+    );
+    constraints.gridy = 1;
+    panel.add(partLabel, constraints);
+
+    return panel;
+  }
+
+  public static JPanel getIncomingFriendRequestPanel(
+    UserMetadata metadata,
+    String requestMsg,
+    Font usernameFont,
+    Font requestMsgFont,
+    Color textColor
+  ) {
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+
+    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    constraints.weightx = 0.3;
+    constraints.weighty = 0;
+    constraints.gridwidth = 2;
+    constraints.gridheight = 2;
+    constraints.ipadx = 2;
+    panel.add(iconLabel, constraints);
+
+    constraints.weightx = 1;
+    constraints.weighty = 0;
+    constraints.ipadx = 0;
+    constraints.gridx = 2;
+    constraints.gridwidth = 3;
+    constraints.gridheight = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    JLabel nameLabel = ClientGUIFactory.getTextLabel(
+      metadata.getUsername(),
+      usernameFont,
+      textColor
+    );
+    panel.add(nameLabel, constraints);
+
+    JLabel partLabel = ClientGUIFactory.getTextLabel(
+      requestMsg,
+      requestMsgFont,
+      textColor
+    );
+    constraints.gridy = 1;
+    panel.add(partLabel, constraints);
+
+    return panel;
+  }
+
+  public static JPanel getOutgoingFriendRequestPanel(
+    UserMetadata recipientMetadata,
+    Font usernameFont,
+    Font statusFont,
+    Color textColor
+  ) {
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+
+    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    constraints.weightx = 0.3;
+    constraints.weighty = 0;
+    constraints.gridwidth = 2;
+    constraints.gridheight = 2;
+    constraints.ipadx = 2;
+    panel.add(iconLabel, constraints);
+
+    constraints.weightx = 1;
+    constraints.weighty = 0;
+    constraints.ipadx = 0;
+    constraints.gridx = 2;
+    constraints.gridwidth = 3;
+    constraints.gridheight = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    JLabel nameLabel = ClientGUIFactory.getTextLabel(
+      recipientMetadata.getUsername(),
+      usernameFont,
+      textColor
+    );
+    panel.add(nameLabel, constraints);
+
+    JLabel partLabel = ClientGUIFactory.getTextLabel(
+      "pending",
+      statusFont,
+      textColor
+    );
+    constraints.gridy = 1;
+    panel.add(partLabel, constraints);
+
+    return panel;
+  }
+
+  public static Color getStatusColor(UserStatus status) {
+    switch (status) {
+      case ACTIVE:
+        return ClientGUIFactory.GREEN_SHADE_3;
+      case IDLE:
+        return ClientGUIFactory.YELLOW_SHADE_2;
+      case DO_NOT_DISTURB:
+        return ClientGUIFactory.RED_SHADE_1;
+      case OFFLINE:
+        return ClientGUIFactory.GRAY_SHADE_3;
+    }
+    return ClientGUIFactory.GRAY_SHADE_4;
+  }
+
+  public static String getStatusText(UserStatus status) {
+    switch (status) {
+      case ACTIVE:
+        return "Online";
+      case IDLE:
+        return "Idle";
+      case DO_NOT_DISTURB:
+        return "Do not disturb";
+      case OFFLINE:
+        return "Offline";
+    }
+    return "";
+  }
+
+  public static BufferedImage getUserIcon() {
+    BufferedImage icon = null;
+    try {
+      icon = ImageIO.read(new File(USER_ICON_PATH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
+
+  public static BufferedImage getGroupChannelIcon() {
+    BufferedImage icon = null;
+    try {
+      icon = ImageIO.read(new File(GROUP_CHANNEL_ICON_PATH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
+
+  public static BufferedImage getSettingsIcon() {
+    BufferedImage icon = null;
+    try {
+      icon = ImageIO.read(new File(SETTINGS_ICON_PATH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
   }
 
   // public static GridBagConstraints getScrollConstraints() {

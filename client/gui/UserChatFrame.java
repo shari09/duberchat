@@ -9,6 +9,7 @@ import client.entities.ClientSocket;
 import common.entities.ClientData;
 import common.entities.payload.PayloadType;
 import common.entities.payload.server_to_client.ServerBroadcast;
+import common.gui.Theme;
 
 /**
  * The frame to display the GUI for the client.
@@ -52,7 +53,8 @@ public class UserChatFrame extends UserFrame {
     this.setPreferredSize(UserChatFrame.PREFERRED_DIMENSION);
     this.setResizable(true);
 
-    this.tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+    this.tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(15));
+    this.tabbedPane.setTabPlacement(JTabbedPane.LEFT);
     this.getContentPane().add(this.tabbedPane);
   }
 

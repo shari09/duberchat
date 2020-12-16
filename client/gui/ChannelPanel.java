@@ -234,7 +234,13 @@ public class ChannelPanel extends JPanel implements ActionListener,
           attachment = Files.readAllBytes(file.toPath());
           attachmentName = file.getName();
         } catch (IOException ioException) {
-          JOptionPane.showMessageDialog(this, "Failed to upload attachment", "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(
+            this,
+            "Failed to upload attachment",
+            "Error",
+            JOptionPane.ERROR_MESSAGE,
+            ClientGUIFactory.getDialogErrorIcon(30, 30)
+          );
         }
       }
 
@@ -269,7 +275,8 @@ public class ChannelPanel extends JPanel implements ActionListener,
           this,
           "Please enter something or upload an attachment",
           "Invalid Input", 
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
       }
 
@@ -378,7 +385,10 @@ public class ChannelPanel extends JPanel implements ActionListener,
   }
 
   private void requestMessages() {
-    if (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) == true) {
+    if (
+      (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) != null)
+      && (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) == true)
+     ) {
       return;
     }
     synchronized (GlobalClient.clientData) {

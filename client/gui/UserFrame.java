@@ -67,7 +67,8 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
             this,
             notifMessage,
             "Error",
-            JOptionPane.ERROR_MESSAGE
+            JOptionPane.ERROR_MESSAGE,
+            ClientGUIFactory.getDialogErrorIcon(30, 30)
           );
           return;
         }

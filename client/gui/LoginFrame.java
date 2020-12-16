@@ -179,7 +179,8 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
           this,
           "Please fill in the required fields",
           "Submission failed",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.ERROR_MESSAGE,
+          ClientGUIFactory.getDialogErrorIcon(30, 30)
         );
         return;
       }

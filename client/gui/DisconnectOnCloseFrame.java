@@ -44,9 +44,10 @@ public abstract class DisconnectOnCloseFrame extends UserFrame implements Window
       "Confirm Action",
       JOptionPane.OK_CANCEL_OPTION,
       JOptionPane.QUESTION_MESSAGE,
-      null,
+      ClientGUIFactory.getDialogConfirmationIcon(30, 30),
       options,
-      null);
+      null
+    );
     
     if (choice == JOptionPane.OK_OPTION) {
       try {
@@ -57,7 +58,8 @@ public abstract class DisconnectOnCloseFrame extends UserFrame implements Window
           this,
           "failed to disconnect",
           "Error",
-          JOptionPane.ERROR_MESSAGE
+          JOptionPane.ERROR_MESSAGE,
+          ClientGUIFactory.getDialogErrorIcon(30, 30)
         );
       }
     }

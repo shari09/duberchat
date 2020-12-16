@@ -226,7 +226,8 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
           this,
           "Please fill in the required fields",
           "Submission failed",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
         return;
       }
@@ -236,7 +237,8 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
           this,
           "Password and confirm password does not match",
           "Submission failed",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
         return;
       }

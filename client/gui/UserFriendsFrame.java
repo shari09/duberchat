@@ -204,14 +204,16 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
           this,
           "Username entered is empty!",
           "Illegal Input",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
       } else if (otherUsername.equals(GlobalClient.clientData.getUsername())) {
         JOptionPane.showMessageDialog(
           this,
           "Cannot add yourself as a friend!",
           "Illegal Input",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
       } else {
         GlobalPayloadQueue.enqueuePayload(
@@ -277,6 +279,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
       if (e.getSource() == this.friends) {
         int row = this.friends.locationToIndex(e.getPoint());
         this.friends.setSelectedIndex(row);
+        System.out.println("-----asdasdasd");
         UserMetadata metadata = this.onlineFriends.getSelectedValue();
         if (metadata != null) {
           GlobalJDialogPrompter.promptFriendAction(this, metadata);

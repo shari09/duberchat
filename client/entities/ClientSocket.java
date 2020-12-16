@@ -123,7 +123,10 @@ public class ClientSocket implements Runnable {
           try {
               Payload payloadToSend = GlobalPayloadQueue.queue.poll();
               if (payloadToSend.getType() != PayloadType.KEEP_ALIVE){
+                System.out.println("---------putting payload");
                 System.out.println(payloadToSend.toString());
+                System.out.println(payloadToSend.getType());
+                System.out.println(payloadToSend.getId());
               }
               this.output.writeObject(payloadToSend);
               this.pendingRequests.put(payloadToSend.getId(), payloadToSend);
@@ -317,6 +320,7 @@ public class ClientSocket implements Runnable {
     String errorMessage = requestStatus.getErrorMessage();
 
     if (originalPayload == null) {
+      System.out.println(originalPayloadId);
       System.out.println("client request originalPayload not found");
 
     } else if (errorMessage != null) {
@@ -333,6 +337,7 @@ public class ClientSocket implements Runnable {
           break;
 
         case UPDATE_STATUS:
+          System.out.println("hiiiiiiiiiiiiiiii");
           this.updateUserStatus((UpdateStatus)originalPayload);
           break;
 
@@ -348,6 +353,7 @@ public class ClientSocket implements Runnable {
     }
     // remove the original payload from pending requests
     this.pendingRequests.remove(originalPayloadId);
+    System.out.println(originalPayloadId);
   }
 
   /**

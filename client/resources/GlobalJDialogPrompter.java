@@ -1,5 +1,6 @@
 package client.resources;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 
 import client.gui.ClientGUIFactory;
 import common.entities.Constants;
@@ -40,6 +42,7 @@ import common.services.RegexValidator;
  * Contains static methods to prompt for and respond to user inputs/choices.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
@@ -135,7 +138,8 @@ public class GlobalJDialogPrompter {
         parentComponent,
         "Required fields incomplete",
         "Submission failed",
-        JOptionPane.INFORMATION_MESSAGE
+        JOptionPane.INFORMATION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30)
       );
       return;
     }
@@ -154,7 +158,8 @@ public class GlobalJDialogPrompter {
         parentComponent,
         "New password and confirm password does not match",
         "Submission failed",
-        JOptionPane.INFORMATION_MESSAGE
+        JOptionPane.INFORMATION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30)
       );
       return;
     }
@@ -195,7 +200,8 @@ public class GlobalJDialogPrompter {
         "New description does not meet requirements:"
         + "\n" + Constants.DESCRIPTION_VALIDATOR.getDescription(),
         "Submission failed",
-        JOptionPane.INFORMATION_MESSAGE
+        JOptionPane.INFORMATION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30)
       );
       return;
     }
@@ -541,7 +547,7 @@ public class GlobalJDialogPrompter {
             metadata,
             false
           );
-          if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
+          if ( (userIdToRemove != null) && (GlobalJDialogPrompter.confirmAction(parentComponent))) {
             GlobalPayloadQueue.enqueuePayload(
               new RemoveParticipant(
                 1,
@@ -628,7 +634,8 @@ public class GlobalJDialogPrompter {
       parentComponent,
       strToShow,
       "Submission failed",
-      JOptionPane.INFORMATION_MESSAGE
+      JOptionPane.INFORMATION_MESSAGE,
+      ClientGUIFactory.getDialogInformationIcon(30, 30)
     );
     return;
   }
@@ -642,7 +649,8 @@ public class GlobalJDialogPrompter {
       parentComponent,
       strToShow,
       "Submission failed",
-      JOptionPane.INFORMATION_MESSAGE
+      JOptionPane.INFORMATION_MESSAGE,
+      ClientGUIFactory.getDialogInformationIcon(30, 30)
     );
     return;
   }
@@ -728,8 +736,12 @@ public class GlobalJDialogPrompter {
       participantsUsernames,
       null
     ));
-
-    return participantsIds[Arrays.asList(participantsUsernames).indexOf(choice)];
+    
+    int index = Arrays.asList(participantsUsernames).indexOf(choice);
+    if (index == -1) {
+      return null;
+    }
+    return participantsIds[index];
   }
 
   public static synchronized boolean confirmAction(Component parentComponent, String customMessage) {
@@ -737,7 +749,9 @@ public class GlobalJDialogPrompter {
       parentComponent,
       customMessage,
       "Confirm Action",
-      JOptionPane.YES_NO_OPTION
+      JOptionPane.YES_NO_OPTION,
+      JOptionPane.PLAIN_MESSAGE,
+      ClientGUIFactory.getDialogConfirmationIcon(30, 30)
     );
     if (n == JOptionPane.YES_OPTION) {
       return true;
@@ -750,7 +764,9 @@ public class GlobalJDialogPrompter {
       parentComponent,
       "Are you sure you want to perform this action?",
       "Confirm Action",
-      JOptionPane.YES_NO_OPTION
+      JOptionPane.YES_NO_OPTION,
+      JOptionPane.PLAIN_MESSAGE,
+      ClientGUIFactory.getDialogConfirmationIcon(30, 30)
     );
     if (n == JOptionPane.YES_OPTION) {
       return true;

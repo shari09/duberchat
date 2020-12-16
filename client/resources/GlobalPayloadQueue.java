@@ -8,6 +8,7 @@ import common.entities.payload.Payload;
  * A queue that stores the payloads to send from client to server.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0

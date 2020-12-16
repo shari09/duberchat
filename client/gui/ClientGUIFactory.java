@@ -9,7 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
+import java.awt.Image;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -22,17 +22,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 
 import common.entities.ChannelMetadata;
 import common.entities.GroupChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
+import common.gui.Theme;
 
 /**
  * The factory used to generate client side GUI components.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
@@ -72,6 +75,21 @@ public class ClientGUIFactory {
   public final static String USER_ICON_PATH = "client/assets/default_icon_user.png";
   public final static String GROUP_CHANNEL_ICON_PATH = "client/assets/default_icon_group_channel.png";
   public final static String SETTINGS_ICON_PATH = "client/assets/icon_settings.png";
+  public final static String DIALOG_CONFIRMATION_ICON_PATH = "client/assets/dialog_icon_confirmation.png";
+  public final static String DIALOG_INFORMATION_ICON_PATH = "client/assets/dialog_icon_information.png";
+  public final static String DIALOG_ERROR_ICON_PATH = "client/assets/dialog_icon_error.png";
+  public final static String DIALOG_SUCCESS_ICON_PATH = "client/assets/dialog_icon_success.png";
+
+  public static void initializeLookAndFeel() {
+    UIManager.put("Panel.background", Color.WHITE);
+    UIManager.put("OptionPane.background", Color.WHITE);
+    UIManager.put("OptionPane.messageFont", Theme.getPlainFont(20));
+    UIManager.put("OptionPane.messageForeground", ClientGUIFactory.PURPLE_SHADE_4);
+    UIManager.put("Button.background", ClientGUIFactory.PURPLE_SHADE_1);
+    UIManager.put("Button.foreground", ClientGUIFactory.PURPLE_SHADE_3);
+    UIManager.put("OptionPane.buttonFont", Theme.getBoldFont(15));
+    UIManager.put("Button.border", BorderFactory.createEmptyBorder(10, 10, 10, 10));
+  }
 
   public static JScrollPane getScrollPane(Component component, boolean visibleScrollBar) {
     JScrollPane scrollPane = new JScrollPane(component);
@@ -250,7 +268,6 @@ public class ClientGUIFactory {
     );
     panel.add(nameLabel, constraints);
 
-    System.out.println("please workkk " + ClientGUIFactory.getStatusText(metadata.getStatus()));
     JLabel statusLabel = ClientGUIFactory.getTextLabel(
       ClientGUIFactory.getStatusText(metadata.getStatus()),
       statusFont,
@@ -258,7 +275,7 @@ public class ClientGUIFactory {
     );
     constraints.gridy = 1;
     panel.add(statusLabel, constraints);
-    
+
     return panel;
   }
 
@@ -557,30 +574,51 @@ public class ClientGUIFactory {
     return icon;
   }
 
-  // public static JButton getIconButton(
-  //   String iconName,
-  //   int iconSize,
-  //   int px,
-  //   int py
-  // ) {
-  //   JButton button = new JButton();
-  //   try {
-  //     BufferedImage img = ImageIO.read(new File("server/assets/"+iconName+".png"));
-  //     Image icon = img.getScaledInstance(
-  //       iconSize, iconSize,
-  //       Image.SCALE_SMOOTH
-  //     );
-  //     button.setIcon(new ImageIcon(icon));
-  //   } catch (Exception e) {
-  //     System.out.println("Unable to add button icon");
-  //     e.printStackTrace();
-  //   }
-  //   button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-  //   button.setContentAreaFilled(false);
-  //   button.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));
-  //   button.setFocusable(false);
-    
-  //   return button;
-  // }
+  public static ImageIcon getDialogConfirmationIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_CONFIRMATION_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
 
+  public static ImageIcon getDialogInformationIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_INFORMATION_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
+
+  public static ImageIcon getDialogErrorIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_ERROR_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
+
+  public static ImageIcon getDialogSuccessIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_SUCCESS_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
 }

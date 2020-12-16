@@ -1,7 +1,5 @@
 package server.gui;
 
-import javax.swing.JButton;
-
 /**
  * 
  * <p>

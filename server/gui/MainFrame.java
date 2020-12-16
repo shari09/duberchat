@@ -1,17 +1,12 @@
 package server.gui;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import common.entities.Constants;
 import common.gui.Theme;
 import server.entities.EventType;
 import server.services.GlobalServices;

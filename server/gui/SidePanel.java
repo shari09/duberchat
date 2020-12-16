@@ -7,7 +7,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import common.gui.Theme;
 import server.entities.EventType;
 import server.services.GlobalServices;
 

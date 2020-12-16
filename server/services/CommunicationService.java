@@ -39,7 +39,7 @@ public class CommunicationService {
         String userId = GlobalServices.clientConnections.getUserId(client);
         String msg = "";
         if (userId != null) {
-          msg = "to user:" + userId;
+          msg = String.format("to user %s:%s", GlobalServices.users.getUsername(userId), userId);
         }
         //log
         CommunicationService.log(String.format(
@@ -71,11 +71,15 @@ public class CommunicationService {
         client.reset();
         client.writeObject(payload);
         client.flush();
+        String msg = "";
+        if (userId != null) {
+          msg = String.format("to user %s:%s", GlobalServices.users.getUsername(userId), userId);
+        }
         //log
         CommunicationService.log(String.format(
-          "Sending %s payload to %s", 
+          "Sending %s payload %s", 
           payload.getType(), 
-          userId
+          msg
         ), LogType.SUCCESS);
       } catch (Exception e) {
 

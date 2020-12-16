@@ -23,7 +23,7 @@ public class GlobalClient {
   
   public static ClientData clientData = null;
   
-  public static ConcurrentHashMap<String, ConcurrentSkipListSet<Message>> messagesData = new ConcurrentHashMap<String, ConcurrentSkipListSet<Message>>();
+  public static ConcurrentHashMap<String, ConcurrentSkipListSet<Message>> messagesData = new ConcurrentHashMap<>();
   
   public static boolean hasData() {
     return GlobalClient.clientData != null;

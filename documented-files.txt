@@ -1,21 +1,60 @@
-Server - entry point: Server.java:
+Server - entry point: Server.java
 
 I didn't document what I found repetitive so not all methods/class variables
 are documented in the following files.
 
-UserService.java
-Token.java
-Subscribable.java
+All files under service/ and entities/ are documented.
+However, entities/ ony have class headers since their methods
+are mainly just getters/setters. 
+
+./server/services/ AuthenticatedClientHandler.java
+./server/services/ AuthenticatedPayloadProcessor.java
+./server/services/ ChannelUpdateHandler.java
+./server/services/ ClientDisconnectHandler.java
+./server/services/ ClientHandler.java
+./server/services/ ClientQueue.java
+./server/services/ DataService.java
+./server/services/ EventQueueService.java
+./server/services/ FriendInfoUpdater.java
+./server/services/ GlobalServices.java
+./server/services/ LoggingHandler.java
+./server/services/ LoggingService.java
+./server/services/ MessageQueue.java
+./server/services/ MessagingService.java
+./server/services/ PayloadProcessor.java
+./server/services/ PayloadSender.java
+./server/services/ SocketService.java
+./server/services/ Subscribable.java
+./server/services/ TokenService.java
+./server/services/ UserService.java
+
+
+./server/entities/ AuthenticatedClientRequest.java
+./server/entities/ Channel.java
+./server/entities/ Client.java
+./server/entities/ ClientConnections.java
+./server/entities/ ClientRequest.java
+./server/entities/ Event.java
+./server/entities/ EventType.java
+./server/entities/ GroupChannel.java
+./server/entities/ Log.java
+./server/entities/ LogEntrySet.java
+./server/entities/ PrivateChannel.java
+./server/entities/ TokensMap.java
+./server/entities/ User.java
 
 
 
-Client - entry point: ClientMain.java:
+None of the gui/ files are documented.
+
+----------------------------------------------------------------
+Client - entry point: ClientLauncher.java
 
 
 
 
 
-
+---------------------------------------------------------------
 Common:
 
 PayloadType.java - all our payload types

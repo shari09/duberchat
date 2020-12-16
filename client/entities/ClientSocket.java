@@ -40,7 +40,7 @@ import common.entities.payload.server_to_client.MessagesToClient;
 import common.entities.payload.server_to_client.ServerBroadcast;
 
 /**
- * The client socket for handling socket connection and payloads.
+ * The main client socket for handling socket connection and payloads.
  * <p>
  * Created on 2020.12.08.
  * @author Candice Zhang, Shari Sun
@@ -61,7 +61,6 @@ public class ClientSocket implements Runnable {
   private LinkedHashSet<ClientSocketListener> listeners;
 
   private boolean running;
-  private long lastActiveTimeMills;
   private long lastHeartBeatTimeMills;
   private Point latestMousePoint;
 
@@ -73,8 +72,8 @@ public class ClientSocket implements Runnable {
     this.pendingRequests = new ConcurrentHashMap<String, Payload>();
     this.listeners = new LinkedHashSet<ClientSocketListener>();
     this.running = true;
-    this.lastActiveTimeMills = System.currentTimeMillis();
     this.latestMousePoint = MouseInfo.getPointerInfo().getLocation();
+    ClientSocketServices.updateLastActiveTime();
     this.sendHeartbeat();
   }
 
@@ -83,7 +82,7 @@ public class ClientSocket implements Runnable {
       this.updateMouseMovement();
 
       // send heartbeat
-      if (this.lastActiveTimeMills - this.lastHeartBeatTimeMills >= ClientSocket.heartbeatFrequency) {
+      if (ClientSocketServices.getLastActiveTimeMills() - this.lastHeartBeatTimeMills >= ClientSocket.heartbeatFrequency) {
         this.sendHeartbeat();
       }
 
@@ -145,23 +144,12 @@ public class ClientSocket implements Runnable {
     this.running = false;
   }
 
-  // public synchronized void sendPayload(Payload payloadToSend) {
-  //   if (!this.running) {
-  //     return;
-  //   }
-  //   GlobalPayloadQueue.queue.add(payloadToSend);
-  // }
-
   public synchronized void addListener(ClientSocketListener listener) {
     this.listeners.add(listener);
   }
 
   public synchronized void removeListener(ClientSocketListener listener) {
     this.listeners.remove(listener);
-  }
-
-  public void updateLastActiveTime() {
-    this.lastActiveTimeMills = System.currentTimeMillis();
   }
 
   private synchronized void processPayload(Payload payload) {
@@ -186,9 +174,6 @@ public class ClientSocket implements Runnable {
 
       case CLIENT_FRIENDS_UPDATE:
         ClientFriendsUpdate friendsUpdate = (ClientFriendsUpdate)payload;
-        // System.out.println(friendsUpdate.getFriends());
-        // System.out.println(friendsUpdate.getIncomingFriendRequests());
-        // System.out.println(friendsUpdate.getOutgoingFriendRequests());
         GlobalClient.clientData.setFriends(friendsUpdate.getFriends());
         GlobalClient.clientData.setIncomingFriendRequests(friendsUpdate.getIncomingFriendRequests());
         GlobalClient.clientData.setOutgoingFriendRequests(friendsUpdate.getOutgoingFriendRequests());
@@ -361,11 +346,9 @@ public class ClientSocket implements Runnable {
   }
 
   private void notifyClientDataUpdate() {
-//    synchronized (GlobalClient.clientData) {
-      for (ClientSocketListener listener: this.listeners) {
-        listener.clientDataUpdated(GlobalClient.clientData);
-      }
-//    }
+    for (ClientSocketListener listener: this.listeners) {
+      listener.clientDataUpdated(GlobalClient.clientData);
+    }
   }
 
   private synchronized void notifyServerBroadcast(ServerBroadcast broadcast) {
@@ -395,7 +378,7 @@ public class ClientSocket implements Runnable {
       (curPoint.getX() != this.latestMousePoint.getX())
       || (curPoint.getY() != this.latestMousePoint.getY())
     ) {
-      this.updateLastActiveTime();
+      ClientSocketServices.updateLastActiveTime();
       this.latestMousePoint = curPoint;
     }
   }

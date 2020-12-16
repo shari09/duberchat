@@ -16,6 +16,16 @@ import common.entities.payload.client_to_server.CreateChannel;
  */
 
 public class ClientSocketServices {
+  private static long lastActiveTimeMills = System.currentTimeMillis();
+
+  public static synchronized void updateLastActiveTime() {
+    ClientSocketServices.lastActiveTimeMills = System.currentTimeMillis();
+  }
+
+  public static synchronized long getLastActiveTimeMills() {
+    return ClientSocketServices.lastActiveTimeMills;
+  }
+
   public static String getRequestSuccessNotifMessage(Payload payload) {
     String strToReturn = "";
 

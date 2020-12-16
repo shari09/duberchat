@@ -32,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
@@ -41,6 +43,7 @@ import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
 import client.resources.GlobalPayloadQueue;
 import client.services.ChannelServices;
+import client.services.ClientSocketServices;
 import common.entities.ChannelMetadata;
 import common.entities.Constants;
 import common.entities.Message;
@@ -51,7 +54,10 @@ import common.entities.payload.client_to_server.RequestMessages;
 import common.gui.Theme;
 
 @SuppressWarnings("serial")
-public class ChannelPanel extends JPanel implements ActionListener, MouseListener, AdjustmentListener {
+public class ChannelPanel extends JPanel implements ActionListener,
+                                                    MouseListener, 
+                                                    AdjustmentListener,
+                                                    DocumentListener {
 
   private static final int MESSAGE_REQUEST_QUANTITY = 50;
   private static final String DEFAULT_ATTACHMENT_LABEL_TEXT = "no file selected";
@@ -129,6 +135,7 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
       Color.WHITE
     );
     this.inputArea.setEditable(true);
+    this.inputArea.getDocument().addDocumentListener(this);
     JScrollPane inputScrollPane = ClientGUIFactory.getScrollPane(this.inputArea, true);
     inputScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     constraints.gridx = 0;
@@ -310,6 +317,21 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
         );
       }
     }
+  }
+
+  @Override
+  public void insertUpdate(DocumentEvent e) {
+    ClientSocketServices.updateLastActiveTime();
+  }
+
+  @Override
+  public void removeUpdate(DocumentEvent e) {
+    ClientSocketServices.updateLastActiveTime();
+  }
+
+  @Override
+  public void changedUpdate(DocumentEvent e) {
+    ClientSocketServices.updateLastActiveTime();
   }
 
   public void syncClientData() {

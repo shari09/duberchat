@@ -90,6 +90,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     this.outgoingFriendRequests.addMouseListener(this);
 
     this.blocked = new JList<UserMetadata>();
+    this.blocked.setCellRenderer(new UserMetadataRenderer());
     this.blocked.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     this.blocked.addMouseListener(this);
 

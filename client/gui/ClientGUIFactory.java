@@ -260,6 +260,62 @@ public class ClientGUIFactory {
     return panel;
   }
 
+  public static JPanel getUserProfilePanel(
+    UserMetadata metadata,
+    Font nameFont,
+    Font statusFont,
+    Font descriptionFont,
+    Color nameColor,
+    Color descriptionColor
+  ) {
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+
+    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    constraints.weightx = 0.3;
+    constraints.weighty = 0;
+    constraints.gridwidth = 2;
+    constraints.gridheight = 2;
+    constraints.ipadx = 2;
+    panel.add(iconLabel, constraints);
+
+    constraints.weightx = 1;
+    constraints.weighty = 0;
+    constraints.ipadx = 0;
+    constraints.gridx = 2;
+    constraints.gridwidth = 3;
+    constraints.gridheight = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    JLabel nameLabel = ClientGUIFactory.getTextLabel(
+      metadata.getUsername(),
+      nameFont,
+      nameColor
+    );
+    panel.add(nameLabel, constraints);
+
+    JLabel statusLabel = ClientGUIFactory.getTextLabel(
+      ClientGUIFactory.getStatusText(metadata.getStatus()),
+      statusFont,
+      ClientGUIFactory.getStatusColor(metadata.getStatus())
+    );
+    constraints.gridy = 1;
+    panel.add(statusLabel, constraints);
+
+    JTextArea description = ClientGUIFactory.getTextArea(
+      3, 30,
+      metadata.getDescription(),
+      descriptionFont,
+      descriptionColor,
+      Color.WHITE
+    );
+    constraints.gridy = 2;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    panel.add(description, constraints);
+
+    return panel;
+  }
+
   public static JPanel getGroupChannelThumbnailPanel(
     GroupChannelMetadata metadata,
     Font titleFont,

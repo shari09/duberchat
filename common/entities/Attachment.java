@@ -3,8 +3,6 @@ package common.entities;
 import java.io.Serializable;
 import java.util.UUID;
 
-import common.entities.Identifiable;
-
 /**
  * Stores an attachment of any type.
  * Binary file serialized.

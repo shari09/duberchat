@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 
+import client.gui.ClientGUIFactory;
 import common.entities.Constants;
 import common.entities.GroupChannelMetadata;
 import common.entities.Message;
@@ -31,6 +32,7 @@ import common.entities.payload.client_to_server.RemoveMessage;
 import common.entities.payload.client_to_server.RemoveParticipant;
 import common.entities.payload.client_to_server.RequestAttachment;
 import common.entities.payload.client_to_server.TransferOwnership;
+import common.gui.Theme;
 import common.services.RegexValidator;
 /**
  * [description]
@@ -282,9 +284,17 @@ public class GlobalJDialogPrompter {
     Component parentComponent,
     UserMetadata metadata
   ) {
+    JPanel userProfile = ClientGUIFactory.getUserProfilePanel(
+      metadata,
+      Theme.getBoldFont(20),
+      Theme.getItalicFont(15),
+      Theme.getPlainFont(15),
+      ClientGUIFactory.BLUE_SHADE_4,
+      ClientGUIFactory.GRAY_SHADE_4
+    );
     JOptionPane.showMessageDialog(
       parentComponent,
-      metadata,
+      userProfile,
       "Friend Profile",
       JOptionPane.PLAIN_MESSAGE
     );

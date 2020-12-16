@@ -8,6 +8,7 @@ import common.entities.payload.PayloadType;
  * contains the data for registering a new user.
  * <p>
  * Created on 2020.12.05.
+ * 
  * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.0.0

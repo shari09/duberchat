@@ -9,15 +9,12 @@ import javax.swing.JOptionPane;
 
 import client.entities.ClientSocket;
 import client.entities.ClientSocketListener;
-import common.entities.ClientData;
 import common.entities.Constants;
 import common.entities.payload.PayloadType;
-import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
 /**
- * The frame to display the GUI for the client.
- * Detects user activity by key and mouse motion events.
+ * The super frame for all client gui frames after a socket connection has been made.
  * <p>
  * Created on 2020.12.12.
  * @author Candice Zhang
@@ -44,12 +41,6 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
     this.clientSocket = clientSocket;
     this.clientSocket.addListener(this);
   }
-
-  @Override
-  public abstract void clientDataUpdated(ClientData updatedClientData);
-
-  @Override
-  public abstract void serverBroadcastReceived(ServerBroadcast broadcast);
 
   @Override
   public synchronized void clientRequestStatusReceived(

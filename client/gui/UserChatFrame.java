@@ -9,13 +9,12 @@ import javax.swing.event.ChangeListener;
 
 import client.entities.ClientSocket;
 import client.services.ChannelServices;
-import common.entities.ClientData;
 import common.entities.payload.PayloadType;
 import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
 /**
- * The frame to display the GUI for the client.
+ * The frame containing a list of the user's opened channels.
  * <p>
  * Created on 2020.12.05.
  * @author Candice Zhang
@@ -73,7 +72,7 @@ public class UserChatFrame extends UserFrame implements ChangeListener {
   }
 
   @Override
-  public void clientDataUpdated(ClientData updatedClientData) {
+  public void clientDataUpdated() {
     this.syncTabs();
     this.repaint();
   }

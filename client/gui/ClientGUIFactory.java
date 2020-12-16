@@ -30,13 +30,14 @@ import common.entities.UserMetadata;
 import common.entities.UserStatus;
 
 /**
- * 
+ * The factory used to generate client side GUI components.
  * <p>
  * Created on 2020.12.13.
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class ClientGUIFactory {
   // smaller number = lighter
   public final static Color GRAY_SHADE_1 = new Color(245, 245, 245);
@@ -249,6 +250,7 @@ public class ClientGUIFactory {
     );
     panel.add(nameLabel, constraints);
 
+    System.out.println("please workkk " + ClientGUIFactory.getStatusText(metadata.getStatus()));
     JLabel statusLabel = ClientGUIFactory.getTextLabel(
       ClientGUIFactory.getStatusText(metadata.getStatus()),
       statusFont,

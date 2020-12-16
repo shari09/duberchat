@@ -4,6 +4,8 @@ import common.entities.Token;
 import common.entities.payload.PayloadType;
 
 /**
+ * A payload from client to server
+ * that contains the data for adding a participant to a channel.
  * <p>
  * Created on 2020.12.10.
  * 
@@ -11,15 +13,13 @@ import common.entities.payload.PayloadType;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class AddParticipant extends AuthenticatablePayload {
 
-  /**
-   *
-   */
+public class AddParticipant extends AuthenticatablePayload {
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
+
   private final String channelId;
   private final String participantId;
-  
 
   public AddParticipant(
     int priority,
@@ -40,6 +40,5 @@ public class AddParticipant extends AuthenticatablePayload {
   public String getParticipantId() {
     return this.participantId;
   }
-
 
 }

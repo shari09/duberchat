@@ -1,4 +1,4 @@
-Server - entry point: Server.java
+Server(Shari) - entry point: Server.java
 
 I didn't document what I found repetitive so not all methods/class variables
 are documented in the following files.
@@ -45,16 +45,29 @@ are mainly just getters/setters.
 
 
 
+
 None of the gui/ files are documented.
 
+
 ----------------------------------------------------------------
-Client - entry point: ClientLauncher.java
+Client(Candice) - entry point: ClientLauncher.java
+
+All files under entities/, resources/, and services/ are documented, with the exception of ./services/GlobalJDialogPrompter.java, which is documented with a header only (I'm sure you wouldn't want to read 700 lines of JDialog anyways...). All gui/ files also have class headers to describe what they do.
 
 
+Documented files:
 
+./client/entities.ClientSocket.java
+./client/entities.ClientSocketListener.java
 
+./client/resources/GlobalClient.java
+./client/resources/GlobalPayloadQueue.java
+
+./client/services/ChannelServices.java
+./client/services/ClientSocketServices.java
+./client/services/UserServices.java
 
 ---------------------------------------------------------------
 Common:
-
-PayloadType.java - all our payload types
+PayloadType.java - all our payload types are documented
+For individual payloads, we only have headers since they are mainly getters and setters, and the parameters are named informatively enough.

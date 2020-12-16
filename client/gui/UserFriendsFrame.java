@@ -36,6 +36,15 @@ import common.entities.payload.client_to_server.FriendRequest;
 import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
+/**
+ * The frame used for viewing, adding and blocking friends.
+ * <p>
+ * Created on 2020.12.12.
+ * @author Candice Zhang
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
 @SuppressWarnings("serial")
 public class UserFriendsFrame extends UserFrame implements ActionListener, MouseListener {
   private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
@@ -94,7 +103,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     this.blocked.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     this.blocked.addMouseListener(this);
 
-    this.updateJLists(GlobalClient.clientData);
+    this.updateJLists();
 
     this.tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(15));
     this.tabbedPane.addTab(
@@ -205,7 +214,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
           JOptionPane.INFORMATION_MESSAGE
         );
       } else {
-        GlobalPayloadQueue.sendPayload(
+        GlobalPayloadQueue.enqueuePayload(
           new FriendRequest(
             1,
             GlobalClient.clientData.getUserId(),
@@ -219,8 +228,8 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   }
 
   @Override
-  public void clientDataUpdated(ClientData updatedClientData) {
-    this.updateJLists(updatedClientData);
+  public void clientDataUpdated() {
+    this.updateJLists();
     this.repaint();
   }
 
@@ -300,11 +309,12 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   public void mouseClicked(MouseEvent e) {
   }
 
-  private synchronized void updateJLists(ClientData updatedClientData) {
+  private synchronized void updateJLists() {
+    ClientData clientData = GlobalClient.clientData;
     // friends and online friends
     DefaultListModel<UserMetadata> friendsListModel = new DefaultListModel<>();
     DefaultListModel<UserMetadata> onlineFriendsListModel = new DefaultListModel<>();
-    LinkedHashSet<UserMetadata> friendsMetadata = updatedClientData.getFriends();
+    LinkedHashSet<UserMetadata> friendsMetadata = clientData.getFriends();
     for (UserMetadata curMetadata: friendsMetadata) {
       friendsListModel.addElement(curMetadata);
       if (curMetadata.getStatus() != UserStatus.OFFLINE) {
@@ -318,7 +328,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
     // incoming friend requests
     DefaultListModel<IncomingFriendRequest> incomingFriendRequestListModel = new DefaultListModel<>();
-    ConcurrentHashMap<UserMetadata, String> incomingFriendRequestsMetadata = updatedClientData.getIncomingFriendRequests();
+    ConcurrentHashMap<UserMetadata, String> incomingFriendRequestsMetadata = clientData.getIncomingFriendRequests();
     for (UserMetadata curMetadata: incomingFriendRequestsMetadata.keySet()) {
       incomingFriendRequestListModel.addElement(
         new IncomingFriendRequest(
@@ -332,7 +342,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
     // outgoing friend requests
     DefaultListModel<OutgoingFriendRequest> outgoingFriendRequestListModel = new DefaultListModel<>();
-    ConcurrentHashMap<UserMetadata, String> outgoingFriendRequestsMetadata = updatedClientData.getOutgoingFriendRequests();
+    ConcurrentHashMap<UserMetadata, String> outgoingFriendRequestsMetadata = clientData.getOutgoingFriendRequests();
     for (UserMetadata curMetadata: outgoingFriendRequestsMetadata.keySet()) {
       outgoingFriendRequestListModel.addElement(
         new OutgoingFriendRequest(
@@ -346,7 +356,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
     // blocked
     DefaultListModel<UserMetadata> blockedListModel = new DefaultListModel<>();
-    LinkedHashSet<UserMetadata> blockedMetadata = updatedClientData.getBlocked();
+    LinkedHashSet<UserMetadata> blockedMetadata = clientData.getBlocked();
     for (UserMetadata curMetadata: blockedMetadata) {
       blockedListModel.addElement(curMetadata);
     }

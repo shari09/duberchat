@@ -53,6 +53,15 @@ import common.entities.payload.client_to_server.MessageToServer;
 import common.entities.payload.client_to_server.RequestMessages;
 import common.gui.Theme;
 
+/**
+ * The panel for a channel's display.
+ * <p>
+ * Created on 2020.12.13.
+ * @author Candice Zhang
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
 @SuppressWarnings("serial")
 public class ChannelPanel extends JPanel implements ActionListener,
                                                     MouseListener, 
@@ -232,7 +241,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
       if ((text.length() > 0) || (attachment != null)) {
         if (Constants.MESSAGE_VALIDATOR.matches(text)) {
-          GlobalPayloadQueue.sendPayload(
+          GlobalPayloadQueue.enqueuePayload(
             new MessageToServer (
               1,
               userId,
@@ -376,7 +385,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
         before = new Timestamp(System.currentTimeMillis());
       }
       
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new RequestMessages(
           1,
           GlobalClient.clientData.getUserId(),

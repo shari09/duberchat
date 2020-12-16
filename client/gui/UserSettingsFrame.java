@@ -27,6 +27,16 @@ import common.entities.payload.client_to_server.UpdateStatus;
 import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
+/**
+ * The frame for the user to change their settings,
+ * including username, password, description and status.
+ * <p>
+ * Created on 2020.12.10.
+ * @author Candice Zhang
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
 @SuppressWarnings("serial")
 public class UserSettingsFrame extends UserFrame implements ActionListener {
 
@@ -257,7 +267,8 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
 
   @Override
-  public synchronized void clientDataUpdated(ClientData updatedClientData) {
+  public synchronized void clientDataUpdated() {
+    ClientData updatedClientData = GlobalClient.clientData;
     this.updateLabels(updatedClientData);
     this.updateUserStatus(updatedClientData.getStatus());
     this.repaint();
@@ -283,7 +294,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
       statusToSend = UserStatus.DO_NOT_DISTURB;
     }
     if (statusToSend != currentStatus) {
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new UpdateStatus(
           1,
           userId,

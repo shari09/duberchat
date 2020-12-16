@@ -1,11 +1,10 @@
 package client.entities;
 
-import common.entities.ClientData;
 import common.entities.payload.PayloadType;
 import common.entities.payload.server_to_client.ServerBroadcast;
 
 /**
- * An interface for objects that listens to the client's data change.
+ * An interface for objects that listens to a {@code ClientSocket}'s events.
  * <p>
  * Created on 2020.12.11.
  * @author Candice Zhang
@@ -15,14 +14,27 @@ import common.entities.payload.server_to_client.ServerBroadcast;
 
 public interface ClientSocketListener {
 
-  public void clientDataUpdated(ClientData updatedClientData);
+  /**
+   * Invoked when the client's data has updated.
+   */
+  public void clientDataUpdated();
 
+  /**
+   * Invoked when the a client request's status is received.
+   * @param payloadType   The type of the original request payload.
+   * @param successful    Whether or not the request is successful.
+   * @param notifMessage  The notification message of the request status.
+   */
   public void clientRequestStatusReceived(
     PayloadType payloadType, 
     boolean successful,
     String notifMessage
   );
 
+  /**
+   * Invoked when the server has made a broadcast.
+   * @param broadcast The {@code ServerBroadcast} payload received.
+   */
   public void serverBroadcastReceived(ServerBroadcast broadcast);
 
 }

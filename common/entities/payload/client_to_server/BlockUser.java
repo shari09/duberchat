@@ -4,7 +4,8 @@ import common.entities.Token;
 import common.entities.payload.PayloadType;
 
 /**
- * Blocking an user.
+ * A payload from client to server
+ * that contains the data for blocking a user.
  * <p>
  * Created on 2020.12.08.
  * 
@@ -12,11 +13,11 @@ import common.entities.payload.PayloadType;
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class BlockUser extends AuthenticatablePayload {
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
+
   private final String blockUsername;
 
   public BlockUser(

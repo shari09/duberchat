@@ -5,20 +5,21 @@ import common.entities.payload.PayloadType;
 
 
 /**
- * Removes a friend
+ * A payload from client to server that
+ * contains the data for a user to remove a friend.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class RemoveFriend extends AuthenticatablePayload {
-  
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
-  private String friendId;
+
+  private final String friendId;
   
   public RemoveFriend(
     int priority,

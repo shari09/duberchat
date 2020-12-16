@@ -6,9 +6,10 @@ import common.entities.payload.PayloadType;
 
 /**
  * A payload from client to server that
- * contains the data for a user to request a change in a channel they administrate.
+ * contains the data for a user to request a change in a channel.
  * <p>
  * Created on 2020.12.06.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0

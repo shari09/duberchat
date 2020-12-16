@@ -4,6 +4,9 @@ import common.entities.Token;
 import common.entities.payload.PayloadType;
 
 /**
+ * A payload from client to server that
+ * contains the data for a user to transfer the ownership of a channel
+ * to another channel participant.
  * <p>
  * Created on 2020.12.10.
  * 
@@ -12,15 +15,12 @@ import common.entities.payload.PayloadType;
  * @since 1.0.0
  */
 public class TransferOwnership extends AuthenticatablePayload {
-
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
+
   private final String channelId;
   private final String recipientId;
   
-
   public TransferOwnership(
     int priority,
     String userId,

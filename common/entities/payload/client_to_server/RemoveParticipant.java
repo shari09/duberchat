@@ -4,6 +4,8 @@ import common.entities.Token;
 import common.entities.payload.PayloadType;
 
 /**
+ * A payload from client to server that
+ * contains the data for a user to remove a participant in a channel.
  * <p>
  * Created on 2020.12.10.
  * 
@@ -12,11 +14,9 @@ import common.entities.payload.PayloadType;
  * @since 1.0.0
  */
 public class RemoveParticipant extends AuthenticatablePayload {
-
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
+
   private final String channelId;
   private final String participantId;
   

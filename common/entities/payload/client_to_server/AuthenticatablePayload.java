@@ -5,20 +5,22 @@ import common.entities.payload.Payload;
 import common.entities.payload.PayloadType;
 
 /**
- * A payload that is authenticatable by user id and token.
+ * A payload from client to server
+ * that is authenticatable by user id and token.
  * <p>
  * Created on 2020.12.06.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
 
-public class AuthenticatablePayload extends Payload {
+public abstract class AuthenticatablePayload extends Payload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
-  private String userId;
-  private Token token;
+  private final String userId;
+  private final Token token;
 
   public AuthenticatablePayload(
     PayloadType type,

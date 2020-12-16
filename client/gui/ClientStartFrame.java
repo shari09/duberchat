@@ -20,7 +20,7 @@ import client.entities.ClientSocket;
 import common.gui.Theme;
 
 /**
- * The frame to display the GUI for the client.
+ * The starting frame of the client gui, used to connect to the server.
  * <p>
  * Created on 2020.12.05.
  * @author Candice Zhang, Shari Sun

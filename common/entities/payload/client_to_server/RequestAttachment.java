@@ -5,9 +5,10 @@ import common.entities.payload.PayloadType;
 
 /**
  * A payload from client to server that
- * contains the data for a user's download request for a certain file.
+ * contains the data for a user's download request of an attachment.
  * <p>
  * Created on 2020.12.06.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0

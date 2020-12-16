@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import javax.swing.JTabbedPane;
 
 import client.entities.ClientSocket;
+import client.services.ChannelServices;
 import common.entities.ClientData;
 import common.entities.payload.PayloadType;
 import common.entities.payload.server_to_client.ServerBroadcast;
@@ -25,7 +26,6 @@ public class UserChatFrame extends UserFrame {
   private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
 
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
-    PayloadType.REQUEST_ATTACHMENT,
     PayloadType.REMOVE_PARTICIPANT,
     PayloadType.BLACKLIST_USER,
     PayloadType.LEAVE_CHANNEL,
@@ -84,7 +84,7 @@ public class UserChatFrame extends UserFrame {
       channelId,
       this.getClientSocket()
     );
-    this.tabbedPane.addTab(panel.getChannelTitle(), panel);
+    this.tabbedPane.addTab(ChannelServices.getChannelTitle(channelId), panel);
     this.syncTabs();
     this.requestFocus();
   }
@@ -107,9 +107,9 @@ public class UserChatFrame extends UserFrame {
       Component comp = this.tabbedPane.getComponentAt(i);
       if (comp instanceof ChannelPanel) {
         ChannelPanel panel = ((ChannelPanel)comp);
-        this.tabbedPane.setTitleAt(i, panel.getChannelTitle());
+        this.tabbedPane.setTitleAt(i, ChannelServices.getChannelTitle(panel.getChannelId()));
         panel.syncClientData();
-        System.out.println("data synced for channel " + panel.getChannelTitle());
+        System.out.println("data synced for channel " + ChannelServices.getChannelTitle(panel.getChannelId()));
       }
     }
     this.repaint();

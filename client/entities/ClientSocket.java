@@ -181,9 +181,13 @@ public class ClientSocket implements Runnable {
         break;
 
       case CLIENT_CHANNELS_UPDATE:
+        System.out.println("update");
         ClientChannelsUpdate channelsUpdate = (ClientChannelsUpdate)payload;
+        System.out.println("update1");
         GlobalClient.clientData.setChannels(channelsUpdate.getChannels());
+        System.out.println("update2");
         this.notifyClientDataUpdate();
+        System.out.println("update3");
         break;
 
       case CLIENT_FRIENDS_UPDATE:
@@ -364,11 +368,11 @@ public class ClientSocket implements Runnable {
   }
 
   private void notifyClientDataUpdate() {
-    synchronized (GlobalClient.clientData) {
+//    synchronized (GlobalClient.clientData) {
       for (ClientSocketListener listener: this.listeners) {
         listener.clientDataUpdated(GlobalClient.clientData);
       }
-    }
+//    }
   }
 
   private synchronized void notifyServerBroadcast(ServerBroadcast broadcast) {

@@ -168,7 +168,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
       clientThread.start();
 
       LoginFrame nextFrame = new LoginFrame(clientSocket);
-      nextFrame.setIconImage(this.getIconImage());
+      nextFrame.setLocationRelativeTo(this);
       this.dispose();
       
     } catch (IOException ioException) {

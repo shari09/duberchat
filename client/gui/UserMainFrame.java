@@ -120,8 +120,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     this.friendsFrameButton.addActionListener(this);
     privateChannelPanel.add(this.friendsFrameButton, BorderLayout.NORTH);
     // a scrollable list of private channels
-    JScrollPane pcScrollPane = new JScrollPane(this.privateChannelsList);
-    pcScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    JScrollPane pcScrollPane = ClientGUIFactory.getScrollPane(this.privateChannelsList, true);
     pcScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     privateChannelPanel.add(pcScrollPane, BorderLayout.CENTER);
 
@@ -137,8 +136,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     this.createGroupChannelButton.addActionListener(this);
     groupChannelPanel.add(this.createGroupChannelButton, BorderLayout.NORTH);
     // a scrollable list of group channels
-    JScrollPane gcScrollPane = new JScrollPane(this.groupChannelsList);
-    gcScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    JScrollPane gcScrollPane = ClientGUIFactory.getScrollPane(this.groupChannelsList, true);
     gcScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     groupChannelPanel.add(gcScrollPane, BorderLayout.CENTER);
 

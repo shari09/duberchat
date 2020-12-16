@@ -268,8 +268,9 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
       );
 
     } else if (e.getSource() == this.backToLoginButton) {
-      this.dispose();
       LoginFrame nextFrame = new LoginFrame(this.getClientSocket());
+      nextFrame.setLocationRelativeTo(this);
+      this.dispose();
     }
   }
 
@@ -277,8 +278,9 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
   public void clientDataUpdated(ClientData updatedClientData) {
     // user successfully logged in
     if (GlobalClient.hasData()) {
-      this.dispose();
       UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());
+      nextFrame.setLocationRelativeTo(this);
+      this.dispose();
     }
   }
 

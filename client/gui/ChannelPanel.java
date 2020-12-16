@@ -2,18 +2,20 @@ package client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-
+import javax.swing.ImageIcon;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -26,6 +28,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 import javax.swing.BorderFactory;
 import javax.swing.border.LineBorder;
 import common.gui.Theme;
@@ -45,7 +49,7 @@ import common.entities.payload.client_to_server.RequestMessages;
 
 @SuppressWarnings("serial")
 public class ChannelPanel extends JPanel implements ActionListener, MouseListener {
-  public static final Dimension SIZE = new Dimension(600, 800);
+  public static final Dimension SIZE = new Dimension(700, 800);
 
   private static final int MESSAGE_REQUEST_QUANTITY = 50;
   private static final String DEFAULT_ATTACHMENT_LABEL_TEXT = "no file selected";
@@ -69,50 +73,125 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
     
     this.setSize(ChannelPanel.SIZE);
     this.setLayout(new BorderLayout());
-
     this.channelId = channelId;
     this.clientSocket = clientSocket;
 
+    this.participantsList = new JList<UserMetadata>();
+    this.participantsList.setCellRenderer(
+      new ParticipantRenderer(
+        ChannelServices.getChannelByChannelId(channelId)
+      )
+    );
     this.messagesList = new JList<Message>();
     this.messagesList.addMouseListener(this);
-    this.messagesList.setCellRenderer(new MessageRenderer());
-    this.participantsList = new JList<UserMetadata>();
-    this.participantsList.setCellRenderer(new ParticipantRenderer());
+    this.messagesList.setCellRenderer(new MessageRenderer(this.participantsList));
     this.requestMessages();
     this.syncClientData();
 
     this.fileChooser = new JFileChooser();
     this.fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     this.fileChooser.setMultiSelectionEnabled(false);
+    
+    JPanel panel = new JPanel();
+    panel.setLayout(new GridBagLayout());
+    panel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.insets = new Insets(10, 10, 10, 10);
+    constraints.gridwidth = 2;
+    constraints.weightx = 0.75;
+    constraints.weighty = 0.1;
+    JLabel title = ClientGUIFactory.getTextLabel(
+      ChannelServices.getChannelTitle(this.channelId),
+      Theme.getBoldFont(20),
+      ClientGUIFactory.BLUE_SHADE_3
+    );
+    title.setHorizontalAlignment(JLabel.CENTER);
+    panel.add(title, constraints);
 
-    JScrollPane msgScrollPane = new JScrollPane(this.messagesList);
-    msgScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    JScrollPane msgScrollPane = ClientGUIFactory.getScrollPane(this.messagesList, true);
     msgScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    this.add(msgScrollPane, BorderLayout.CENTER);
+    msgScrollPane.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+    constraints.gridy = 1;
+    constraints.weightx = 0;
+    constraints.weighty = 1;
+    panel.add(msgScrollPane, constraints);
 
+    // text input area
+    this.inputArea = ClientGUIFactory.getTextArea(
+      5,
+      30,
+      Theme.getPlainFont(15),
+      ClientGUIFactory.GRAY_SHADE_4,
+      Color.WHITE
+    );
+    this.inputArea.setEditable(true);
+    JScrollPane inputScrollPane = ClientGUIFactory.getScrollPane(this.inputArea, true);
+    inputScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    constraints.gridx = 0;
+    constraints.gridy = 2;
+    constraints.gridwidth = 1;
+    constraints.gridheight = 1;
+    constraints.weightx = 1;
+    constraints.weighty = 0.25;
+    panel.add(inputScrollPane, constraints);
+
+    // attachment upload
+    JPanel buttonsPanel = new JPanel(new BorderLayout());
+    buttonsPanel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+    this.uploadAttachmentButton = ClientGUIFactory.getTextButton(
+      "Select an attachment",
+      Theme.getBoldFont(15),
+      ClientGUIFactory.BLUE_SHADE_4,
+      ClientGUIFactory.BLUE_SHADE_1
+    );
+    this.uploadAttachmentButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    this.uploadAttachmentButton.addActionListener(this);
+    buttonsPanel.add(this.uploadAttachmentButton, BorderLayout.CENTER);
+    this.attachmentLabel = ClientGUIFactory.getTextLabel(
+      DEFAULT_ATTACHMENT_LABEL_TEXT,
+      Theme.getPlainFont(20),
+      ClientGUIFactory.BLUE_SHADE_4
+    );
+    this.attachmentLabel.setOpaque(false);
+    this.attachmentLabel.setHorizontalAlignment(JLabel.CENTER);
+    buttonsPanel.add(this.attachmentLabel, BorderLayout.NORTH);
+    // send message button
+    this.sendMessageButton = ClientGUIFactory.getTextButton(
+      "Send",
+      Theme.getBoldFont(20),
+      ClientGUIFactory.GREEN_SHADE_3,
+      ClientGUIFactory.GREEN_SHADE_1
+    );
+    this.sendMessageButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    this.sendMessageButton.addActionListener(this);
+    buttonsPanel.add(this.sendMessageButton, BorderLayout.SOUTH);
+    constraints.gridx = 1;
+    constraints.gridy = 2;
+    constraints.gridwidth = 1;
+    constraints.gridheight = 1;
+    constraints.weightx = 0;
+    constraints.fill = GridBagConstraints.NONE;
+    constraints.anchor = GridBagConstraints.LAST_LINE_START;
+    panel.add(buttonsPanel, constraints);
+    this.add(panel, BorderLayout.CENTER);
+
+    // participants
     JPanel partPanel = new JPanel(new BorderLayout());
-    partPanel.add(new JLabel("Participants"), BorderLayout.PAGE_START);
-    JScrollPane partScrollPane = new JScrollPane(this.participantsList);
-    partScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    partPanel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+    partPanel.add(
+      ClientGUIFactory.getTextLabel("Participants", Theme.getBoldFont(15), ClientGUIFactory.BLUE_SHADE_4),
+      BorderLayout.PAGE_START
+    );
+    JScrollPane partScrollPane = ClientGUIFactory.getScrollPane(this.participantsList, true);
     partScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     partPanel.add(partScrollPane, BorderLayout.CENTER);
+    constraints.gridx = 2;
+    constraints.gridy = 0;
+    constraints.gridwidth = 2;
+    constraints.gridheight = 2;
+    constraints.weightx = 0.75;
     this.add(partPanel, BorderLayout.EAST);
-
-    JPanel inputPanel = new JPanel();
-    // text input area
-    this.inputArea = new JTextArea(10, 30);
-    this.inputArea.setEditable(true);
-    inputPanel.add(this.inputArea);
-    // attachment upload
-    this.uploadAttachmentButton = new JButton("Select an attachment");
-    this.uploadAttachmentButton.addActionListener(this);
-    inputPanel.add(this.uploadAttachmentButton);
-    this.attachmentLabel = new JLabel(ChannelPanel.DEFAULT_ATTACHMENT_LABEL_TEXT);
-    inputPanel.add(this.attachmentLabel);
-    this.sendMessageButton = new JButton("Send");
-    this.sendMessageButton.addActionListener(this);
-    inputPanel.add(this.sendMessageButton);
-    this.add(inputPanel, BorderLayout.PAGE_END);
 
     this.setVisible(true);
   }
@@ -220,20 +299,6 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
     this.repaint();
   }
 
-  public synchronized String getChannelTitle() {
-    String title = "";
-    ChannelMetadata channelMetadata = ChannelServices.getChannelByChannelId(this.channelId);
-    
-    if (channelMetadata instanceof PrivateChannelMetadata) {
-      PrivateChannelMetadata pcMeta = ((PrivateChannelMetadata)channelMetadata);
-      title = ChannelServices.getOtherUserInPrivateChannel(pcMeta).getUsername();
-
-    } else if (channelMetadata instanceof GroupChannelMetadata) {
-      title = ((GroupChannelMetadata)channelMetadata).getChannelName();
-    }
-    return title;
-  }
-
   public String getChannelId() {
     return this.channelId;
   }
@@ -241,6 +306,7 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
   private synchronized void updateJLists() {
     ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(this.channelId);
     if (messages != null) {
+      System.out.println("not null");
       DefaultListModel<Message> messagesListModel = new DefaultListModel<>();
       for (Message msg: messages) {
         messagesListModel.add(0, msg);
@@ -248,8 +314,10 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
       this.messagesList.setModel(messagesListModel);
       this.messagesList.revalidate();
     }
+    System.out.println("hi");
     LinkedHashSet<UserMetadata> participants = ChannelServices.getChannelByChannelId(this.channelId).getParticipants();
     if (participants != null) {
+      System.out.println("not null 2");
       DefaultListModel<UserMetadata> participantsListModel = new DefaultListModel<>();
       for (UserMetadata participant: participants) {
         participantsListModel.addElement(participant);
@@ -257,6 +325,7 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
       this.participantsList.setModel(participantsListModel);
       this.participantsList.revalidate();
     }
+    System.out.println("done");
   }
 
   private void requestMessages() {
@@ -280,32 +349,14 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
     System.out.println("messages requested");
   }
 
-  private class MessageRenderer implements ListCellRenderer<Message> {
-    @Override
-    public Component getListCellRendererComponent(
-      JList<? extends Message> messages,
-      Message msg,
-      int index,
-      boolean isSelected,
-      boolean hasFocus
-    ) {
-      String strToSend = String.format(
-        "Sender: %s\nCreated time: %s\nContent: %s",
-        msg.getSenderId(),
-        msg.getCreated().toString(),
-        msg.getContent()
-      );
-      if (msg.hasAttachment()) {
-        strToSend += "\n" + "Attachment: " + msg.getAttachmentName();
-      }
-      if (msg.hasEdited()) {
-        strToSend += "\n(Edited at" + msg.getEditedTime().toString() + ")";
-      }
-      return new JTextArea(strToSend + "\n");
-    }
-  }
 
   private class ParticipantRenderer implements ListCellRenderer<UserMetadata> {
+    private final ChannelMetadata channelMetadata;
+
+    public ParticipantRenderer(ChannelMetadata channelMetadata) {
+      this.channelMetadata = channelMetadata;
+    }
+
     @Override
     public Component getListCellRendererComponent(
       JList<? extends UserMetadata> participants,
@@ -314,16 +365,93 @@ public class ChannelPanel extends JPanel implements ActionListener, MouseListene
       boolean isSelected,
       boolean hasFocus
     ) {
-      JPanel panel = ClientGUIFactory.getUserThumbnailPanel(
+      JPanel panel = ClientGUIFactory.getParticipantThumbnailPanel(
+        channelMetadata,
         metadata,
         Theme.getBoldFont(15),
-        Theme.getItalicFont(10),
         ClientGUIFactory.BLUE_SHADE_3
       );
-      LineBorder border = new LineBorder(ClientGUIFactory.GRAY_SHADE_3, 1);
+      LineBorder border = new LineBorder(ClientGUIFactory.BLUE_SHADE_2, 1);
       panel.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 15)));
       panel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
       return panel;
     }
+  }
+  
+  private class MessageRenderer implements ListCellRenderer<Message> {
+    private JList<UserMetadata> participants;
+
+    public MessageRenderer(JList<UserMetadata> participants) {
+      this.participants = participants;
+    }
+
+    @Override
+    public Component getListCellRendererComponent(
+      JList<? extends Message> messages,
+      Message msg,
+      int index,
+      boolean isSelected,
+      boolean hasFocus
+    ) {
+      JPanel panelToReturn = new JPanel(new BorderLayout());
+      panelToReturn.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+      panelToReturn.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+
+      JPanel senderPanel = new JPanel();
+      senderPanel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+      senderPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+      senderPanel.add(new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon())));
+      senderPanel.add(
+        ClientGUIFactory.getTextLabel(
+        this.getUsernameFromId(msg.getSenderId()),
+        Theme.getBoldFont(15),
+        ClientGUIFactory.PURPLE_SHADE_4
+        )
+      );
+      senderPanel.add(
+        ClientGUIFactory.getTextLabel(
+          "\t" + msg.getCreated().toString(),
+        Theme.getPlainFont(15),
+        ClientGUIFactory.GRAY_SHADE_3
+        )
+      );
+      panelToReturn.add(senderPanel, BorderLayout.NORTH);
+
+      JTextArea content = ClientGUIFactory.getTextArea(
+        5, 20,
+        msg.getContent(),
+        Theme.getPlainFont(15),
+        ClientGUIFactory.GRAY_SHADE_4,
+        Color.WHITE
+      );
+      content.setEditable(false);
+      panelToReturn.add(content, BorderLayout.CENTER);
+
+      if (msg.hasAttachment()) {
+        panelToReturn.add(
+          ClientGUIFactory.getTextLabel(
+            "Attachment: " + msg.getAttachmentName(),
+            Theme.getItalicFont(15),
+            ClientGUIFactory.MAGENTA_SHADE_2
+          ),
+          BorderLayout.SOUTH
+        );
+      }
+      LineBorder border = new LineBorder(ClientGUIFactory.GRAY_SHADE_3, 1);
+      panelToReturn.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 15)));
+      panelToReturn.setBorder(border);
+      return panelToReturn;
+    }
+
+    private String getUsernameFromId(String userId) {
+      for (int i = 0; i < this.participants.getModel().getSize(); i++) {
+        UserMetadata user = this.participants.getModel().getElementAt(i);
+        if (user.getUserId().equals(userId)) {
+          return user.getUsername();
+        }
+      }
+      return "[unknown user]";
+    }
+
   }
 }

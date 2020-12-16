@@ -7,6 +7,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.swing.Box;
+
+import java.awt.Color;
 import java.awt.Component;
 import javax.swing.ListCellRenderer;
 import javax.swing.BoxLayout;
@@ -95,45 +98,75 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     this.tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(15));
     this.tabbedPane.addTab(
       "Online",
-      new JScrollPane(this.onlineFriends)
+      ClientGUIFactory.getScrollPane(this.onlineFriends, true)
     );
     this.tabbedPane.addTab(
       "All",
-      new JScrollPane(this.friends)
+      ClientGUIFactory.getScrollPane(this.friends, true)
     );
     this.tabbedPane.addTab(
       "Incoming Friend Requests",
-      new JScrollPane(this.incomingFriendRequests)
+      ClientGUIFactory.getScrollPane(this.incomingFriendRequests, true)
     );
     this.tabbedPane.addTab(
       "Outgoing Friend Requests",
-      new JScrollPane(this.outgoingFriendRequests)
+      ClientGUIFactory.getScrollPane(this.outgoingFriendRequests, true)
     );
     this.tabbedPane.addTab(
       "Blocked",
-      new JScrollPane(this.blocked)
+      ClientGUIFactory.getScrollPane(this.blocked, true)
     );
 
     JPanel addFriendPanel = new JPanel();
     addFriendPanel.setLayout(new BoxLayout(addFriendPanel, BoxLayout.PAGE_AXIS));
-
+    addFriendPanel.setBackground(Color.WHITE);
     JPanel usernameSearchPanel = new JPanel();
-    this.usernameSearchField = new JTextField(20);
-    JLabel usernameSearchLabel = new JLabel("Enter their username:");
-    usernameSearchLabel.setLabelFor(this.usernameSearchField);
+    usernameSearchPanel.setBackground(Color.WHITE);
+    this.usernameSearchField = ClientGUIFactory.getTextField(
+      20,
+      Theme.getPlainFont(20),
+      ClientGUIFactory.GRAY_SHADE_4,
+      ClientGUIFactory.GRAY_SHADE_1
+    );
+    JLabel usernameSearchLabel = ClientGUIFactory.getTextLabel(
+      "Enter their username:",
+      Theme.getPlainFont(20), 
+      ClientGUIFactory.BLUE_SHADE_4
+    );
+    usernameSearchLabel.setOpaque(false);
     usernameSearchPanel.add(usernameSearchLabel);
     usernameSearchPanel.add(usernameSearchField);
     
     JPanel requestMessagePanel = new JPanel();
-    this.requestMessageField = new JTextField(20);
-    JLabel requestMessageLabel = new JLabel("Enter a request message (optional):");
-    requestMessageLabel.setLabelFor(this.requestMessageField);
+    requestMessagePanel.setBackground(Color.WHITE);
+    this.requestMessageField = ClientGUIFactory.getTextField(
+      20,
+      Theme.getPlainFont(20),
+      ClientGUIFactory.GRAY_SHADE_4,
+      ClientGUIFactory.GRAY_SHADE_1
+    );
+    JLabel requestMessageLabel = ClientGUIFactory.getTextLabel(
+      "Enter a request message (optional):",
+      Theme.getPlainFont(20), 
+      ClientGUIFactory.BLUE_SHADE_4
+    );
+    requestMessagePanel.setOpaque(false);
     requestMessagePanel.add(requestMessageLabel);
     requestMessagePanel.add(requestMessageField);
     
-    this.sendFriendRequestButton = new JButton("send request");
+    this.sendFriendRequestButton = ClientGUIFactory.getTextButton(
+      "send request",
+      Theme.getBoldFont(25),
+      ClientGUIFactory.BLUE_SHADE_4,
+      ClientGUIFactory.BLUE_SHADE_1,
+      10,
+      10
+    );
+    this.sendFriendRequestButton.setHorizontalAlignment(JButton.CENTER);
+    this.sendFriendRequestButton.setAlignmentX(JButton.CENTER);
     this.sendFriendRequestButton.addActionListener(this);
 
+    addFriendPanel.add(Box.createRigidArea(new Dimension(10, 20)));
     addFriendPanel.add(usernameSearchPanel);
     addFriendPanel.add(requestMessagePanel);
     addFriendPanel.add(this.sendFriendRequestButton);

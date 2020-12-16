@@ -192,8 +192,9 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
       );
 
     } else if (e.getSource() == this.registerButton) {
-      this.dispose();
       RegistrationFrame nextFrame = new RegistrationFrame(this.getClientSocket());
+      nextFrame.setLocationRelativeTo(this);
+      this.dispose();
     }
   }
 
@@ -201,8 +202,9 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   public void clientDataUpdated(ClientData updatedClientData) {
     // user successfully logged in
     if (GlobalClient.hasData()) {
-      this.dispose();
       UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());
+      nextFrame.setLocationRelativeTo(this);
+      this.dispose();
     } else {
       System.out.println("failed to initialize client data");
     }

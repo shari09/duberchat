@@ -9,6 +9,7 @@ import common.entities.UserMetadata;
 import common.entities.Message;
 import common.entities.ChannelMetadata;
 import common.entities.PrivateChannelMetadata;
+import common.entities.GroupChannelMetadata;
 
 /**
  * [description]
@@ -21,12 +22,10 @@ import common.entities.PrivateChannelMetadata;
 
 public class ChannelServices {
 
-  public static ChannelMetadata getChannelByChannelId(String channelId) {
-    synchronized (GlobalClient.clientData) {
-      for (ChannelMetadata channelMetadata: GlobalClient.clientData.getChannels()) {
-        if (channelMetadata.getChannelId().equals(channelId)) {
-          return channelMetadata;
-        }
+  public static synchronized ChannelMetadata getChannelByChannelId(String channelId) {
+    for (ChannelMetadata channelMetadata: GlobalClient.clientData.getChannels()) {
+      if (channelMetadata.getChannelId().equals(channelId)) {
+        return channelMetadata;
       }
     }
     return null;
@@ -46,17 +45,29 @@ public class ChannelServices {
     }
   }
 
-  public static void removeMessages(String channelId, Message[] messages) {
-    synchronized (GlobalClient.clientData) {
+  public static synchronized void removeMessages(String channelId, Message[] messages) {
     ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
-      if (channelMessages != null) {
-        for (Message msg: messages) {
-          if (msg != null) {
-            channelMessages.remove(msg);
-          }
+    if (channelMessages != null) {
+      for (Message msg: messages) {
+        if (msg != null) {
+          channelMessages.remove(msg);
         }
       }
     }
+  }
+
+  public static synchronized String getChannelTitle(String channelId) {
+    String title = "";
+    ChannelMetadata channelMetadata = ChannelServices.getChannelByChannelId(channelId);
+    
+    if (channelMetadata instanceof PrivateChannelMetadata) {
+      PrivateChannelMetadata pcMeta = ((PrivateChannelMetadata)channelMetadata);
+      title = ChannelServices.getOtherUserInPrivateChannel(pcMeta).getUsername();
+
+    } else if (channelMetadata instanceof GroupChannelMetadata) {
+      title = ((GroupChannelMetadata)channelMetadata).getChannelName();
+    }
+    return title;
   }
 
   public static UserMetadata getOtherUserInPrivateChannel(PrivateChannelMetadata privateChannelMetadata) {

@@ -48,7 +48,7 @@ public class Constants {
 
   public static final RegexValidator MESSAGE_VALIDATOR = new RegexValidator(
     new String[] {
-      "^.{0,200}$"
+      "^[\\s\\S]{0,200}$"
     },
     "Message: between 0 to 200 characters."
   );

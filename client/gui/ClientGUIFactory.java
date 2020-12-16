@@ -8,7 +8,6 @@ import java.io.IOException;
 import javax.swing.Box;
 import java.awt.Image;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.ImageIcon;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
@@ -17,8 +16,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.GridBagLayout;
-import java.awt.Dimension;
-import javax.swing.SwingConstants;
 import java.awt.GridBagConstraints;
 import javax.swing.ImageIcon;
 
@@ -29,6 +26,7 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
@@ -37,6 +35,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 import common.entities.GroupChannelMetadata;
+import common.entities.ChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 import common.gui.Theme;
@@ -149,6 +148,15 @@ public class ClientGUIFactory {
   public static JButton getTextButton(String text, Font font, Color textColor, Color bgColor, int hPad, int vPad, Color borderColor) {
     JButton button = ClientGUIFactory.getTextButton(text, font, textColor, bgColor, hPad, vPad);
     button.setBorder(new LineBorder(borderColor, 3));
+    return button;
+  }
+
+  public static JRadioButton getRadioButton(String text, Font font, Color textColor, int hPad, int vPad) {
+    JRadioButton button = new JRadioButton(text);
+    button.setFont(font);
+    button.setForeground(textColor);
+    button.setOpaque(false);
+    button.setBorder(BorderFactory.createEmptyBorder(vPad, hPad, vPad, hPad));
     return button;
   }
 
@@ -306,6 +314,57 @@ public class ClientGUIFactory {
     return panel;
   }
 
+  public static JPanel getParticipantThumbnailPanel(
+    ChannelMetadata metadata,
+    UserMetadata participant,
+    Font font,
+    Color textColor
+  ) {
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+
+    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    constraints.weightx = 0.3;
+    constraints.weighty = 0;
+    constraints.gridwidth = 2;
+    constraints.gridheight = 2;
+    constraints.ipadx = 2;
+    panel.add(iconLabel, constraints);
+
+    constraints.weightx = 1;
+    constraints.weighty = 0;
+    constraints.ipadx = 0;
+    constraints.gridx = 2;
+    constraints.gridwidth = 3;
+    constraints.gridheight = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    String nameLabelText = participant.getUsername();
+    if (
+      (metadata instanceof GroupChannelMetadata)
+      && (((GroupChannelMetadata)metadata).getOwnerId().equals(participant.getUserId()))
+    ) {
+      nameLabelText += " (Owner)";
+    }
+    JLabel nameLabel = ClientGUIFactory.getTextLabel(
+      nameLabelText,
+      font,
+      textColor
+    );
+    panel.add(nameLabel, constraints);
+
+    JLabel statusLabel = ClientGUIFactory.getTextLabel(
+      ClientGUIFactory.getStatusText(participant.getStatus()),
+      font,
+      ClientGUIFactory.getStatusColor(participant.getStatus())
+    );
+    constraints.gridy = 1;
+    panel.add(statusLabel, constraints);
+    
+    
+    return panel;
+  }
+
   public static JPanel getIncomingFriendRequestPanel(
     UserMetadata metadata,
     String requestMsg,
@@ -450,115 +509,6 @@ public class ClientGUIFactory {
     }
     return icon;
   }
-
-  // public static GridBagConstraints getScrollConstraints() {
-  //   GridBagConstraints c = new GridBagConstraints();
-  //   c.fill = GridBagConstraints.HORIZONTAL;
-  //   c.anchor = GridBagConstraints.NORTH;
-  //   c.weightx = 1;
-  //   c.weighty = 1;
-  //   c.gridx = 0;
-  //   return c;
-  // }
-
-  // /**
-  //  * 
-  //  * @param title
-  //  * @param px         padding x
-  //  * @param py         padding y
-  //  * @return
-  //  */
-  // public static JCheckBox getCheckBox(
-  //   String title, 
-  //   int px, int py, 
-  //   Color bg,
-  //   Color hover,
-  //   boolean whiteIcon
-  // ) {
-  //   JCheckBox box = new JCheckBox(title);
-  //   try {
-  //     String path;
-  //     if (whiteIcon) {
-  //       path = "server/assets/unchecked_checkbox_white.png";
-  //     } else {
-  //       path = "server/assets/unchecked_checkbox.png";
-  //     }
-  //     BufferedImage img = ImageIO.read(new File(path));
-  //     Image icon = img.getScaledInstance(
-  //       20, 20, 
-  //       Image.SCALE_SMOOTH
-  //     );
-  //     box.setIcon(new ImageIcon(icon));
-  //     if (whiteIcon) {
-  //       path = "server/assets/checked_checkbox_white.png";
-  //     } else {
-  //       path = "server/assets/checked_checkbox.png";
-  //     }
-  //     img = ImageIO.read(new File(path));
-  //     icon = img.getScaledInstance(
-  //       20, 20, 
-  //       Image.SCALE_SMOOTH
-  //     );
-  //     box.setSelectedIcon(new ImageIcon(icon));
-  //   } catch (Exception e) {
-  //     System.out.println("Unable to add button icon");
-  //     e.printStackTrace();
-  //   }
-  //   box.setFont(ServerGUIFactory.getFont(17));
-  //   box.setForeground(ServerGUIFactory.TEXT);
-  //   box.setCursor(new Cursor(Cursor.HAND_CURSOR));
-  //   box.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));
-  //   box.setMinimumSize(new Dimension(
-  //     box.getPreferredSize().width+px*2,
-  //     box.getPreferredSize().height+py*2
-  //   ));
-  //   box.setFocusPainted(false);
-  //   box.setHorizontalAlignment(SwingConstants.CENTER);
-  //   box.setBackground(bg);
-  //   box.addMouseListener(new MouseAdapter() {
-  //     public void mouseEntered(MouseEvent evt) {
-  //       box.setBackground(hover);
-  //     }
-
-  //     public void mouseExited(MouseEvent evt) {
-  //       box.setBackground(bg);
-  //     }
-  //   });
-  //   return box;
-
-  // }
-
-
-  // public static JButton getButton(
-  //   String text, 
-  //   Color textColor,
-  //   int textSize,
-  //   int px, 
-  //   int py,
-  //   Color bg,
-  //   Color hover
-  // ) {
-  //   JButton button = new JButton(text);
-  //   button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-  //   button.setFont(ServerGUIFactory.getFont(textSize));
-  //   button.setForeground(textColor);
-  //   button.setBackground(bg);
-  //   button.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));
-  //   button.setFocusPainted(false);
-  //   button.addMouseListener(new MouseAdapter() {
-  //     public void mouseEntered(MouseEvent evt) {
-  //       button.setBackground(hover);
-  //     }
-
-  //     public void mouseExited(MouseEvent evt) {
-  //       button.setBackground(bg);
-  //     }
-  //   });
-
-  //   return button;
-  // }
-
-
 
   // public static JButton getIconButton(
   //   String iconName,

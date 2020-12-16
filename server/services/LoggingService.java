@@ -52,7 +52,7 @@ public class LoggingService {
         "Loading log data: %s \n%s", 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
   }
 
@@ -70,7 +70,7 @@ public class LoggingService {
         "saving log data: %s \n%s", 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
   }
 
@@ -102,7 +102,7 @@ public class LoggingService {
         "Loading log data: %s \n%s", 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
 
     return entrySet;

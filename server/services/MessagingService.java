@@ -92,7 +92,7 @@ public class MessagingService {
         "Saving channel data: %s \n%s", 
         e.getMessage(), 
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
   }
 

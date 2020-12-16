@@ -36,6 +36,14 @@ import common.entities.payload.client_to_server.FriendRequest;
 import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
+/**
+ * The frame to display the GUI for the client.
+ * <p>
+ * Created on 2020.12.09.
+ * @author Candice Zhang, Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 @SuppressWarnings("serial")
 public class UserFriendsFrame extends UserFrame implements ActionListener, MouseListener {
   private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
@@ -99,23 +107,23 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     this.tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(15));
     this.tabbedPane.addTab(
       "Online",
-      ClientGUIFactory.getScrollPane(this.onlineFriends, true)
+      ClientGUIFactory.getScrollPane(this.onlineFriends)
     );
     this.tabbedPane.addTab(
       "All",
-      ClientGUIFactory.getScrollPane(this.friends, true)
+      ClientGUIFactory.getScrollPane(this.friends)
     );
     this.tabbedPane.addTab(
       "Incoming Friend Requests",
-      ClientGUIFactory.getScrollPane(this.incomingFriendRequests, true)
+      ClientGUIFactory.getScrollPane(this.incomingFriendRequests)
     );
     this.tabbedPane.addTab(
       "Outgoing Friend Requests",
-      ClientGUIFactory.getScrollPane(this.outgoingFriendRequests, true)
+      ClientGUIFactory.getScrollPane(this.outgoingFriendRequests)
     );
     this.tabbedPane.addTab(
       "Blocked",
-      ClientGUIFactory.getScrollPane(this.blocked, true)
+      ClientGUIFactory.getScrollPane(this.blocked)
     );
 
     JPanel addFriendPanel = new JPanel();

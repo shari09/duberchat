@@ -53,6 +53,14 @@ import common.entities.payload.client_to_server.MessageToServer;
 import common.entities.payload.client_to_server.RequestMessages;
 import common.gui.Theme;
 
+/**
+ * Generates a label containing the name and icon of a channel.
+ * <p>
+ * Created on 2020.12.13.
+ * @author Candice Zhang, Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 @SuppressWarnings("serial")
 public class ChannelPanel extends JPanel implements ActionListener,
                                                     MouseListener, 
@@ -92,6 +100,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
     this.messagesList = new JList<Message>();
     this.messagesList.addMouseListener(this);
     this.messagesList.setCellRenderer(new MessageRenderer(this.participantsList));
+    this.messagesList.setBackground(ClientGUIFactory.GRAY_SHADE_1);
     this.requestMessages();
     this.syncClientData();
 
@@ -116,9 +125,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
     title.setHorizontalAlignment(JLabel.CENTER);
     panel.add(title, constraints);
 
-    JScrollPane msgScrollPane = ClientGUIFactory.getScrollPane(this.messagesList, true);
-    msgScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    msgScrollPane.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+    JScrollPane msgScrollPane = ClientGUIFactory.getScrollPane(this.messagesList);
     this.messageScrollBar = msgScrollPane.getVerticalScrollBar();
     this.messageScrollBar.addAdjustmentListener(this);
     constraints.gridy = 1;
@@ -128,22 +135,20 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
     // text input area
     this.inputArea = ClientGUIFactory.getTextArea(
-      5,
-      30,
       Theme.getPlainFont(15),
       ClientGUIFactory.GRAY_SHADE_4,
       Color.WHITE
     );
     this.inputArea.setEditable(true);
     this.inputArea.getDocument().addDocumentListener(this);
-    JScrollPane inputScrollPane = ClientGUIFactory.getScrollPane(this.inputArea, true);
+    JScrollPane inputScrollPane = ClientGUIFactory.getScrollPane(this.inputArea);
     inputScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     constraints.gridx = 0;
     constraints.gridy = 2;
     constraints.gridwidth = 1;
     constraints.gridheight = 1;
     constraints.weightx = 1;
-    constraints.weighty = 0.25;
+    constraints.weighty = 0;
     panel.add(inputScrollPane, constraints);
 
     // attachment upload
@@ -193,7 +198,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
       ClientGUIFactory.getTextLabel("Participants", Theme.getBoldFont(15), ClientGUIFactory.BLUE_SHADE_4),
       BorderLayout.PAGE_START
     );
-    JScrollPane partScrollPane = ClientGUIFactory.getScrollPane(this.participantsList, true);
+    JScrollPane partScrollPane = ClientGUIFactory.getScrollPane(this.participantsList);
     partScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     partPanel.add(partScrollPane, BorderLayout.CENTER);
     constraints.gridx = 2;
@@ -202,6 +207,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
     constraints.gridheight = 2;
     constraints.weightx = 0.75;
     this.add(partPanel, BorderLayout.EAST);
+    
     
     this.setVisible(true);
   }
@@ -424,6 +430,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
     public MessageRenderer(JList<UserMetadata> participants) {
       this.participants = participants;
+      this.participants.setBackground(ClientGUIFactory.GRAY_SHADE_1);
     }
 
     @Override
@@ -447,49 +454,56 @@ public class ChannelPanel extends JPanel implements ActionListener,
       senderPanel.add(Box.createHorizontalGlue());
       senderPanel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
       senderPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-      senderPanel.add(new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon())));
+      senderPanel.add(new JLabel(ClientGUIFactory.getUserIcon(15)));
       senderPanel.add(
         ClientGUIFactory.getTextLabel(
-        this.getUsernameFromId(msg.getSenderId()),
-        Theme.getBoldFont(15),
-        ClientGUIFactory.PURPLE_SHADE_4
+          this.getUsernameFromId(msg.getSenderId()),
+          Theme.getBoldFont(15),
+          ClientGUIFactory.PURPLE_SHADE_4
         )
       );
+      String created = msg.getCreated().toString();
       senderPanel.add(
         ClientGUIFactory.getTextLabel(
-          "\t" + msg.getCreated().toString(),
-        Theme.getPlainFont(15),
+          "\t" + created.substring(0, created.length()-4),
+        Theme.getPlainFont(12),
         ClientGUIFactory.GRAY_SHADE_3
         )
       );
+      senderPanel.setBorder(BorderFactory.createEmptyBorder());
       constraints.weightx = 0.5;
       constraints.weighty = 0;
       
       panelToReturn.add(senderPanel, constraints);
 
       JTextArea content = ClientGUIFactory.getTextArea(
-        5, 20,
         msg.getContent(),
         Theme.getPlainFont(15),
         ClientGUIFactory.GRAY_SHADE_4,
-        Color.WHITE
+        ClientGUIFactory.GRAY_SHADE_1
+        // Color.WHITE
       );
       constraints.gridy = 1;
-      constraints.weighty = 0.5;
+      constraints.weighty = 0;
       content.setEditable(false);
+      content.setBorder(BorderFactory.createEmptyBorder(0, 40, 0, 0));
+      if (msg.getContent().equals("")) {
+        content.setVisible(false);
+      }
       constraints.fill = GridBagConstraints.HORIZONTAL;
       panelToReturn.add(content, constraints);
 
       if (msg.hasAttachment()) {
         JLabel label = ClientGUIFactory.getTextLabel(
           "Attachment: " + msg.getAttachmentName(),
-          Theme.getItalicFont(20),
+          Theme.getItalicFont(15),
           ClientGUIFactory.MAGENTA_SHADE_2
         );
-        label.setBackground(Color.WHITE);
+        label.setBackground(ClientGUIFactory.GRAY_SHADE_1);
+        label.setBorder(BorderFactory.createEmptyBorder(0, 40, 0, 0));
         constraints.gridy = 2;
         constraints.fill = GridBagConstraints.NONE;
-        panelToReturn.add(label, BorderLayout.SOUTH);
+        panelToReturn.add(label, constraints);
       }
       panelToReturn.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 15));
       return panelToReturn;
@@ -502,6 +516,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
           return user.getUsername();
         }
       }
+      
       return "[unknown user]";
     }
 

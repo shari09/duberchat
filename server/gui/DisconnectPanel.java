@@ -63,7 +63,7 @@ public class DisconnectPanel extends AdminPanel {
         } catch (Exception e) {
           CommunicationService.log(
             String.format("Disconnecting %s:%s", username, userId), 
-            LogType.ERROR
+            LogType.CLIENT_ERROR
           );
         }
     }

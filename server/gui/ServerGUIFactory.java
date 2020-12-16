@@ -78,8 +78,9 @@ public class ServerGUIFactory {
   public static final Color SCROLL_BAR = ServerGUIFactory.getColour("474747");
 
   public static final Color LOG_SUCCESS = ServerGUIFactory.getColour("6EAF55");
-  public static final Color LOG_ERROR = ServerGUIFactory.getColour("D14A4A");
-  public static final Color LOG_INFO = ServerGUIFactory.getColour("DED158");
+  public static final Color LOG_CLIENT_ERROR = ServerGUIFactory.getColour("DED158");
+  public static final Color LOG_SYSTEM_ERROR = ServerGUIFactory.getColour("D14A4A");
+  public static final Color LOG_INFO = ServerGUIFactory.getColour("5270DA");
 
 
 
@@ -204,7 +205,7 @@ public class ServerGUIFactory {
         "Unable to load checkbox icon: %s \n%s", 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
     box.setFont(Theme.getPlainFont(textSize));
     box.setForeground(textColor);
@@ -289,7 +290,7 @@ public class ServerGUIFactory {
         "Unable to add button icon: %s \n%s", 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
     button.setCursor(new Cursor(Cursor.HAND_CURSOR));
     button.setContentAreaFilled(false);

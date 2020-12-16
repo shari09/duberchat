@@ -1,19 +1,21 @@
 package client.gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
@@ -27,10 +29,18 @@ import common.entities.payload.client_to_server.UpdateStatus;
 import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
+/**
+ * 
+ * <p>
+ * Created on 2020.12.13.
+ * @author Candice Zhang, Shari Sun
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 @SuppressWarnings("serial")
 public class UserSettingsFrame extends UserFrame implements ActionListener {
 
-  private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
+  private static final Dimension PREFERRED_DIMENSION = new Dimension(450, 500);
 
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
     PayloadType.CHANGE_PROFILE,
@@ -43,12 +53,13 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
     PayloadType.UPDATE_STATUS
   };
 
-  private JLabel usernameLabel;
+
+  private JTextArea usernameText;
   private JButton updateUsernameButton;
 
   private JButton updatePasswordButton;
 
-  private JLabel descriptionLabel;
+  private JTextArea descriptionText;
   private JButton updateDescriptionButton;
 
   private JRadioButton activeButton;
@@ -62,7 +73,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
 
     this.setSize(UserSettingsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserSettingsFrame.PREFERRED_DIMENSION);
-    this.setResizable(true);
+    
 
     String username;
     String description;
@@ -74,156 +85,195 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
     }
     JPanel panel = new JPanel(new GridBagLayout());
     panel.setBackground(Color.WHITE);
-    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
-    constraints.anchor = GridBagConstraints.LINE_START;
-    constraints.insets = new Insets(5, 5, 5, 5);
-    constraints.fill = GridBagConstraints.NONE;
-    constraints.weighty = 1;
-    constraints.gridwidth = 1;
-    constraints.gridheight = 1;
+    panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+    GridBagConstraints c = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    // username
-    this.usernameLabel = ClientGUIFactory.getTextLabel(
-      "Username: " + username,
-      Theme.getBoldFont(20),
-      ClientGUIFactory.PURPLE_SHADE_4
-    );
-    constraints.gridy = 0;
-    panel.add(this.usernameLabel, constraints);
 
-    this.updateUsernameButton = ClientGUIFactory.getTextButton(
-      "Edit",
-      Theme.getBoldFont(15),
-      ClientGUIFactory.PURPLE_SHADE_4,
-      ClientGUIFactory.PURPLE_SHADE_1,
-      10,
-      5
-    );
+    this.usernameText = new JTextArea(username);
+    this.updateUsernameButton = new JButton("Edit");
     this.updateUsernameButton.addActionListener(this);
-    this.updateUsernameButton.setAlignmentX(JButton.RIGHT_ALIGNMENT);
-    constraints.gridx = 1;
-    panel.add(this.updateUsernameButton, constraints);
-    
-    constraints.gridy = 1;
-    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
 
-    // password
-    constraints.gridx = 0;
-    constraints.gridy = 2;
-    panel.add(
-      ClientGUIFactory.getTextLabel(
-        "Password",
-        Theme.getBoldFont(20),
-        ClientGUIFactory.PURPLE_SHADE_4
-      ),
-      constraints
-    );
-    this.updatePasswordButton = ClientGUIFactory.getTextButton(
-      "Change password",
-      Theme.getBoldFont(15),
-      ClientGUIFactory.BLUE_SHADE_4,
-      ClientGUIFactory.BLUE_SHADE_1,
-      10,
-      5
-    );
+    this.updatePasswordButton = new JButton("Edit");
     this.updatePasswordButton.addActionListener(this);
-    this.updatePasswordButton.setAlignmentX(JButton.RIGHT_ALIGNMENT);
-    constraints.gridx = 1;
-    panel.add(this.updatePasswordButton, constraints);
 
-    constraints.gridy = 3;
-    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
-
-    // description
-    this.descriptionLabel = ClientGUIFactory.getTextLabel(
-      "Description: " + description,
-      Theme.getBoldFont(20),
-      ClientGUIFactory.PURPLE_SHADE_4
-    );
-    constraints.gridx = 0;
-    constraints.gridy = 4;
-    panel.add(this.descriptionLabel, constraints);
-
-    this.updateDescriptionButton = ClientGUIFactory.getTextButton(
-      "Edit",
-      Theme.getBoldFont(20),
-      ClientGUIFactory.PURPLE_SHADE_4,
-      ClientGUIFactory.PURPLE_SHADE_1,
-      10,
-      5
-    );
+    this.descriptionText = new JTextArea(description);
+    this.updateDescriptionButton = new JButton("Edit");
     this.updateDescriptionButton.addActionListener(this);
-    this.updateDescriptionButton.setAlignmentX(JButton.RIGHT_ALIGNMENT);
-    constraints.gridx = 1;
-    panel.add(this.updateDescriptionButton, constraints);
-    
-    constraints.gridy = 5;
-    panel.add(Box.createRigidArea(new Dimension(1, 1)), constraints);
 
-    // status
-    JLabel statusTitle = ClientGUIFactory.getTextLabel(
-      "Status: ",
-      Theme.getBoldFont(20),
-      ClientGUIFactory.PURPLE_SHADE_4
-    );
-    constraints.gridx = 0;
-    constraints.gridy = 6;
-    panel.add(statusTitle, constraints);
 
-    JPanel statusPanel = new JPanel();
-    statusPanel.setBackground(Color.WHITE);
-    this.activeButton = ClientGUIFactory.getRadioButton(
-      "active",
-      Theme.getPlainFont(20),
-      ClientGUIFactory.GREEN_SHADE_3,
-      5, 20
+    JPanel usernamePanel = this.getSection(
+      "Username", 
+      this.usernameText, 
+      this.updateUsernameButton
     );
-    this.activeButton.addActionListener(this);
-    statusPanel.add(this.activeButton);
 
-    this.idleButton = ClientGUIFactory.getRadioButton(
-      "idle",
-      Theme.getPlainFont(20),
-      ClientGUIFactory.YELLOW_SHADE_2,
-      5, 20
-    );
-    this.idleButton.addActionListener(this);
-    statusPanel.add(this.idleButton);
-    
-    this.offlineButton = ClientGUIFactory.getRadioButton(
-      "invisible",
-      Theme.getPlainFont(20),
-      ClientGUIFactory.GRAY_SHADE_3,
-      5, 20
-    );
-    this.offlineButton.addActionListener(this);
-    statusPanel.add(this.offlineButton);
 
-    this.doNotDisturbButton = ClientGUIFactory.getRadioButton(
-      "do not disturb",
-      Theme.getPlainFont(20),
-      ClientGUIFactory.RED_SHADE_2,
-      5, 10
+    JPanel passwordPanel = this.getSection(
+      "Password", 
+      new JTextArea("[Hidden]"), 
+      this.updatePasswordButton
     );
-    this.doNotDisturbButton.addActionListener(this);
-    statusPanel.add(this.doNotDisturbButton);
 
-    ButtonGroup statusGroup = new ButtonGroup();
-    statusGroup.add(this.activeButton);
-    statusGroup.add(this.idleButton);
-    statusGroup.add(this.offlineButton);
-    statusGroup.add(this.doNotDisturbButton);
-    
-    statusPanel.setAlignmentX(JPanel.RIGHT_ALIGNMENT);
-    constraints.gridx = 1;
-    constraints.gridy = 6;
-    panel.add(statusPanel, constraints);
+    JPanel descriptionPanel = this.getSection(
+      "Description", 
+      this.descriptionText, 
+      this.updateDescriptionButton
+    );
+
+    JLabel title = new JLabel("MY ACCOUNT");
+    title.setFont(Theme.getBoldFont(16));
+    title.setForeground(ClientGUIFactory.PURPLE_SHADE_4);
+    title.setOpaque(false);
+
+    panel.add(title, c);
+
+
+    c.gridx = 0;
+    c.gridy = 1;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.weighty = 0;
+
+
+    panel.add(usernamePanel, c);
+    c.gridy = 2;
+    panel.add(passwordPanel, c);
+    c.gridy = 3;
+    panel.add(descriptionPanel, c);
+
+    c.gridy = 4;
+    c.weighty = 1;
+    panel.add(Box.createVerticalGlue(), c);
+
+    c.gridy = 5;
+    c.weighty = 0;
+
+    panel.add(this.getStatusPanel(), c);
 
     this.add(panel);
 
     this.updateUserStatus(status);
 
     this.setVisible(true);
+  }
+
+  private JPanel getSection(String labelText, JTextArea content, JButton button) {
+    JPanel panel = new JPanel();
+    panel.setLayout(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+
+    GridBagConstraints c = new GridBagConstraints();
+
+    //label
+    JLabel label = new JLabel(labelText);
+    label.setFont(Theme.getPlainFont(16));
+    label.setForeground(ClientGUIFactory.GRAY_SHADE_3);
+    label.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+    label.setOpaque(false);
+
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.gridx = 0;
+    c.gridy = 0;
+    c.weighty = 0;
+
+    panel.add(label, c);
+
+    //content
+    content.setOpaque(false);
+    content.setFont(Theme.getPlainFont(17));
+    content.setForeground(ClientGUIFactory.GRAY_SHADE_4);
+    content.setLineWrap(true);
+    content.setEditable(false);
+    content.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+
+    c.gridy = 1;
+
+    panel.add(content, c);
+    //button
+
+    button.setBackground(ClientGUIFactory.PURPLE_SHADE_3);
+    button.setForeground(Color.WHITE);
+    button.setFont(Theme.getPlainFont(20));
+    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    button.setFocusPainted(false);
+    button.setBorder(BorderFactory.createEmptyBorder(5, 40, 5, 40));
+
+    c.weightx = 1;
+    panel.add(Box.createHorizontalGlue(), c);
+
+    c.gridx = 1;
+    c.gridy = 0;
+    c.gridheight = 2;
+    c.anchor = GridBagConstraints.CENTER;
+    panel.add(button, c);
+    return panel;
+  }
+
+  public JPanel getStatusPanel() {
+    JPanel statusPanel = new JPanel();
+    statusPanel.setOpaque(false);
+    statusPanel.setLayout(new GridBagLayout());
+    GridBagConstraints c = new GridBagConstraints();
+
+
+    this.activeButton = ClientGUIFactory.getRadioButton(
+      "Active",
+      Theme.getPlainFont(15),
+      ClientGUIFactory.GREEN_SHADE_3,
+      5, 20
+    );
+    this.activeButton.addActionListener(this);
+    
+    this.idleButton = ClientGUIFactory.getRadioButton(
+      "Idle",
+      Theme.getPlainFont(15),
+      ClientGUIFactory.YELLOW_SHADE_2,
+      5, 20
+    );
+    this.idleButton.addActionListener(this);
+    
+    this.offlineButton = ClientGUIFactory.getRadioButton(
+      "Invisible",
+      Theme.getPlainFont(15),
+      ClientGUIFactory.GRAY_SHADE_3,
+      5, 20
+    );
+    this.offlineButton.addActionListener(this);
+    
+    this.doNotDisturbButton = ClientGUIFactory.getRadioButton(
+      "Do not disturb",
+      Theme.getPlainFont(15),
+      ClientGUIFactory.RED_SHADE_2,
+      5, 10
+    );
+    this.doNotDisturbButton.addActionListener(this);
+
+    c.weightx = 0;
+    c.weighty = 0;
+
+    c.gridx = 0;
+    c.gridy = 0;
+    statusPanel.add(this.activeButton, c);
+
+    c.weightx = 1;
+    c.gridx = 1;
+    statusPanel.add(this.idleButton, c);
+
+    c.gridx = 2;
+    statusPanel.add(this.offlineButton, c);
+
+    c.gridx = 3;
+    c.weightx = 0;
+    statusPanel.add(this.doNotDisturbButton, c);
+
+    ButtonGroup statusGroup = new ButtonGroup();
+    statusGroup.add(this.activeButton);
+    statusGroup.add(this.idleButton);
+    statusGroup.add(this.offlineButton);
+    statusGroup.add(this.doNotDisturbButton);
+
+    return statusPanel;
+    
   }
 
   @Override
@@ -295,10 +345,10 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
 
   private synchronized void updateLabels(ClientData updatedClientData) {
-    this.usernameLabel.setText("Username: " + updatedClientData.getUsername());
-    this.usernameLabel.revalidate();
-    this.descriptionLabel.setText("Description: " + updatedClientData.getDescription());
-    this.descriptionLabel.revalidate();
+    this.usernameText.setText(updatedClientData.getUsername());
+    this.usernameText.revalidate();
+    this.descriptionText.setText(updatedClientData.getDescription());
+    this.descriptionText.revalidate();
   }
 
   private synchronized void updateUserStatus(UserStatus status) {

@@ -75,7 +75,7 @@ public class UserService {
     } catch (Exception e) {
       //log
       CommunicationService.log(
-        "Loading user data files", LogType.ERROR
+        "Loading user data files", LogType.CLIENT_ERROR
       );
     }
   }
@@ -108,7 +108,7 @@ public class UserService {
         "Saving user data files: %s \n%s",
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
   }
 

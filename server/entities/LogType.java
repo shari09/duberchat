@@ -10,7 +10,8 @@ package server.entities;
  */
 public enum LogType {
   SUCCESS,
-  ERROR,
+  CLIENT_ERROR,
+  SERVER_ERROR,
   CONNECTION,
   SERVER
 }

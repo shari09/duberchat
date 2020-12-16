@@ -2,18 +2,22 @@ package client.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -22,7 +26,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import common.entities.ChannelMetadata;
 import common.entities.GroupChannelMetadata;
@@ -33,7 +39,7 @@ import common.entities.UserStatus;
  * 
  * <p>
  * Created on 2020.12.13.
- * @author Candice Zhang
+ * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -72,22 +78,42 @@ public class ClientGUIFactory {
   public final static String GROUP_CHANNEL_ICON_PATH = "client/assets/default_icon_group_channel.png";
   public final static String SETTINGS_ICON_PATH = "client/assets/icon_settings.png";
 
-  public static JScrollPane getScrollPane(Component component, boolean visibleScrollBar) {
-    JScrollPane scrollPane = new JScrollPane(component);
+  public static JScrollPane getScrollPane(JComponent panel) {
+    JScrollPane scrollPane = new JScrollPane(panel);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    scrollPane.setVerticalScrollBarPolicy(
-      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
-    );
-    scrollPane.setHorizontalScrollBarPolicy(
-      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-    );
-
-    if (!visibleScrollBar) {
-      scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-    }
-    scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-
+    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.getVerticalScrollBar().setBackground(ClientGUIFactory.GRAY_SHADE_1);
+    scrollPane.getVerticalScrollBar().setUI(ClientGUIFactory.getScrollbarUI());    
+    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
     return scrollPane;
+  }
+
+  public static BasicScrollBarUI getScrollbarUI() {
+    return (new BasicScrollBarUI() {
+      @Override
+      public void configureScrollBarColors() {
+        this.thumbColor = ClientGUIFactory.GRAY_SHADE_2;
+      }
+
+      @Override
+      public JButton createDecreaseButton(int orientation) {
+        JButton button = new JButton();
+        button.setMaximumSize(new Dimension(0 ,0));
+        button.setPreferredSize(new Dimension(0, 0));
+        button.setMinimumSize(new Dimension(0, 0));
+        return button;
+      }
+
+      @Override
+      public JButton createIncreaseButton(int orientation) {
+        JButton button = new JButton();
+        button.setMaximumSize(new Dimension(0 ,0));
+        button.setPreferredSize(new Dimension(0, 0));
+        button.setMinimumSize(new Dimension(0, 0));
+        return button;
+      }
+    });
   }
 
   public static JTabbedPane getTabbedPane(Font font) {
@@ -112,6 +138,7 @@ public class ClientGUIFactory {
     button.setFont(font);
     button.setForeground(textColor);
     button.setBackground(bgColor);
+    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
     button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return button;
   }
@@ -122,6 +149,8 @@ public class ClientGUIFactory {
     button.setOpaque(false);
     button.setContentAreaFilled(false);
     button.setBorderPainted(false);
+    button.setFocusPainted(false);
+    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
     return button;
   }
 
@@ -130,6 +159,7 @@ public class ClientGUIFactory {
     button.setFont(font);
     button.setForeground(textColor);
     button.setBackground(bgColor);
+    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
     button.setBorder(BorderFactory.createEmptyBorder(vPad, hPad, vPad, hPad));
     return button;
   }
@@ -146,6 +176,8 @@ public class ClientGUIFactory {
     button.setForeground(textColor);
     button.setOpaque(false);
     button.setBorder(BorderFactory.createEmptyBorder(vPad, hPad, vPad, hPad));
+    button.setFocusPainted(false);
+    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
     return button;
   }
 
@@ -173,17 +205,18 @@ public class ClientGUIFactory {
     return passField;
   }
 
-  public static JTextArea getTextArea(int row, int columns, String initialText, Font font, Color textColor, Color bgColor) {
-    JTextArea textField = ClientGUIFactory.getTextArea(row, columns, font, textColor, bgColor);
+  public static JTextArea getTextArea(String initialText, Font font, Color textColor, Color bgColor) {
+    JTextArea textField = ClientGUIFactory.getTextArea(font, textColor, bgColor);
     textField.setText(initialText);
     return textField;
   }
 
-  public static JTextArea getTextArea(int row, int columns, Font font, Color textColor, Color bgColor) {
-    JTextArea textField = new JTextArea(row, columns);
+  public static JTextArea getTextArea(Font font, Color textColor, Color bgColor) {
+    JTextArea textField = new JTextArea();
     textField.setFont(font);
     textField.setForeground(textColor);
     textField.setBackground(bgColor);
+    textField.setLineWrap(true);
     return textField;
   }
 
@@ -227,7 +260,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -272,7 +305,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -303,7 +336,6 @@ public class ClientGUIFactory {
     panel.add(statusLabel, constraints);
 
     JTextArea description = ClientGUIFactory.getTextArea(
-      3, 30,
       metadata.getDescription(),
       descriptionFont,
       descriptionColor,
@@ -369,7 +401,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -421,7 +453,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -464,7 +496,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getUserIcon()));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -525,13 +557,20 @@ public class ClientGUIFactory {
     return "";
   }
 
-  public static BufferedImage getUserIcon() {
-    BufferedImage icon = null;
+  public static ImageIcon getUserIcon(int size) {
+    ImageIcon icon = null;
+
     try {
-      icon = ImageIO.read(new File(USER_ICON_PATH));
-    } catch (IOException e) {
+      BufferedImage img = ImageIO.read(new File(USER_ICON_PATH));
+      Image resized = img.getScaledInstance(
+        size, size,
+        Image.SCALE_SMOOTH
+      );
+      icon = new ImageIcon(resized);
+    } catch (Exception e) {
       e.printStackTrace();
     }
+
     return icon;
   }
 
@@ -554,31 +593,4 @@ public class ClientGUIFactory {
     }
     return icon;
   }
-
-  // public static JButton getIconButton(
-  //   String iconName,
-  //   int iconSize,
-  //   int px,
-  //   int py
-  // ) {
-  //   JButton button = new JButton();
-  //   try {
-  //     BufferedImage img = ImageIO.read(new File("server/assets/"+iconName+".png"));
-  //     Image icon = img.getScaledInstance(
-  //       iconSize, iconSize,
-  //       Image.SCALE_SMOOTH
-  //     );
-  //     button.setIcon(new ImageIcon(icon));
-  //   } catch (Exception e) {
-  //     System.out.println("Unable to add button icon");
-  //     e.printStackTrace();
-  //   }
-  //   button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-  //   button.setContentAreaFilled(false);
-  //   button.setBorder(BorderFactory.createEmptyBorder(py, px, py, px));
-  //   button.setFocusable(false);
-    
-  //   return button;
-  // }
-
 }

@@ -110,7 +110,7 @@ public class CommunicationService {
       sendSuccess(client);
     } else {
       sendError(client, errorMsgToClient);
-      log(String.format("%s:%s: %s", username, payload.getUserId(), log), LogType.ERROR);
+      log(String.format("%s:%s: %s", username, payload.getUserId(), log), LogType.CLIENT_ERROR);
     }
     
   }
@@ -135,7 +135,7 @@ public class CommunicationService {
       sendSuccess(client);
     } else {
       sendError(client, errorMsgToClient);
-      log(String.format("%s", log), LogType.ERROR);
+      log(String.format("%s", log), LogType.CLIENT_ERROR);
     }
     
   }

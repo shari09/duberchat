@@ -50,7 +50,7 @@ public class ClientHandler implements Runnable {
     } catch (Exception e) {
       CommunicationService.log(String.format(
         "Client connection: \n%s", CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
   }
 
@@ -89,7 +89,7 @@ public class ClientHandler implements Runnable {
         "Failed to receive payload from the client\n%s\n%s", 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
     this.close();
   }
@@ -135,7 +135,7 @@ public class ClientHandler implements Runnable {
         "Failed to close socket: %s \n%s", 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
   }
 }

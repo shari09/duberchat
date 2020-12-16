@@ -130,7 +130,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
           CommunicationService.log(String.format(
             "Incorrect payload: %s", 
             client.getPayload().getType()
-          ), LogType.ERROR);
+          ), LogType.CLIENT_ERROR);
           break;
       }
 

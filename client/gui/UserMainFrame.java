@@ -41,7 +41,7 @@ import common.gui.Theme;
  * The frame to display the GUI for the client.
  * <p>
  * Created on 2020.12.09.
- * @author Candice Zhang
+ * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -121,7 +121,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     this.friendsFrameButton.addActionListener(this);
     privateChannelPanel.add(this.friendsFrameButton, BorderLayout.NORTH);
     // a scrollable list of private channels
-    JScrollPane pcScrollPane = ClientGUIFactory.getScrollPane(this.privateChannelsList, true);
+    JScrollPane pcScrollPane = ClientGUIFactory.getScrollPane(this.privateChannelsList);
     pcScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     privateChannelPanel.add(pcScrollPane, BorderLayout.CENTER);
 
@@ -137,7 +137,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     this.createGroupChannelButton.addActionListener(this);
     groupChannelPanel.add(this.createGroupChannelButton, BorderLayout.NORTH);
     // a scrollable list of group channels
-    JScrollPane gcScrollPane = ClientGUIFactory.getScrollPane(this.groupChannelsList, true);
+    JScrollPane gcScrollPane = ClientGUIFactory.getScrollPane(this.groupChannelsList);
     gcScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     groupChannelPanel.add(gcScrollPane, BorderLayout.CENTER);
 
@@ -154,6 +154,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     constraints.weightx = 0;
     constraints.weighty = 0;
     this.settingsButton = ClientGUIFactory.getImageButton(new ImageIcon(ClientGUIFactory.getSettingsIcon()));
+    this.settingsButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 20));
     this.settingsButton.addActionListener(this);
 
     constraints.gridx = 5;

@@ -67,7 +67,7 @@ public class SocketService implements Runnable {
         "Accepting connection: %s \n %s", 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
   }
 }

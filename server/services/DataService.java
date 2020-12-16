@@ -38,7 +38,7 @@ public class DataService {
         filePath, 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
     return data;
   }
@@ -64,7 +64,7 @@ public class DataService {
         filePath, 
         e.getMessage(),
         CommunicationService.getStackTrace(e)
-      ), LogType.ERROR);
+      ), LogType.SERVER_ERROR);
     }
   }
 }

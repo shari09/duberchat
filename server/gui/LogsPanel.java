@@ -81,8 +81,11 @@ public class LogsPanel extends JPanel {
       case SUCCESS:
         textColor = ServerGUIFactory.LOG_SUCCESS;
         break;
-      case ERROR:
-        textColor = ServerGUIFactory.LOG_ERROR;
+      case CLIENT_ERROR:
+        textColor = ServerGUIFactory.LOG_CLIENT_ERROR;
+        break;
+      case SERVER_ERROR:
+        textColor = ServerGUIFactory.LOG_SYSTEM_ERROR;
         break;
       default:
         textColor = ServerGUIFactory.LOG_INFO;

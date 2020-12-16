@@ -96,7 +96,7 @@ public class EventQueueService {
               "Unable to pause event queue: %s \n%s", 
               e.getMessage(),
               CommunicationService.getStackTrace(e)
-            ), LogType.ERROR);
+            ), LogType.SERVER_ERROR);
           }
         }  
       }

@@ -70,7 +70,7 @@ public class MessageQueue implements Subscribable {
         CommunicationService.log(String.format(
           "Wrong event: %s", 
           eventType 
-        ), LogType.ERROR);
+        ), LogType.CLIENT_ERROR);
         return;
     }
 

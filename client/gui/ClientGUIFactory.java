@@ -1,28 +1,19 @@
 package client.gui;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
-
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.Box;
-import java.awt.Image;
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import javax.swing.border.LineBorder;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import javax.swing.ImageIcon;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -31,14 +22,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
-import common.entities.GroupChannelMetadata;
 import common.entities.ChannelMetadata;
+import common.entities.GroupChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
-import common.gui.Theme;
 
 /**
  * 
@@ -79,9 +68,9 @@ public class ClientGUIFactory {
   public final static Color BLUE_SHADE_3 = new Color( 76, 105, 199);
   public final static Color BLUE_SHADE_4 = new Color( 58,  79, 146);
 
-  public final static String USER_ICON_PATH = "client/assets/2.png";
-  public final static String GROUP_CHANNEL_ICON_PATH = "client/assets/1.png";
-  public final static String SETTINGS_ICON_PATH = "client/assets/3.png";
+  public final static String USER_ICON_PATH = "client/assets/default_icon_user.png";
+  public final static String GROUP_CHANNEL_ICON_PATH = "client/assets/default_icon_group_channel.png";
+  public final static String SETTINGS_ICON_PATH = "client/assets/icon_settings.png";
 
   public static JScrollPane getScrollPane(Component component, boolean visibleScrollBar) {
     JScrollPane scrollPane = new JScrollPane(component);

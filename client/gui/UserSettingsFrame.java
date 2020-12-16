@@ -1,24 +1,24 @@
 package client.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Insets;
-import java.awt.Color;
-import javax.swing.BoxLayout;
+
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
+
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
+import client.resources.GlobalPayloadQueue;
 import common.entities.ClientData;
 import common.entities.Token;
 import common.entities.UserStatus;
@@ -240,15 +240,15 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     // username
     if (e.getSource() == this.updateUsernameButton) {
-      GlobalJDialogPrompter.promptChangeUsername(this, this.getClientSocket());
+      GlobalJDialogPrompter.promptChangeUsername(this);
 
     // password
     } else if (e.getSource() == this.updatePasswordButton) {
-      GlobalJDialogPrompter.promptChangePassword(this, this.getClientSocket());
+      GlobalJDialogPrompter.promptChangePassword(this);
 
     // description
     } else if (e.getSource() == this.updateDescriptionButton) {
-      GlobalJDialogPrompter.promptChangeProfileDescription(this, this.getClientSocket());
+      GlobalJDialogPrompter.promptChangeProfileDescription(this);
 
     // status
     } else if (e.getSource() instanceof JRadioButton) {
@@ -283,7 +283,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
       statusToSend = UserStatus.DO_NOT_DISTURB;
     }
     if (statusToSend != currentStatus) {
-      this.getClientSocket().sendPayload(
+      GlobalPayloadQueue.sendPayload(
         new UpdateStatus(
           1,
           userId,

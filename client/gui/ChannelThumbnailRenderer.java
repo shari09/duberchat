@@ -1,10 +1,12 @@
 package client.gui;
 
-import javax.swing.JPanel;
 import java.awt.Component;
+
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
+
 import client.services.ChannelServices;
 import common.entities.ChannelMetadata;
 import common.entities.GroupChannelMetadata;

@@ -1,7 +1,10 @@
 package client.services;
 
 import common.entities.payload.Payload;
-import common.entities.payload.client_to_server.*;
+import common.entities.payload.client_to_server.BlockUser;
+import common.entities.payload.client_to_server.ChangeChannel;
+import common.entities.payload.client_to_server.ChangeProfile;
+import common.entities.payload.client_to_server.CreateChannel;
 
 /**
  * [description]

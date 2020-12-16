@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 
-import client.entities.ClientSocket;
 import common.entities.Constants;
 import common.entities.GroupChannelMetadata;
 import common.entities.Message;
@@ -43,10 +42,7 @@ import common.services.RegexValidator;
  */
 
 public class GlobalJDialogPrompter {
-  public static synchronized void promptChangeUsername(
-    Component parentComponent,
-    ClientSocket clientSocket
-  ) {
+  public static synchronized void promptChangeUsername(Component parentComponent) {
     String curUsername = GlobalClient.clientData.getUsername();
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
@@ -74,7 +70,7 @@ public class GlobalJDialogPrompter {
       return;
     }
 
-    clientSocket.sendPayload(
+    GlobalPayloadQueue.sendPayload(
       new ChangeProfile(
         1,
         userId,
@@ -85,10 +81,7 @@ public class GlobalJDialogPrompter {
     );
   }
 
-  public static synchronized void promptChangePassword(
-    Component parentComponent,
-    ClientSocket clientSocket
-  ) {
+  public static synchronized void promptChangePassword(Component parentComponent) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
 
@@ -161,7 +154,7 @@ public class GlobalJDialogPrompter {
       return;
     }
 
-    clientSocket.sendPayload(
+    GlobalPayloadQueue.sendPayload(
       new ChangePassword(
         1,
         userId,
@@ -172,10 +165,7 @@ public class GlobalJDialogPrompter {
     );
   }
 
-  public static synchronized void promptChangeProfileDescription(
-    Component parentComponent,
-    ClientSocket clientSocket
-  ) {
+  public static synchronized void promptChangeProfileDescription(Component parentComponent) {
     String curDescription = GlobalClient.clientData.getDescription();
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
@@ -205,7 +195,7 @@ public class GlobalJDialogPrompter {
       return;
     }
 
-    clientSocket.sendPayload(
+    GlobalPayloadQueue.sendPayload(
       new ChangeProfile(
         1,
         userId,
@@ -219,8 +209,7 @@ public class GlobalJDialogPrompter {
   public static synchronized void promptRespondFriendRequest(
     Component parentComponent,
     UserMetadata sender,
-    String requestMessage,
-    ClientSocket clientSocket
+    String requestMessage
   ) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
@@ -243,7 +232,7 @@ public class GlobalJDialogPrompter {
     );
 
     if (choice == JOptionPane.YES_OPTION) {
-      clientSocket.sendPayload(
+      GlobalPayloadQueue.sendPayload(
         new FriendRequestResponse(
           1,
           userId,
@@ -253,7 +242,7 @@ public class GlobalJDialogPrompter {
         )
       );
     } else if (choice == JOptionPane.NO_OPTION) {
-      clientSocket.sendPayload(
+      GlobalPayloadQueue.sendPayload(
         new FriendRequestResponse(
           1,
           userId,
@@ -267,8 +256,7 @@ public class GlobalJDialogPrompter {
 
   public static synchronized void promptCancelFriendRequest(
     Component parentComponent,
-    UserMetadata recipient,
-    ClientSocket clientSocket
+    UserMetadata recipient
   ) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
@@ -304,8 +292,7 @@ public class GlobalJDialogPrompter {
 
   public static synchronized void promptFriendAction(
     Component parentComponent,
-    UserMetadata metadata,
-    ClientSocket clientSocket
+    UserMetadata metadata
   ) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
@@ -332,7 +319,7 @@ public class GlobalJDialogPrompter {
         "Are you sure you want to block this user (permanently)?"
         )
       ) {
-        clientSocket.sendPayload(
+        GlobalPayloadQueue.sendPayload(
           new BlockUser(
             1,
             userId,
@@ -344,7 +331,7 @@ public class GlobalJDialogPrompter {
     // remove friend
     } else if (choice == JOptionPane.NO_OPTION) {
       if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-        clientSocket.sendPayload(
+        GlobalPayloadQueue.sendPayload(
           new RemoveFriend(
             1,
             userId,
@@ -358,8 +345,7 @@ public class GlobalJDialogPrompter {
 
   public static synchronized void promptMessageAction(
     Component parentComponent,
-    Message message,
-    ClientSocket clientSocket
+    Message message
   ) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
@@ -415,7 +401,7 @@ public class GlobalJDialogPrompter {
       }
       String newContent = area.getText();
       if ((newContent != null) && (newContent.length() > 0)) {
-        clientSocket.sendPayload(
+        GlobalPayloadQueue.sendPayload(
           new EditMessage(
             1,
             userId,
@@ -428,7 +414,7 @@ public class GlobalJDialogPrompter {
       }
     } else if (choice.equals("remove message")) {
       if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-        clientSocket.sendPayload(
+        GlobalPayloadQueue.sendPayload(
           new RemoveMessage(
             1,
             userId,
@@ -440,7 +426,7 @@ public class GlobalJDialogPrompter {
       }
 
     } else if (choice.equals("download attachment")) {
-      clientSocket.sendPayload(
+      GlobalPayloadQueue.sendPayload(
         new RequestAttachment(
           1,
           userId,
@@ -453,8 +439,7 @@ public class GlobalJDialogPrompter {
 
   public static synchronized void promptGroupChannelAction(
     Component parentComponent,
-    GroupChannelMetadata metadata,
-    ClientSocket clientSocket
+    GroupChannelMetadata metadata
   ) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
@@ -483,19 +468,17 @@ public class GlobalJDialogPrompter {
         if (choice.equals("add participant")) {
           GlobalJDialogPrompter.promptAddParticipantToChannel(
             parentComponent,
-            metadata,
-            clientSocket
+            metadata
           );
 
         } else if (choice.equals("remove participant")) {
           String userIdToRemove = GlobalJDialogPrompter.promptSelectParticipantFromChannel(
             parentComponent,
             metadata,
-            false,
-            clientSocket
+            false
           );
           if ((userIdToRemove != null) && (userIdToRemove.length() > 0)) {
-            clientSocket.sendPayload(
+            GlobalPayloadQueue.sendPayload(
               new RemoveParticipant(
                 1,
                 userId,
@@ -510,8 +493,7 @@ public class GlobalJDialogPrompter {
           String userIdToBlacklist = GlobalJDialogPrompter.promptSelectParticipantFromChannel(
             parentComponent,
             metadata,
-            false,
-            clientSocket
+            false
           );
           if (
             (userIdToBlacklist != null)
@@ -523,7 +505,7 @@ public class GlobalJDialogPrompter {
               )
             )
           ) {
-            clientSocket.sendPayload(
+            GlobalPayloadQueue.sendPayload(
               new BlacklistUser(
                 1,
                 userId,
@@ -538,11 +520,10 @@ public class GlobalJDialogPrompter {
           String userIdToRemove = GlobalJDialogPrompter.promptSelectParticipantFromChannel(
             parentComponent,
             metadata,
-            false,
-            clientSocket
+            false
           );
           if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-            clientSocket.sendPayload(
+            GlobalPayloadQueue.sendPayload(
               new RemoveParticipant(
                 1,
                 userId,
@@ -555,7 +536,7 @@ public class GlobalJDialogPrompter {
 
         } else if (choice.equals("leave channel")) {
           if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-            clientSocket.sendPayload(
+            GlobalPayloadQueue.sendPayload(
               new LeaveChannel(
                 1,
                 userId,
@@ -569,11 +550,10 @@ public class GlobalJDialogPrompter {
           String userIdToTransfer = GlobalJDialogPrompter.promptSelectParticipantFromChannel(
             parentComponent,
             metadata,
-            false,
-            clientSocket
+            false
           );
           if ((userIdToTransfer != null) && (userIdToTransfer.length() > 0)) {
-            clientSocket.sendPayload(
+            GlobalPayloadQueue.sendPayload(
               new TransferOwnership(
                 1,
                 userId,
@@ -605,12 +585,11 @@ public class GlobalJDialogPrompter {
         if (choice.equals("add participant")) {
           GlobalJDialogPrompter.promptAddParticipantToChannel(
             parentComponent,
-            metadata,
-            clientSocket
+            metadata
           );
         } else if (choice.equals("leave channel")) {
           if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-            clientSocket.sendPayload(
+            GlobalPayloadQueue.sendPayload(
               new LeaveChannel(
                 1,
                 userId,
@@ -651,8 +630,7 @@ public class GlobalJDialogPrompter {
 
   public static synchronized void promptAddParticipantToChannel(
     Component parentComponent,
-    GroupChannelMetadata metadata,
-    ClientSocket clientSocket
+    GroupChannelMetadata metadata
   ) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
@@ -683,7 +661,7 @@ public class GlobalJDialogPrompter {
 
     if ((choice != null) && (choice.length() > 0)) {
       String userIdToAdd = friendIds[Arrays.asList(friendUsernames).indexOf(choice)];
-      clientSocket.sendPayload(
+      GlobalPayloadQueue.sendPayload(
         new AddParticipant(
           1,
           userId,
@@ -698,8 +676,7 @@ public class GlobalJDialogPrompter {
   public static synchronized String promptSelectParticipantFromChannel(
     Component parentComponent,
     GroupChannelMetadata metadata,
-    boolean canBeSelf,
-    ClientSocket clientSocket
+    boolean canBeSelf
   ) {
     String userId = GlobalClient.clientData.getUserId();
     

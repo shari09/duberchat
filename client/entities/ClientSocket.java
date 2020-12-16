@@ -17,11 +17,12 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.PriorityBlockingQueue;
 
 import client.resources.GlobalClient;
+import client.resources.GlobalPayloadQueue;
 import client.services.ChannelServices;
 import client.services.ClientSocketServices;
+import common.entities.Attachment;
 import common.entities.Constants;
 import common.entities.Message;
 import common.entities.payload.Payload;
@@ -29,7 +30,6 @@ import common.entities.payload.PayloadType;
 import common.entities.payload.client_to_server.ChangeProfile;
 import common.entities.payload.client_to_server.KeepAlive;
 import common.entities.payload.client_to_server.UpdateStatus;
-import common.entities.Attachment;
 import common.entities.payload.server_to_client.AttachmentToClient;
 import common.entities.payload.server_to_client.ClientChannelsUpdate;
 import common.entities.payload.server_to_client.ClientFriendsUpdate;
@@ -57,7 +57,6 @@ public class ClientSocket implements Runnable {
   private ObjectInputStream input;
   private ObjectOutputStream output;
 
-  private PriorityBlockingQueue<Payload> payloadQueue;
   private ConcurrentHashMap<String, Payload> pendingRequests;
   private LinkedHashSet<ClientSocketListener> listeners;
 
@@ -71,7 +70,6 @@ public class ClientSocket implements Runnable {
     this.rawInput = this.socket.getInputStream();
     this.input = new ObjectInputStream(this.rawInput);
     this.output = new ObjectOutputStream(this.socket.getOutputStream());
-    this.payloadQueue = new PriorityBlockingQueue<Payload>();
     this.pendingRequests = new ConcurrentHashMap<String, Payload>();
     this.listeners = new LinkedHashSet<ClientSocketListener>();
     this.running = true;
@@ -89,10 +87,10 @@ public class ClientSocket implements Runnable {
         this.sendHeartbeat();
       }
 
-      synchronized (this.payloadQueue) {
-        if (this.payloadQueue.size() > 0) {
+      synchronized (GlobalPayloadQueue.queue) {
+        if (GlobalPayloadQueue.queue.size() > 0) {
           try {
-              Payload payloadToSend = this.payloadQueue.poll();
+              Payload payloadToSend = GlobalPayloadQueue.queue.poll();
               if (payloadToSend.getType() != PayloadType.KEEP_ALIVE){
                 System.out.println(payloadToSend.toString());
               }
@@ -147,12 +145,12 @@ public class ClientSocket implements Runnable {
     this.running = false;
   }
 
-  public synchronized void sendPayload(Payload payloadToSend) {
-    if (!this.running) {
-      return;
-    }
-    this.payloadQueue.add(payloadToSend);
-  }
+  // public synchronized void sendPayload(Payload payloadToSend) {
+  //   if (!this.running) {
+  //     return;
+  //   }
+  //   GlobalPayloadQueue.queue.add(payloadToSend);
+  // }
 
   public synchronized void addListener(ClientSocketListener listener) {
     this.listeners.add(listener);
@@ -181,24 +179,19 @@ public class ClientSocket implements Runnable {
         break;
 
       case CLIENT_CHANNELS_UPDATE:
-        System.out.println("update");
         ClientChannelsUpdate channelsUpdate = (ClientChannelsUpdate)payload;
-        System.out.println("update1");
         GlobalClient.clientData.setChannels(channelsUpdate.getChannels());
-        System.out.println("update2");
         this.notifyClientDataUpdate();
-        System.out.println("update3");
         break;
 
       case CLIENT_FRIENDS_UPDATE:
         ClientFriendsUpdate friendsUpdate = (ClientFriendsUpdate)payload;
-        System.out.println(friendsUpdate.getFriends());
-        System.out.println(friendsUpdate.getIncomingFriendRequests());
-        System.out.println(friendsUpdate.getOutgoingFriendRequests());
+        // System.out.println(friendsUpdate.getFriends());
+        // System.out.println(friendsUpdate.getIncomingFriendRequests());
+        // System.out.println(friendsUpdate.getOutgoingFriendRequests());
         GlobalClient.clientData.setFriends(friendsUpdate.getFriends());
         GlobalClient.clientData.setIncomingFriendRequests(friendsUpdate.getIncomingFriendRequests());
         GlobalClient.clientData.setOutgoingFriendRequests(friendsUpdate.getOutgoingFriendRequests());
-        System.out.println("CLIENT_FRIENDS_UPDATE");
         this.notifyClientDataUpdate();
         break;
 
@@ -382,7 +375,7 @@ public class ClientSocket implements Runnable {
   }
 
   private synchronized void sendHeartbeat() {
-    this.sendPayload(new KeepAlive());
+    GlobalPayloadQueue.sendPayload(new KeepAlive());
     this.lastHeartBeatTimeMills = System.currentTimeMillis();
   }
 

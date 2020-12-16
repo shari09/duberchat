@@ -1,15 +1,15 @@
 package client.services;
 
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.LinkedHashSet;
 import java.sql.Timestamp;
+import java.util.LinkedHashSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import client.resources.GlobalClient;
-import common.entities.UserMetadata;
-import common.entities.Message;
 import common.entities.ChannelMetadata;
-import common.entities.PrivateChannelMetadata;
 import common.entities.GroupChannelMetadata;
+import common.entities.Message;
+import common.entities.PrivateChannelMetadata;
+import common.entities.UserMetadata;
 
 /**
  * [description]

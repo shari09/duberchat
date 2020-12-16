@@ -1,27 +1,29 @@
 package client.gui;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
-import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import common.entities.payload.PayloadType;
-import common.entities.ClientData;
-import common.gui.Theme;
+
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
+import client.resources.GlobalPayloadQueue;
+import common.entities.ClientData;
+import common.entities.payload.PayloadType;
 import common.entities.payload.client_to_server.Login;
 import common.entities.payload.server_to_client.ServerBroadcast;
+import common.gui.Theme;
 
 /**
  * The frame to display the GUI for the client.
@@ -183,7 +185,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
         return;
       }
 
-      this.getClientSocket().sendPayload(
+      GlobalPayloadQueue.sendPayload(
         new Login(
           1,
           username,

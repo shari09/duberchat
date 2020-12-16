@@ -1,13 +1,15 @@
 package client.gui;
 
 import java.awt.Component;
+
+import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import javax.swing.BorderFactory;
 import javax.swing.border.LineBorder;
-import common.gui.Theme;
+
 import common.entities.UserMetadata;
+import common.gui.Theme;
 
 public class UserMetadataRenderer implements ListCellRenderer<UserMetadata> {
   @Override

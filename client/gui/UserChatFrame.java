@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import client.entities.ClientSocket;
 import client.services.ChannelServices;
@@ -22,8 +24,8 @@ import common.gui.Theme;
  */
 
 @SuppressWarnings("serial")
-public class UserChatFrame extends UserFrame {
-  private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
+public class UserChatFrame extends UserFrame implements ChangeListener {
+  private static final Dimension PREFERRED_DIMENSION = new Dimension(1000, 800);
 
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
     PayloadType.REMOVE_PARTICIPANT,
@@ -56,6 +58,7 @@ public class UserChatFrame extends UserFrame {
 
     this.tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(15));
     this.tabbedPane.setTabPlacement(JTabbedPane.LEFT);
+    this.tabbedPane.addChangeListener(this);
     this.getContentPane().add(this.tabbedPane);
   }
 
@@ -79,14 +82,23 @@ public class UserChatFrame extends UserFrame {
   public void serverBroadcastReceived(ServerBroadcast broadcast) {
   }
 
+  @Override
+  public void stateChanged(ChangeEvent e) {
+    if (this.tabbedPane.getSelectedComponent() instanceof ChannelPanel) {
+      this.scrollToBottom((ChannelPanel)this.tabbedPane.getSelectedComponent());
+    }
+  }
+
   public void addChannel(String channelId) {
     ChannelPanel panel = new ChannelPanel(
       channelId,
       this.getClientSocket()
     );
     this.tabbedPane.addTab(ChannelServices.getChannelTitle(channelId), panel);
+    this.tabbedPane.setSelectedComponent(panel);
     this.syncTabs();
     this.requestFocus();
+    this.scrollToBottom(panel);
   }
 
   public boolean hasChannelTab(String channelId) {
@@ -102,6 +114,12 @@ public class UserChatFrame extends UserFrame {
     return false;
   }
 
+  private void scrollToBottom(ChannelPanel panel) {
+    if (panel.getMessagesList().getModel().getSize() > 0) {
+      panel.getMessagesList().ensureIndexIsVisible(panel.getMessagesList().getModel().getSize()-1);
+    }
+  }
+
   private void syncTabs() {
     for(int i = 0; i < this.tabbedPane.getTabCount(); i++) {
       Component comp = this.tabbedPane.getComponentAt(i);
@@ -114,4 +132,6 @@ public class UserChatFrame extends UserFrame {
     }
     this.repaint();
   }
+  
+
 }

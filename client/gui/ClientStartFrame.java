@@ -2,24 +2,22 @@ package client.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import javax.imageio.ImageIO;
-import java.io.File;
+
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-import common.gui.Theme;
 import javax.swing.SwingConstants;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import common.entities.Constants;
-import common.gui.Theme;
+
 import client.entities.ClientSocket;
+import common.gui.Theme;
 
 /**
  * The frame to display the GUI for the client.

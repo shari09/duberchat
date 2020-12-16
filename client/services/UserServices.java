@@ -2,8 +2,8 @@ package client.services;
 
 import java.util.LinkedHashSet;
 
-import common.entities.UserMetadata;
 import client.resources.GlobalClient;
+import common.entities.UserMetadata;
 
 /**
  * [description]

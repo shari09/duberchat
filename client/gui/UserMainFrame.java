@@ -2,17 +2,18 @@ package client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedHashSet;
-import javax.swing.ImageIcon;
-import java.awt.GridBagLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -20,11 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingConstants;
-import java.awt.GridBagConstraints;
+
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
+import client.resources.GlobalPayloadQueue;
 import common.entities.ChannelMetadata;
 import common.entities.ClientData;
 import common.entities.Constants;
@@ -218,7 +219,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
             data.getStatus()
           )
         );
-        this.getClientSocket().sendPayload(
+        GlobalPayloadQueue.sendPayload(
           new CreateChannel(
             1,
             data.getToken(),
@@ -280,11 +281,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
       
       // group chat actions
       } else if (SwingUtilities.isRightMouseButton(e)) {
-        GlobalJDialogPrompter.promptGroupChannelAction(
-          this,
-          metadata,
-          this.getClientSocket()
-        );
+        GlobalJDialogPrompter.promptGroupChannelAction(this, metadata);
       }
 
     // private channels

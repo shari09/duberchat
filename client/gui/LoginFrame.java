@@ -208,6 +208,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
       this.dispose();
     } else {
       System.out.println("failed to initialize client data");
+      this.dispose();
     }
     
   }

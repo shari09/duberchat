@@ -358,12 +358,12 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     DefaultListModel<UserMetadata> blockedListModel = new DefaultListModel<>();
     LinkedHashSet<UserMetadata> blockedMetadata = clientData.getBlocked();
     for (UserMetadata curMetadata: blockedMetadata) {
+      System.out.println("blocked: " + curMetadata);
       blockedListModel.addElement(curMetadata);
     }
     this.blocked.setModel(blockedListModel);
     this.blocked.revalidate();
 
-    System.out.println("friends data updated");
   }
 
   private class IncomingFriendRequest {

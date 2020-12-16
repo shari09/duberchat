@@ -37,11 +37,13 @@ public class ChannelServices {
   }
 
   /**
-   * Loads an array of messages to the channel with the given channel id.
+   * Loads an array of messages to the channel with the given channel id,
+   * and determines whether or not the channel has more messages to request for.
    * @param channelId The id of the channel.
    * @param messages  The messages to be loaded.
    */
   public static synchronized void addMessages(String channelId, Message[] messages) {
+    boolean shouldRequest = true;
     ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
     if (channelMessages == null) {
       GlobalClient.messagesData.put(channelId, new ConcurrentSkipListSet<Message>());
@@ -50,8 +52,12 @@ public class ChannelServices {
     for (Message msg: messages) {
       if (msg != null) {
         channelMessages.add(msg);
+      } else {
+        // if there are any nulls, the history is fully added and the channel does not need to further request
+        shouldRequest = false; 
       }
     }
+    GlobalClient.messageHistoryFullyLoaded.put(channelId, shouldRequest);
   }
 
   /**

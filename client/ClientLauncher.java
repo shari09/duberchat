@@ -8,6 +8,7 @@ import client.gui.ClientStartFrame;
  * Launches the client side of the chat program.
  * <p>
  * Created on 2020.12.04.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0

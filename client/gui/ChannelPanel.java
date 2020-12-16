@@ -84,7 +84,6 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
   private JList<Message> messagesList;
   private JList<UserMetadata> participantsList;
-  
 
   public ChannelPanel(String channelId, ClientSocket clientSocket) {
     super();
@@ -379,6 +378,9 @@ public class ChannelPanel extends JPanel implements ActionListener,
   }
 
   private void requestMessages() {
+    if (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) == true) {
+      return;
+    }
     synchronized (GlobalClient.clientData) {
       Timestamp before = ChannelServices.getEarliestStoredMessageTime(this.channelId);
       if (before == null) {
@@ -415,6 +417,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
       boolean isSelected,
       boolean hasFocus
     ) {
+      System.out.println("participant renderer: " + ClientGUIFactory.getStatusText(metadata.getStatus()));
       JPanel panel = ClientGUIFactory.getParticipantThumbnailPanel(
         channelMetadata,
         metadata,

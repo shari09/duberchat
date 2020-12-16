@@ -126,7 +126,6 @@ public class UserChatFrame extends UserFrame implements ChangeListener {
         ChannelPanel panel = ((ChannelPanel)comp);
         this.tabbedPane.setTitleAt(i, ChannelServices.getChannelTitle(panel.getChannelId()));
         panel.syncClientData();
-        System.out.println("data synced for channel " + ChannelServices.getChannelTitle(panel.getChannelId()));
       }
     }
     this.repaint();

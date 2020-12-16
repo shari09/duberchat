@@ -26,7 +26,8 @@ public class GlobalClient {
   public static ClientData clientData = null;
   /** The messages data the client has, with channel ids as keys. */
   public static ConcurrentHashMap<String, ConcurrentSkipListSet<Message>> messagesData = new ConcurrentHashMap<String, ConcurrentSkipListSet<Message>>();
-  
+  /** Whether or not the channels' message history is fully loaded, with channel ids as keys. */
+  public static ConcurrentHashMap<String, Boolean> messageHistoryFullyLoaded = new ConcurrentHashMap<String, Boolean>();
   /**
    * Returns whether or not the client data of the {@code GlobalClient} is initialized.
    * @return Whether or not the client data of the {@code GlobalClient} is null.

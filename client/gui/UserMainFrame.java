@@ -237,6 +237,18 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
 
   @Override
+  public synchronized void clientRequestStatusReceived(
+    PayloadType payloadType, 
+    boolean successful,
+    String notifMessage
+  ) {
+    super.clientRequestStatusReceived(payloadType, successful, notifMessage);
+    if ((payloadType == PayloadType.KEEP_ALIVE) && (!successful)) {
+      this.dispose();
+    }
+  }
+
+  @Override
   public void serverBroadcastReceived(ServerBroadcast broadcast) {
     this.requestFocus();
     synchronized (broadcast) {
@@ -319,6 +331,8 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
       Theme.getItalicFont(15),
       ClientGUIFactory.PURPLE_SHADE_3
     );
+    System.out.println("profile panel: " + ClientGUIFactory.getStatusText(GlobalClient.getClientUserMetadata().getStatus()));
+    this.userProfilePanel.revalidate();
   }
 
   private synchronized void updateChannelsJLists() {

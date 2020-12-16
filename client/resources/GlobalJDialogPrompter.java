@@ -370,7 +370,6 @@ public class GlobalJDialogPrompter {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
     String[] choices;
-    System.out.println(message.hasAttachment());
     if (message.getSenderId().equals(userId)) {
       if (message.hasAttachment()) {
         choices = new String[] {

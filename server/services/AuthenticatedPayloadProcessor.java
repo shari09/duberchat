@@ -466,6 +466,8 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
       msg = "Recipient does not exist";
     } else if (GlobalServices.users.isBlocked(recipientId, payload.getUserId())) {
       msg = "You are blocked";
+    } else if (GlobalServices.users.isFriend(recipientId, payload.getUserId())) {
+      msg = "You are already friends!";
     } else {
       success = GlobalServices.users.sendFriendRequest(
         payload.getUserId(), 

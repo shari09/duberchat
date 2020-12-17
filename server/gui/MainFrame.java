@@ -59,6 +59,7 @@ public class MainFrame extends JFrame implements Subscribable {
     this.curEntriesPanel = this.logsPanel;
 
     this.nullPanel = new JPanel();
+    this.nullPanel.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
     
 
 

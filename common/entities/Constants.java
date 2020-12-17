@@ -16,7 +16,7 @@ public class Constants {
 
   public static final int HEARTBEAT_FREQUENCY = 1000*5;
   
-  public static final int SOCKET_TIMEOUT = 1000*30;
+  public static final int SOCKET_TIMEOUT = 1000*300;
 
   public static final String APPLICATION_NAME = "DQ";
   

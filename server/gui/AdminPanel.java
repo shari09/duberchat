@@ -4,6 +4,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +32,7 @@ import server.services.Subscribable;
  * 
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
@@ -57,22 +60,23 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
   private EventType eventType;
 
   private String action;
+  private String prompt;
 
-
-  public AdminPanel(String action, String title, EventType eventType) {
+  public AdminPanel(String action, String title, EventType eventType, String prompt) {
     super();
     this.userToCheckBox = new LinkedHashMap<>();
     this.checkBoxToUser = new LinkedHashMap<>();
     this.clients = new LinkedHashMap<>();
     this.eventType = eventType;
     this.action = action;
+    this.prompt = prompt;
 
     this.setLayout(new GridBagLayout());
-    
+
     JPanel titlePanel = ServerGUIFactory.getHeader(title);
     GridBagConstraints overallC = new GridBagConstraints();
-    
-    //title
+
+    // title
     overallC.gridx = 0;
     overallC.gridy = 0;
     overallC.weightx = 10;
@@ -83,12 +87,14 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
 
     this.add(titlePanel, overallC);
 
-    //select all
+    // select all
     this.selectAll = ServerGUIFactory.getCheckBox(
-      "Select all", ServerGUIFactory.EMPHASIS_TEXT, 18,
+      "Select all", 
+      ServerGUIFactory.EMPHASIS_TEXT, 
+      18, 
       50, 12,
-      ServerGUIFactory.EMPHASIS,
-      ServerGUIFactory.EMPHASIS_HOVER,
+      ServerGUIFactory.EMPHASIS, 
+      ServerGUIFactory.EMPHASIS_HOVER, 
       true
     );
     this.selectAll.addActionListener(this);
@@ -100,37 +106,54 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     overallC.gridwidth = 1;
     this.add(selectAll, overallC);
 
-    //users panel
+    // users panel
     this.usersPanel = new JPanel();
     this.usersPanel.setMinimumSize(this.usersPanel.getPreferredSize());
     this.usersPanel.setLayout(new GridBagLayout());
     this.usersPanel.setBackground(ServerGUIFactory.USER_SELECTION);
     this.usersPanel.setAlignmentX(LEFT_ALIGNMENT);
-    
+
     this.userC = ServerGUIFactory.getScrollConstraints();
     this.usersPanel.add(Box.createVerticalGlue(), this.userC);
 
     this.userC.weighty = 0;
-    
-    this.scrollPane = ServerGUIFactory.getScrollPane(this.usersPanel);
 
+    this.scrollPane = ServerGUIFactory.getScrollPane(this.usersPanel);
 
     overallC.gridx = 0;
     overallC.gridy = 2;
     overallC.weightx = 0;
     overallC.weighty = 1;
     overallC.gridwidth = 1;
-    
+
     this.add(this.scrollPane, overallC);
 
-    //message
-    this.msg = new JTextArea("");
+    // message
+    this.msg = new JTextArea(this.prompt);
     this.msg.setFont(Theme.getPlainFont(15));
     this.msg.setLineWrap(true);
     this.msg.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     this.msg.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
     this.msg.setForeground(ServerGUIFactory.GENERAL_TEXT);
     this.msg.setCaretColor(ServerGUIFactory.GENERAL_TEXT);
+    this.msg.addFocusListener(new FocusListener() {
+
+      @Override
+      public void focusGained(FocusEvent e) {
+        if (AdminPanel.this.msg.getText().equals(AdminPanel.this.prompt)) {
+          AdminPanel.this.msg.setText("");
+        }
+
+      }
+
+      @Override
+      public void focusLost(FocusEvent e) {
+        if (AdminPanel.this.msg.getText().equals("")) {
+          AdminPanel.this.msg.setText(AdminPanel.this.prompt);
+        }
+      }
+      
+    });
 
     JScrollPane scroll = new JScrollPane(this.msg);
     scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -262,8 +285,8 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     return this.msg.getText();
   }
 
-  public void setMessageText(String text) {
-    this.msg.setText(text);
+  public void resetMessagePrompt() {
+    this.msg.setText(prompt);
   }
 
   @Override

@@ -74,6 +74,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
   private static final int MESSAGE_REQUEST_QUANTITY = 50;
 
   private static final float SCROLL_THRESHOLD = 0.95f;
+  private static final long REQUEST_COOLDOWN_MILLS = 1000*5;
 
   private final String channelId;
 
@@ -83,6 +84,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
   private JButton uploadAttachmentButton;
   private JButton sendMessageButton;
   private JScrollBar messageScrollBar;
+  private long lastRequestTime;
 
   private JList<Message> messagesList;
   private JList<UserMetadata> participantsList;
@@ -92,7 +94,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
     
     this.setLayout(new BorderLayout());
     this.channelId = channelId;
-
+    this.lastRequestTime = -1;
     this.participantsList = new JList<UserMetadata>();
     this.participantsList.setCellRenderer(
       new ParticipantRenderer(
@@ -207,6 +209,12 @@ public class ChannelPanel extends JPanel implements ActionListener,
     this.setVisible(true);
   }
 
+  private boolean canRequestMessages() {
+    if (this.lastRequestTime == -1) {
+      return true;
+    }
+    return System.currentTimeMillis() - this.lastRequestTime >= REQUEST_COOLDOWN_MILLS;
+  }
 
   private JPanel getButtons() {
     JPanel panel = new JPanel(new GridBagLayout());
@@ -369,6 +377,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
         );
         // reset inputs
         this.inputArea.setText("");
+        this.inputArea.requestFocus();
         this.attachmentLabel.setText("");
         this.fileChooser.setSelectedFile(null);
       } else {
@@ -421,6 +430,10 @@ public class ChannelPanel extends JPanel implements ActionListener,
     }
     
     if (GlobalClient.messageHistoryFullyLoaded.get(this.channelId)) {
+      return;
+    }
+
+    if (!this.canRequestMessages()) {
       return;
     }
     

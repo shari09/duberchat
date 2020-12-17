@@ -44,7 +44,7 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
   }
 
   @Override
-  public synchronized void clientRequestStatusReceived(
+  public void clientRequestStatusReceived(
     PayloadType payloadType, 
     boolean successful,
     String notifMessage

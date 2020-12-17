@@ -136,13 +136,8 @@ public class ChannelServices {
       ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(channelId);
       if ((messages == null) || (messages.size() == 0)) {
         return null;
-      } else if (messages.size() == 1) {
-        return messages.first().getCreated();
       } else {
-        if (messages.first().getCreated().compareTo(messages.last().getCreated()) < 0) {
-          return messages.first().getCreated();
-        }
-        return messages.last().getCreated();
+        return messages.first().getCreated();
       }
     }
   }

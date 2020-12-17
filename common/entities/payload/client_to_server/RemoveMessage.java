@@ -4,21 +4,21 @@ import common.entities.Token;
 import common.entities.payload.PayloadType;
 
 /**
- * Request from user to remove a message.
+ * A payload from client to server that
+ * contains the data for a user to remove a message.
  * <p>
  * Created on 2020.12.08.
+ * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
 public class RemoveMessage extends AuthenticatablePayload {
-
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
-  private String channelId;
-  private String messageId;
+
+  private final String channelId;
+  private final String messageId;
 
   public RemoveMessage(
     int priority,

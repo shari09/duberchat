@@ -1,5 +1,6 @@
 package client.resources;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 
 import client.gui.ClientGUIFactory;
 import common.entities.Constants;
@@ -22,6 +24,7 @@ import common.entities.UserMetadata;
 import common.entities.payload.client_to_server.AddParticipant;
 import common.entities.payload.client_to_server.BlacklistUser;
 import common.entities.payload.client_to_server.BlockUser;
+import common.entities.payload.client_to_server.CancelFriendRequest;
 import common.entities.payload.client_to_server.ChangePassword;
 import common.entities.payload.client_to_server.ChangeProfile;
 import common.entities.payload.client_to_server.EditMessage;
@@ -34,16 +37,19 @@ import common.entities.payload.client_to_server.RequestAttachment;
 import common.entities.payload.client_to_server.TransferOwnership;
 import common.gui.Theme;
 import common.services.RegexValidator;
+
 /**
- * [description]
+ * Contains static methods to prompt for and respond to user inputs/choices.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
 
 public class GlobalJDialogPrompter {
+
   public static synchronized void promptChangeUsername(Component parentComponent) {
     String curUsername = GlobalClient.clientData.getUsername();
     String userId = GlobalClient.clientData.getUserId();
@@ -72,7 +78,7 @@ public class GlobalJDialogPrompter {
       return;
     }
 
-    GlobalPayloadQueue.sendPayload(
+    GlobalPayloadQueue.enqueuePayload(
       new ChangeProfile(
         1,
         userId,
@@ -132,7 +138,8 @@ public class GlobalJDialogPrompter {
         parentComponent,
         "Required fields incomplete",
         "Submission failed",
-        JOptionPane.INFORMATION_MESSAGE
+        JOptionPane.INFORMATION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30)
       );
       return;
     }
@@ -151,12 +158,13 @@ public class GlobalJDialogPrompter {
         parentComponent,
         "New password and confirm password does not match",
         "Submission failed",
-        JOptionPane.INFORMATION_MESSAGE
+        JOptionPane.INFORMATION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30)
       );
       return;
     }
 
-    GlobalPayloadQueue.sendPayload(
+    GlobalPayloadQueue.enqueuePayload(
       new ChangePassword(
         1,
         userId,
@@ -192,12 +200,13 @@ public class GlobalJDialogPrompter {
         "New description does not meet requirements:"
         + "\n" + Constants.DESCRIPTION_VALIDATOR.getDescription(),
         "Submission failed",
-        JOptionPane.INFORMATION_MESSAGE
+        JOptionPane.INFORMATION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30)
       );
       return;
     }
 
-    GlobalPayloadQueue.sendPayload(
+    GlobalPayloadQueue.enqueuePayload(
       new ChangeProfile(
         1,
         userId,
@@ -217,7 +226,7 @@ public class GlobalJDialogPrompter {
     Token token = GlobalClient.clientData.getToken();
 
     String strToShow = "Accept friend request from " + sender.getUsername() + "?";
-    if ((requestMessage != null) || (requestMessage.length() > 0)) {
+    if ((requestMessage != null) && (requestMessage.length() > 0)) {
       strToShow += "\n" + requestMessage;
     }
 
@@ -234,7 +243,7 @@ public class GlobalJDialogPrompter {
     );
 
     if (choice == JOptionPane.YES_OPTION) {
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new FriendRequestResponse(
           1,
           userId,
@@ -244,7 +253,7 @@ public class GlobalJDialogPrompter {
         )
       );
     } else if (choice == JOptionPane.NO_OPTION) {
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new FriendRequestResponse(
           1,
           userId,
@@ -276,7 +285,14 @@ public class GlobalJDialogPrompter {
     );
 
     if (choice == JOptionPane.YES_OPTION) {
-    } else if (choice == JOptionPane.NO_OPTION) {
+      GlobalPayloadQueue.enqueuePayload(
+        new CancelFriendRequest(
+          1,
+          userId,
+          token,
+          recipient.getUserId()
+        )
+      );
     }
   }
   
@@ -329,7 +345,7 @@ public class GlobalJDialogPrompter {
         "Are you sure you want to block this user (permanently)?"
         )
       ) {
-        GlobalPayloadQueue.sendPayload(
+        GlobalPayloadQueue.enqueuePayload(
           new BlockUser(
             1,
             userId,
@@ -341,7 +357,7 @@ public class GlobalJDialogPrompter {
     // remove friend
     } else if (choice == JOptionPane.NO_OPTION) {
       if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-        GlobalPayloadQueue.sendPayload(
+        GlobalPayloadQueue.enqueuePayload(
           new RemoveFriend(
             1,
             userId,
@@ -360,7 +376,6 @@ public class GlobalJDialogPrompter {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
     String[] choices;
-    System.out.println(message.hasAttachment());
     if (message.getSenderId().equals(userId)) {
       if (message.hasAttachment()) {
         choices = new String[] {
@@ -411,7 +426,7 @@ public class GlobalJDialogPrompter {
       }
       String newContent = area.getText();
       if ((newContent != null) && (newContent.length() > 0)) {
-        GlobalPayloadQueue.sendPayload(
+        GlobalPayloadQueue.enqueuePayload(
           new EditMessage(
             1,
             userId,
@@ -424,7 +439,7 @@ public class GlobalJDialogPrompter {
       }
     } else if (choice.equals("remove message")) {
       if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-        GlobalPayloadQueue.sendPayload(
+        GlobalPayloadQueue.enqueuePayload(
           new RemoveMessage(
             1,
             userId,
@@ -436,7 +451,7 @@ public class GlobalJDialogPrompter {
       }
 
     } else if (choice.equals("download attachment")) {
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new RequestAttachment(
           1,
           userId,
@@ -488,7 +503,7 @@ public class GlobalJDialogPrompter {
             false
           );
           if ((userIdToRemove != null) && (userIdToRemove.length() > 0)) {
-            GlobalPayloadQueue.sendPayload(
+            GlobalPayloadQueue.enqueuePayload(
               new RemoveParticipant(
                 1,
                 userId,
@@ -515,7 +530,7 @@ public class GlobalJDialogPrompter {
               )
             )
           ) {
-            GlobalPayloadQueue.sendPayload(
+            GlobalPayloadQueue.enqueuePayload(
               new BlacklistUser(
                 1,
                 userId,
@@ -532,8 +547,8 @@ public class GlobalJDialogPrompter {
             metadata,
             false
           );
-          if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-            GlobalPayloadQueue.sendPayload(
+          if ( (userIdToRemove != null) && (GlobalJDialogPrompter.confirmAction(parentComponent))) {
+            GlobalPayloadQueue.enqueuePayload(
               new RemoveParticipant(
                 1,
                 userId,
@@ -546,7 +561,7 @@ public class GlobalJDialogPrompter {
 
         } else if (choice.equals("leave channel")) {
           if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-            GlobalPayloadQueue.sendPayload(
+            GlobalPayloadQueue.enqueuePayload(
               new LeaveChannel(
                 1,
                 userId,
@@ -563,7 +578,7 @@ public class GlobalJDialogPrompter {
             false
           );
           if ((userIdToTransfer != null) && (userIdToTransfer.length() > 0)) {
-            GlobalPayloadQueue.sendPayload(
+            GlobalPayloadQueue.enqueuePayload(
               new TransferOwnership(
                 1,
                 userId,
@@ -599,7 +614,7 @@ public class GlobalJDialogPrompter {
           );
         } else if (choice.equals("leave channel")) {
           if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
-            GlobalPayloadQueue.sendPayload(
+            GlobalPayloadQueue.enqueuePayload(
               new LeaveChannel(
                 1,
                 userId,
@@ -619,7 +634,8 @@ public class GlobalJDialogPrompter {
       parentComponent,
       strToShow,
       "Submission failed",
-      JOptionPane.INFORMATION_MESSAGE
+      JOptionPane.INFORMATION_MESSAGE,
+      ClientGUIFactory.getDialogInformationIcon(30, 30)
     );
     return;
   }
@@ -633,7 +649,8 @@ public class GlobalJDialogPrompter {
       parentComponent,
       strToShow,
       "Submission failed",
-      JOptionPane.INFORMATION_MESSAGE
+      JOptionPane.INFORMATION_MESSAGE,
+      ClientGUIFactory.getDialogInformationIcon(30, 30)
     );
     return;
   }
@@ -671,7 +688,7 @@ public class GlobalJDialogPrompter {
 
     if ((choice != null) && (choice.length() > 0)) {
       String userIdToAdd = friendIds[Arrays.asList(friendUsernames).indexOf(choice)];
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new AddParticipant(
           1,
           userId,
@@ -719,8 +736,12 @@ public class GlobalJDialogPrompter {
       participantsUsernames,
       null
     ));
-
-    return participantsIds[Arrays.asList(participantsUsernames).indexOf(choice)];
+    
+    int index = Arrays.asList(participantsUsernames).indexOf(choice);
+    if (index == -1) {
+      return null;
+    }
+    return participantsIds[index];
   }
 
   public static synchronized boolean confirmAction(Component parentComponent, String customMessage) {
@@ -728,7 +749,9 @@ public class GlobalJDialogPrompter {
       parentComponent,
       customMessage,
       "Confirm Action",
-      JOptionPane.YES_NO_OPTION
+      JOptionPane.YES_NO_OPTION,
+      JOptionPane.PLAIN_MESSAGE,
+      ClientGUIFactory.getDialogConfirmationIcon(30, 30)
     );
     if (n == JOptionPane.YES_OPTION) {
       return true;
@@ -741,7 +764,9 @@ public class GlobalJDialogPrompter {
       parentComponent,
       "Are you sure you want to perform this action?",
       "Confirm Action",
-      JOptionPane.YES_NO_OPTION
+      JOptionPane.YES_NO_OPTION,
+      JOptionPane.PLAIN_MESSAGE,
+      ClientGUIFactory.getDialogConfirmationIcon(30, 30)
     );
     if (n == JOptionPane.YES_OPTION) {
       return true;

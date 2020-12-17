@@ -7,7 +7,8 @@ import common.entities.payload.client_to_server.ChangeProfile;
 import common.entities.payload.client_to_server.CreateChannel;
 
 /**
- * [description]
+ * Contains static methods to retrieve/update the user's active time
+ * and to return the notification message for successful client request payloads.
  * <p>
  * Created on 2020.12.14.
  * @author Candice Zhang
@@ -16,16 +17,28 @@ import common.entities.payload.client_to_server.CreateChannel;
  */
 
 public class ClientSocketServices {
+  /** The latest time the user is reported active, in milliseconds. */
   private static long lastActiveTimeMills = System.currentTimeMillis();
 
+  /**
+   * Sets the last active time of the user to the current time.
+   */
   public static synchronized void updateLastActiveTime() {
     ClientSocketServices.lastActiveTimeMills = System.currentTimeMillis();
   }
 
+  /**
+   * Returns the latest time the user is reported active, in milliseconds.
+   * @return The latest time the user is reported active, in milliseconds.
+   */
   public static synchronized long getLastActiveTimeMills() {
     return ClientSocketServices.lastActiveTimeMills;
   }
 
+  /**
+   * Return the notification message for successful client request payloads.
+   * @param payload The payload used to determine the notification message.
+   */
   public static String getRequestSuccessNotifMessage(Payload payload) {
     String strToReturn = "";
 

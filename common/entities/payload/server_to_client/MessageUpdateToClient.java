@@ -6,21 +6,24 @@ import common.entities.payload.Payload;
 import common.entities.payload.PayloadType;
 
 /**
- * Server updating all connected clients who should receive the message.
+ * A payload from server to client that
+ * contains an update on a channel message.
  * It can be a new message, edit of old message, or removing a message.
  * <p>
  * Created on 2020.12.08.
+ * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.2
  */
+
 public class MessageUpdateToClient extends Payload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
-  private Message message;
-  private String channelId;
-  private MessageUpdateType updateType;
+  private final Message message;
+  private final String channelId;
+  private final MessageUpdateType updateType;
 
   public MessageUpdateToClient(
     int priority,

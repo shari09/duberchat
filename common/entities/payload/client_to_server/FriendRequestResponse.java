@@ -5,9 +5,10 @@ import common.entities.payload.PayloadType;
 
 /**
  * A payload from client to server that
- * contains the data for a user's response to a friend request from another user.
+ * contains the data of a user's response to a friend request from another user.
  * <p>
  * Created on 2020.12.06.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0

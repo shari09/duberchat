@@ -83,7 +83,6 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
   private JList<Message> messagesList;
   private JList<UserMetadata> participantsList;
-  
 
   public ChannelPanel(String channelId, ClientSocket clientSocket) {
     super();
@@ -232,13 +231,19 @@ public class ChannelPanel extends JPanel implements ActionListener,
           attachment = Files.readAllBytes(file.toPath());
           attachmentName = file.getName();
         } catch (IOException ioException) {
-          JOptionPane.showMessageDialog(this, "Failed to upload attachment", "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(
+            this,
+            "Failed to upload attachment",
+            "Error",
+            JOptionPane.ERROR_MESSAGE,
+            ClientGUIFactory.getDialogErrorIcon(30, 30)
+          );
         }
       }
 
       if ((text.length() > 0) || (attachment != null)) {
         if (Constants.MESSAGE_VALIDATOR.matches(text)) {
-          GlobalPayloadQueue.sendPayload(
+          GlobalPayloadQueue.enqueuePayload(
             new MessageToServer (
               1,
               userId,
@@ -267,7 +272,8 @@ public class ChannelPanel extends JPanel implements ActionListener,
           this,
           "Please enter something or upload an attachment",
           "Invalid Input", 
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
       }
 
@@ -376,13 +382,19 @@ public class ChannelPanel extends JPanel implements ActionListener,
   }
 
   private void requestMessages() {
+    if (
+      (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) != null)
+      && (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) == true)
+     ) {
+      return;
+    }
     synchronized (GlobalClient.clientData) {
       Timestamp before = ChannelServices.getEarliestStoredMessageTime(this.channelId);
       if (before == null) {
         before = new Timestamp(System.currentTimeMillis());
       }
       
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new RequestMessages(
           1,
           GlobalClient.clientData.getUserId(),
@@ -412,6 +424,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
       boolean isSelected,
       boolean hasFocus
     ) {
+      System.out.println("participant renderer: " + ClientGUIFactory.getStatusText(metadata.getStatus()));
       JPanel panel = ClientGUIFactory.getParticipantThumbnailPanel(
         channelMetadata,
         metadata,

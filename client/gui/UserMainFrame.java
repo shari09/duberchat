@@ -38,7 +38,10 @@ import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
 /**
- * The frame to display the GUI for the client.
+ * The main frame of the user, which includes
+ * a list of private and group channels,
+ * button to create a new channel,
+ * and buttons to navigate to the friends frame and settings frame.
  * <p>
  * Created on 2020.12.09.
  * @author Candice Zhang, Shari Sun
@@ -163,19 +166,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     constraints.gridheight = 1;
     panel.add(this.settingsButton, constraints);
 
-    // JButton test = new JButton("test");
-    // test.addActionListener(
-    //   new ActionListener() {
-    //     @Override
-    //     public synchronized void actionPerformed(ActionEvent e) {
-    //       GlobalClient.displayClientData();
-    //     }
-    //   }
-    // );
-    // buttonPanel.add(test);
-
-    // panel.add(buttonPanel, BorderLayout.PAGE_END);
-
     this.getContentPane().add(panel);
     this.setVisible(true);
   }
@@ -193,7 +183,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   @Override
   public void actionPerformed(ActionEvent e) { 
     if (e.getSource() == this.createGroupChannelButton) {
-      // TODO: also ask for participants
       String channelName = JOptionPane.showInputDialog(this, "Channel Name: ");
       
       if ((channelName == null) || (channelName.length() == 0)) {
@@ -220,7 +209,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
             data.getStatus()
           )
         );
-        GlobalPayloadQueue.sendPayload(
+        GlobalPayloadQueue.enqueuePayload(
           new CreateChannel(
             1,
             data.getToken(),
@@ -242,10 +231,22 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
   
   @Override
-  public void clientDataUpdated(ClientData updatedClientData) {
+  public void clientDataUpdated() {
     this.updateUserProfilePanel();
     this.updateChannelsJLists();
     this.repaint();
+  }
+
+  @Override
+  public synchronized void clientRequestStatusReceived(
+    PayloadType payloadType, 
+    boolean successful,
+    String notifMessage
+  ) {
+    super.clientRequestStatusReceived(payloadType, successful, notifMessage);
+    if ((payloadType == PayloadType.KEEP_ALIVE) && (!successful)) {
+      this.dispose();
+    }
   }
 
   @Override
@@ -316,6 +317,14 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   public void mouseExited(MouseEvent e) {
   }
 
+  @Override
+  public void dispose() {
+    this.friendsFrame.dispose();
+    this.chatFrame.dispose();
+    this.settingsFrame.dispose();
+    super.dispose();
+  }
+  
   private void updateUserProfilePanel() {
     this.userProfilePanel = ClientGUIFactory.getUserThumbnailPanel(
       GlobalClient.getClientUserMetadata(),
@@ -323,6 +332,8 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
       Theme.getItalicFont(15),
       ClientGUIFactory.PURPLE_SHADE_3
     );
+    System.out.println("profile panel: " + ClientGUIFactory.getStatusText(GlobalClient.getClientUserMetadata().getStatus()));
+    this.userProfilePanel.revalidate();
   }
 
   private synchronized void updateChannelsJLists() {

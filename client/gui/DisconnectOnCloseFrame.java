@@ -9,7 +9,9 @@ import javax.swing.JOptionPane;
 import client.entities.ClientSocket;
 
 /**
- * [description]
+ * A super class for all the client side GUI frames that
+ * asks for confirmation of the user
+ * and disconnects the client socket upon closing.
  * <p>
  * Created on 2020.12.09.
  * @author Candice Zhang
@@ -42,20 +44,22 @@ public abstract class DisconnectOnCloseFrame extends UserFrame implements Window
       "Confirm Action",
       JOptionPane.OK_CANCEL_OPTION,
       JOptionPane.QUESTION_MESSAGE,
-      null,
+      ClientGUIFactory.getDialogConfirmationIcon(30, 30),
       options,
-      null);
+      null
+    );
     
     if (choice == JOptionPane.OK_OPTION) {
       try {
         this.getClientSocket().close();
-        System.exit(0);
+        this.dispose();
       } catch (IOException ioException) {
         JOptionPane.showMessageDialog(
           this,
           "failed to disconnect",
           "Error",
-          JOptionPane.ERROR_MESSAGE
+          JOptionPane.ERROR_MESSAGE,
+          ClientGUIFactory.getDialogErrorIcon(30, 30)
         );
       }
     }

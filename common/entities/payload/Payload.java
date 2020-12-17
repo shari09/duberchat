@@ -9,6 +9,7 @@ import common.entities.Identifiable;
  * Represent the pack of data that is transferred between server and client.
  * <p>
  * Created on 2020.12.05.
+ * 
  * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
@@ -17,9 +18,9 @@ import common.entities.Identifiable;
 public abstract class Payload implements Serializable, Identifiable, Comparable<Payload> {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
-  private PayloadType type;
-  private String id;
-  private int priority;
+  private final PayloadType type;
+  private final String id;
+  private final int priority;
 
   public Payload(PayloadType type, int priority) {
     this.id = UUID.randomUUID().toString();

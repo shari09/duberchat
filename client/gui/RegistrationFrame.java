@@ -20,7 +20,6 @@ import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
 import client.resources.GlobalPayloadQueue;
-import common.entities.ClientData;
 import common.entities.Constants;
 import common.entities.payload.PayloadType;
 import common.entities.payload.client_to_server.NewUser;
@@ -29,7 +28,7 @@ import common.gui.Theme;
 import common.services.RegexValidator;
 
 /**
- * The frame to display the GUI for the client.
+ * The frame for the client to register a new account.
  * <p>
  * Created on 2020.12.08.
  * @author Candice Zhang
@@ -227,7 +226,8 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
           this,
           "Please fill in the required fields",
           "Submission failed",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
         return;
       }
@@ -237,7 +237,8 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
           this,
           "Password and confirm password does not match",
           "Submission failed",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
         return;
       }
@@ -259,7 +260,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
         return;
       }
 
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new NewUser(
           1,
           username,
@@ -276,7 +277,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
   }
 
   @Override
-  public void clientDataUpdated(ClientData updatedClientData) {
+  public void clientDataUpdated() {
     // user successfully logged in
     if (GlobalClient.hasData()) {
       UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());

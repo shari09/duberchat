@@ -11,6 +11,16 @@ import javax.swing.border.LineBorder;
 import common.entities.UserMetadata;
 import common.gui.Theme;
 
+/**
+ * Generates a panel containing the metadata display of a user,
+ * including username and status.
+ * <p>
+ * Created on 2020.12.10.
+ * @author Candice Zhang
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
 public class UserMetadataRenderer implements ListCellRenderer<UserMetadata> {
   @Override
   public Component getListCellRendererComponent(

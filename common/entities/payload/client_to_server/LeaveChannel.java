@@ -4,6 +4,8 @@ import common.entities.Token;
 import common.entities.payload.PayloadType;
 
 /**
+ * A payload from client to server that
+ * contains the data for a user to leave a channel.
  * <p>
  * Created on 2020.12.10.
  * 
@@ -11,14 +13,12 @@ import common.entities.payload.PayloadType;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class LeaveChannel extends AuthenticatablePayload {
 
-  /**
-   *
-   */
+public class LeaveChannel extends AuthenticatablePayload {
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
+
   private final String channelId;
-  
 
   public LeaveChannel(
     int priority,

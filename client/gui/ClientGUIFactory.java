@@ -27,6 +27,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
@@ -34,6 +35,7 @@ import common.entities.ChannelMetadata;
 import common.entities.GroupChannelMetadata;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
+import common.gui.Theme;
 
 /**
  * 
@@ -77,7 +79,21 @@ public class ClientGUIFactory {
   public final static String USER_ICON_PATH = "client/assets/default_icon_user.png";
   public final static String GROUP_CHANNEL_ICON_PATH = "client/assets/default_icon_group_channel.png";
   public final static String SETTINGS_ICON_PATH = "client/assets/icon_settings.png";
+  public final static String DIALOG_CONFIRMATION_ICON_PATH = "client/assets/dialog_icon_confirmation.png";
+  public final static String DIALOG_INFORMATION_ICON_PATH = "client/assets/dialog_icon_information.png";
+  public final static String DIALOG_ERROR_ICON_PATH = "client/assets/dialog_icon_error.png";
+  public final static String DIALOG_SUCCESS_ICON_PATH = "client/assets/dialog_icon_success.png";
 
+  public static void initializeLookAndFeel() {
+    UIManager.put("Panel.background", Color.WHITE);
+    UIManager.put("OptionPane.background", Color.WHITE);
+    UIManager.put("OptionPane.messageFont", Theme.getPlainFont(20));
+    UIManager.put("OptionPane.messageForeground", ClientGUIFactory.PURPLE_SHADE_4);
+    UIManager.put("Button.background", ClientGUIFactory.PURPLE_SHADE_1);
+    UIManager.put("Button.foreground", ClientGUIFactory.PURPLE_SHADE_3);
+    UIManager.put("OptionPane.buttonFont", Theme.getBoldFont(15));
+    UIManager.put("Button.border", BorderFactory.createEmptyBorder(10, 10, 10, 10));
+  }
   public static JScrollPane getScrollPane(JComponent panel) {
     JScrollPane scrollPane = new JScrollPane(panel);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -588,6 +604,55 @@ public class ClientGUIFactory {
     BufferedImage icon = null;
     try {
       icon = ImageIO.read(new File(SETTINGS_ICON_PATH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
+
+  
+  public static ImageIcon getDialogConfirmationIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_CONFIRMATION_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
+
+  public static ImageIcon getDialogInformationIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_INFORMATION_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
+
+  public static ImageIcon getDialogErrorIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_ERROR_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
+
+  public static ImageIcon getDialogSuccessIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_SUCCESS_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }

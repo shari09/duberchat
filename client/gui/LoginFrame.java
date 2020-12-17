@@ -19,19 +19,18 @@ import javax.swing.SwingConstants;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalPayloadQueue;
-import common.entities.ClientData;
 import common.entities.payload.PayloadType;
 import common.entities.payload.client_to_server.Login;
 import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
 /**
- * The frame to display the GUI for the client.
+ * The frame for the client to log in by username and password.
  * <p>
  * Created on 2020.12.08.
  * @author Candice Zhang
- * @version 
- * @since 
+ * @version 1.0.0
+ * @since 1.0.0
  */
 
 @SuppressWarnings("serial")
@@ -180,12 +179,13 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
           this,
           "Please fill in the required fields",
           "Submission failed",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.ERROR_MESSAGE,
+          ClientGUIFactory.getDialogErrorIcon(30, 30)
         );
         return;
       }
 
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new Login(
           1,
           username,
@@ -201,7 +201,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   }
 
   @Override
-  public void clientDataUpdated(ClientData updatedClientData) {
+  public void clientDataUpdated() {
     // user successfully logged in
     if (GlobalClient.hasData()) {
       UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());
@@ -209,6 +209,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
       this.dispose();
     } else {
       System.out.println("failed to initialize client data");
+      this.dispose();
     }
     
   }

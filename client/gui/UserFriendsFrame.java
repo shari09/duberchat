@@ -102,7 +102,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     this.blocked.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     this.blocked.addMouseListener(this);
 
-    this.updateJLists(GlobalClient.clientData);
+    this.updateJLists();
 
     this.tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(15));
     this.tabbedPane.addTab(
@@ -203,17 +203,19 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
           this,
           "Username entered is empty!",
           "Illegal Input",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
       } else if (otherUsername.equals(GlobalClient.clientData.getUsername())) {
         JOptionPane.showMessageDialog(
           this,
           "Cannot add yourself as a friend!",
           "Illegal Input",
-          JOptionPane.INFORMATION_MESSAGE
+          JOptionPane.INFORMATION_MESSAGE,
+          ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
       } else {
-        GlobalPayloadQueue.sendPayload(
+        GlobalPayloadQueue.enqueuePayload(
           new FriendRequest(
             1,
             GlobalClient.clientData.getUserId(),
@@ -227,8 +229,8 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   }
 
   @Override
-  public void clientDataUpdated(ClientData updatedClientData) {
-    this.updateJLists(updatedClientData);
+  public void clientDataUpdated() {
+    this.updateJLists();
     this.repaint();
   }
 
@@ -276,6 +278,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
       if (e.getSource() == this.friends) {
         int row = this.friends.locationToIndex(e.getPoint());
         this.friends.setSelectedIndex(row);
+        System.out.println("-----asdasdasd");
         UserMetadata metadata = this.onlineFriends.getSelectedValue();
         if (metadata != null) {
           GlobalJDialogPrompter.promptFriendAction(this, metadata);
@@ -308,11 +311,12 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   public void mouseClicked(MouseEvent e) {
   }
 
-  private synchronized void updateJLists(ClientData updatedClientData) {
+  private synchronized void updateJLists() {
+    ClientData clientData = GlobalClient.clientData;
     // friends and online friends
     DefaultListModel<UserMetadata> friendsListModel = new DefaultListModel<>();
     DefaultListModel<UserMetadata> onlineFriendsListModel = new DefaultListModel<>();
-    LinkedHashSet<UserMetadata> friendsMetadata = updatedClientData.getFriends();
+    LinkedHashSet<UserMetadata> friendsMetadata = clientData.getFriends();
     for (UserMetadata curMetadata: friendsMetadata) {
       friendsListModel.addElement(curMetadata);
       if (curMetadata.getStatus() != UserStatus.OFFLINE) {
@@ -326,7 +330,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
     // incoming friend requests
     DefaultListModel<IncomingFriendRequest> incomingFriendRequestListModel = new DefaultListModel<>();
-    ConcurrentHashMap<UserMetadata, String> incomingFriendRequestsMetadata = updatedClientData.getIncomingFriendRequests();
+    ConcurrentHashMap<UserMetadata, String> incomingFriendRequestsMetadata = clientData.getIncomingFriendRequests();
     for (UserMetadata curMetadata: incomingFriendRequestsMetadata.keySet()) {
       incomingFriendRequestListModel.addElement(
         new IncomingFriendRequest(
@@ -340,7 +344,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
     // outgoing friend requests
     DefaultListModel<OutgoingFriendRequest> outgoingFriendRequestListModel = new DefaultListModel<>();
-    ConcurrentHashMap<UserMetadata, String> outgoingFriendRequestsMetadata = updatedClientData.getOutgoingFriendRequests();
+    ConcurrentHashMap<UserMetadata, String> outgoingFriendRequestsMetadata = clientData.getOutgoingFriendRequests();
     for (UserMetadata curMetadata: outgoingFriendRequestsMetadata.keySet()) {
       outgoingFriendRequestListModel.addElement(
         new OutgoingFriendRequest(
@@ -354,14 +358,14 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
     // blocked
     DefaultListModel<UserMetadata> blockedListModel = new DefaultListModel<>();
-    LinkedHashSet<UserMetadata> blockedMetadata = updatedClientData.getBlocked();
+    LinkedHashSet<UserMetadata> blockedMetadata = clientData.getBlocked();
     for (UserMetadata curMetadata: blockedMetadata) {
+      System.out.println("blocked: " + curMetadata);
       blockedListModel.addElement(curMetadata);
     }
     this.blocked.setModel(blockedListModel);
     this.blocked.revalidate();
 
-    System.out.println("friends data updated");
   }
 
   private class IncomingFriendRequest {

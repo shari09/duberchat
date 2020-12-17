@@ -4,8 +4,8 @@ import common.entities.payload.Payload;
 import common.entities.payload.PayloadType;
 
 /**
- * A payload from client to server that contains the data for logging in as an
- * existing user.
+ * A payload from client to server
+ * that contains the data for logging in as an existing user.
  * <p>
  * Created on 2020.12.05.
  * 

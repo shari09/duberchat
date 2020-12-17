@@ -5,20 +5,22 @@ import common.entities.payload.PayloadType;
 
 
 /**
- * Cancels an outgoing friend request
+ * A payload from client to server
+ * that contains the data for cancelling an outgoing friend request.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class CancelFriendRequest extends AuthenticatablePayload {
-  
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
-  private String recipientId;
+
+  private final String recipientId;
+  
   public CancelFriendRequest(
     int priority,
     String userId,

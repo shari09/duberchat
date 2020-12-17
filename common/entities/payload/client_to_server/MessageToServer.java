@@ -8,6 +8,7 @@ import common.entities.payload.PayloadType;
  * contains the data for a user to send a message in a channel.
  * <p>
  * Created on 2020.12.06.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
@@ -17,10 +18,10 @@ public class MessageToServer extends AuthenticatablePayload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   
-  private String channelId;
-  private String content; // represents filename if has attachment
-  private byte[] attachment;
-  private String attachmentName;
+  private final String channelId;
+  private final String content;
+  private final byte[] attachment;
+  private final String attachmentName;
 
   public MessageToServer(
     int priority,

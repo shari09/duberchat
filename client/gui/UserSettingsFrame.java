@@ -307,7 +307,8 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
 
   @Override
-  public synchronized void clientDataUpdated(ClientData updatedClientData) {
+  public synchronized void clientDataUpdated() {
+    ClientData updatedClientData = GlobalClient.clientData;
     this.updateLabels(updatedClientData);
     this.updateUserStatus(updatedClientData.getStatus());
     this.repaint();
@@ -333,7 +334,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
       statusToSend = UserStatus.DO_NOT_DISTURB;
     }
     if (statusToSend != currentStatus) {
-      GlobalPayloadQueue.sendPayload(
+      GlobalPayloadQueue.enqueuePayload(
         new UpdateStatus(
           1,
           userId,

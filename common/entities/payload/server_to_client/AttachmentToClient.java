@@ -5,10 +5,10 @@ import common.entities.payload.PayloadType;
 
 /**
  * A payload from server to client that
- * contains a requested file by the user.
- * before a certain timestamp.
+ * contains a requested attachment by the user.
  * <p>
  * Created on 2020.12.06.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0

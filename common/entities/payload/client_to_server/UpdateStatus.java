@@ -6,9 +6,10 @@ import common.entities.payload.PayloadType;
 
 /**
  * A payload from client to server that
- * contains the data for a user to request a change in their profile.
+ * contains the data for a user to request a change in their status.
  * <p>
  * Created on 2020.12.10.
+ * 
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0

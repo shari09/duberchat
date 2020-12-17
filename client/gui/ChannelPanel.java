@@ -364,7 +364,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
             userId,
             token,
             this.channelId,
-            text,
+            text.trim(),
             attachment,
             attachmentName
           )

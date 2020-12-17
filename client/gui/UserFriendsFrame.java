@@ -224,7 +224,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
             GlobalClient.clientData.getUserId(),
             GlobalClient.clientData.getToken(),
             otherUsername,
-            this.requestMessageField.getText()
+            this.requestMessageField.getText().trim()
           )
         );
       }

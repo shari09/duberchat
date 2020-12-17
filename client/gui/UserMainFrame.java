@@ -180,7 +180,15 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   @Override
   public void actionPerformed(ActionEvent e) { 
     if (e.getSource() == this.createGroupChannelButton) {
-      String channelName = JOptionPane.showInputDialog(this, "Channel Name: ");
+      String channelName = (String)(JOptionPane.showInputDialog(
+        this,
+        "Channel name: ",
+        "Create Channel",
+        JOptionPane.QUESTION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30),
+        null,
+        null
+      ));
       
       if ((channelName == null) || (channelName.length() == 0)) {
         return;

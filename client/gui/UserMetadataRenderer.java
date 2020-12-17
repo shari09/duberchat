@@ -37,8 +37,7 @@ public class UserMetadataRenderer implements ListCellRenderer<UserMetadata> {
       Theme.getItalicFont(10),
       ClientGUIFactory.BLUE_SHADE_3
     );
-    LineBorder border = new LineBorder(ClientGUIFactory.GRAY_SHADE_3, 1);
-    panel.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 15)));
+    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 15));
     panel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
     return panel;
   }

@@ -54,11 +54,15 @@ public class GlobalJDialogPrompter {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
 
-    String newUsername = JOptionPane.showInputDialog(
+    String newUsername = (String)(JOptionPane.showInputDialog(
       parentComponent,
-      "New Username: ",
-      curUsername
-    );
+      "New username: ",
+      "Change Username",
+      JOptionPane.QUESTION_MESSAGE,
+      ClientGUIFactory.getDialogInformationIcon(30, 30),
+      null,
+      null
+    ));
 
     if (
       (newUsername == null)
@@ -179,11 +183,15 @@ public class GlobalJDialogPrompter {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
 
-    String newDescription = JOptionPane.showInputDialog(
+    String newDescription = (String)(JOptionPane.showInputDialog(
       parentComponent,
-      "New Description: ",
-      curDescription
-    );
+      "New description: ",
+      "Change Description",
+      JOptionPane.QUESTION_MESSAGE,
+      ClientGUIFactory.getDialogInformationIcon(30, 30),
+      null,
+      null
+    ));
 
     if (
       (newDescription == null)

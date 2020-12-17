@@ -52,4 +52,11 @@ public class Constants {
     },
     "Message: between 0 to 200 characters."
   );
+
+  public static final RegexValidator FRIEND_REQUEST_VALIDATOR = new RegexValidator(
+    new String[] {
+      "^.{1,20}$"
+    },
+    "Friend request: between 1 to 20 characters."
+  );
 }

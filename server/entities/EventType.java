@@ -21,6 +21,7 @@ public enum EventType {
    * meaning the token matches with what the server sent back originally.
    */
   AUTHENTICATED_PAYLOAD,
+
   /**
    * Once the client has successfully authenticated itself either
    * through logging in or creating a new user.
@@ -47,6 +48,8 @@ public enum EventType {
   NEW_LOG,
 
   //gui events
+  /** A change in a user's profile, used for server gui user list updates */
+  PROFILE_CHANGE,
   /** Active/connected users tab */
   USERS_TAB,
   /** Server logs */

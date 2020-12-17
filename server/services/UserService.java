@@ -260,7 +260,12 @@ public class UserService {
     this.usernameToId.remove(oldUsername);
     this.idToUsername.put(userId, newUsername);
     this.usernameToId.put(newUsername, userId);
-    this.broadcastChanges(this.users.get(userId));
+    User user = this.users.get(userId);
+    user.updateUsername(newUsername);
+    this.broadcastChanges(user);
+    GlobalServices.guiEventQueue.emitEvent(
+      EventType.PROFILE_CHANGE, 5, user.getMetdata()
+    );
     this.save();
     return true;
   }

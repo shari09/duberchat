@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
@@ -18,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import common.entities.UserMetadata;
 import common.gui.Theme;
 import server.entities.Client;
 import server.entities.EventType;
@@ -169,6 +171,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
   public void activate() {
     GlobalServices.serverEventQueue.subscribe(EventType.AUTHENTICATED_CLIENT, this);
     GlobalServices.serverEventQueue.subscribe(EventType.CLIENT_DISCONNECTED, this);
+    GlobalServices.guiEventQueue.subscribe(EventType.PROFILE_CHANGE, this);
   }
 
   @Override
@@ -180,17 +183,44 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
       case CLIENT_DISCONNECTED:
         this.removeUser(emitter);
         break;
+      case PROFILE_CHANGE:
+        this.updateUser(emitter);
+        break;
       default:
         break;
     }
+  }
+
+  private void updateUser(Object emitter) {
+    UserMetadata user = (UserMetadata)emitter;
+    JCheckBox box = this.getUserCheckBox(user.getUsername());
+    JCheckBox old = this.userToCheckBox.get(user.getUserId());
+    int index = Arrays.asList(this.usersPanel.getComponents()).indexOf(old);
+    this.userToCheckBox.put(user.getUserId(), box);
+    this.checkBoxToUser.remove(old);
+    this.usersPanel.remove(old);
+    this.usersPanel.add(box, this.userC, index);
+    this.repaint();
   }
 
   private void addUser(Object emitter) {
     Client client = (Client)emitter;
     String userId = client.getUserId();
     this.clients.put(userId, client);
+
+    JCheckBox box = this.getUserCheckBox(
+      GlobalServices.users.getUsername(userId)
+    );
+
+    this.userToCheckBox.put(userId, box);
+    this.checkBoxToUser.put(box, userId);
+    this.usersPanel.add(box, this.userC, this.clients.size()-1);
+    this.repaint();
+  }
+
+  private JCheckBox getUserCheckBox(String username) {
     JCheckBox box = ServerGUIFactory.getCheckBox(
-      GlobalServices.users.getUsername(userId), 
+      username, 
       ServerGUIFactory.USER_TEXT,
       15,
       8, 5,
@@ -201,11 +231,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     box.setFont(Theme.getPlainFont(13));
     box.setHorizontalAlignment(SwingConstants.LEFT);
     box.addActionListener(this);
-
-    this.userToCheckBox.put(userId, box);
-    this.checkBoxToUser.put(box, userId);
-    this.usersPanel.add(box, this.userC, this.clients.size()-1);
-    this.repaint();
+    return box;
   }
 
   private void removeUser(Object emitter) {

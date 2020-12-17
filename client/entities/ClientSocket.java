@@ -98,14 +98,18 @@ public class ClientSocket implements Runnable {
   /**
    * Starts this {@code ClientSocket} in the separately executing thread.
    * The {@code ClientSocket} would repeatedly:
+   * <ul>
    * <li>update the mouse movement location of the user
    * <li>determine whether a heartbeat payload should be sent
    * <li>try to write a payload to the server, if there are any in the global payload queue
    * <li>try to read and process a payload from the server, if there are any in the input stream
+   * </ul>
    * Until {@code running} is set to false, which can be caused by:
+   * <ul>
    * <li>if the socket is timed out
    * <li>if a SocketException is received
    * <li>if the public method .close() is called
+   * </ul>
    */
   @Override
   public void run() {
@@ -163,7 +167,8 @@ public class ClientSocket implements Runnable {
       }
     }
 
-    // stops running
+    // Closes the socket connection as well as
+    // all input/output streams in this {@code ClientSocket}.
     try {
       this.socket.close();
       this.input.close();
@@ -171,18 +176,16 @@ public class ClientSocket implements Runnable {
     } catch (SocketException socketException) {
       // notify listeners
       this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "You have been disconnected");
-    } catch (Exception exception) {
-      exception.printStackTrace();
-      // notify listeners
-      this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "An error has occurred");
+    } catch (IOException ioException) {
+      System.out.println("An error has occurred!");
+      ioException.printStackTrace();
     }
   }
 
   /**
-   * Closes the socket connection as well as all input/output streams in this {@code ClientSocket}.
-   * @throws IOException
+   * Informs the {@code ClientSocket} to terminate.
    */
-  public synchronized void close() throws IOException {
+  public void terminate() {
     this.running = false;
   }
 
@@ -263,11 +266,13 @@ public class ClientSocket implements Runnable {
 
   /**
    * Adds and/or removes a message from the stored message history data.
+   * <ul>
    * <li>When the message is new, adds it into the corresponding channel message history.
    * <li>When the message is edited, replaces the original message with the edited message,
    * if it exists in the local message history.
    * <li>When the message is removed, remove the original message,
    * if it exists in the local message history.
+   * </ul>
    * @param messageUpdate The {@code MessageUpdateToClient} payload to be processed.
    */
   private synchronized void processMessageUpdate(MessageUpdateToClient messageUpdate) {

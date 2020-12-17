@@ -30,13 +30,16 @@ import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
 /**
- * 
+ * The frame for the user to change their settings,
+ * including username, password, description and status.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
+
 @SuppressWarnings("serial")
 public class UserSettingsFrame extends UserFrame implements ActionListener {
 
@@ -69,12 +72,13 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
 
   public UserSettingsFrame(ClientSocket clientSocket) {
     super(clientSocket);
+
+    this.setVisible(false);
     this.setTitle("Settings");
 
     this.setSize(UserSettingsFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserSettingsFrame.PREFERRED_DIMENSION);
     
-
     String username;
     String description;
     UserStatus status;

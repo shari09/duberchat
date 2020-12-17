@@ -16,6 +16,7 @@ import common.gui.Theme;
  * including username and status.
  * <p>
  * Created on 2020.12.10.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0

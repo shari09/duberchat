@@ -17,6 +17,7 @@ import common.gui.Theme;
  * The super frame for all client gui frames after a socket connection has been made.
  * <p>
  * Created on 2020.12.12.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
@@ -29,7 +30,7 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
 
   public UserFrame(ClientSocket clientSocket) {
     super(Theme.APPLICATION_NAME);
-    
+
     this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
     try {
@@ -55,7 +56,8 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
             this,
             notifMessage,
             "Success",
-            JOptionPane.PLAIN_MESSAGE
+            JOptionPane.PLAIN_MESSAGE,
+            ClientGUIFactory.getDialogSuccessIcon(30, 30)
           );
           return;
         }

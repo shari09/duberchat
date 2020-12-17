@@ -1,20 +1,18 @@
 package client.gui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.image.BufferedImage;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -38,13 +36,15 @@ import common.entities.UserStatus;
 import common.gui.Theme;
 
 /**
- * 
+ * The factory used to generate client side GUI components.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class ClientGUIFactory {
   // smaller number = lighter
   public final static Color GRAY_SHADE_1 = new Color(245, 245, 245);
@@ -83,6 +83,7 @@ public class ClientGUIFactory {
   public final static String DIALOG_INFORMATION_ICON_PATH = "client/assets/dialog_icon_information.png";
   public final static String DIALOG_ERROR_ICON_PATH = "client/assets/dialog_icon_error.png";
   public final static String DIALOG_SUCCESS_ICON_PATH = "client/assets/dialog_icon_success.png";
+  public final static String DIALOG_BROADCAST_ICON_PATH = "client/assets/dialog_icon_broadcast.png";
 
   public static void initializeLookAndFeel() {
     UIManager.put("Panel.background", Color.WHITE);
@@ -94,6 +95,7 @@ public class ClientGUIFactory {
     UIManager.put("OptionPane.buttonFont", Theme.getBoldFont(15));
     UIManager.put("Button.border", BorderFactory.createEmptyBorder(10, 10, 10, 10));
   }
+
   public static JScrollPane getScrollPane(JComponent panel) {
     JScrollPane scrollPane = new JScrollPane(panel);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -155,6 +157,7 @@ public class ClientGUIFactory {
     button.setForeground(textColor);
     button.setBackground(bgColor);
     button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    button.setFocusPainted(false);
     button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return button;
   }
@@ -176,6 +179,7 @@ public class ClientGUIFactory {
     button.setForeground(textColor);
     button.setBackground(bgColor);
     button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    button.setFocusPainted(false);
     button.setBorder(BorderFactory.createEmptyBorder(vPad, hPad, vPad, hPad));
     return button;
   }
@@ -200,6 +204,7 @@ public class ClientGUIFactory {
   public static JTextField getTextField(int columns, String initialText, Font font, Color textColor, Color bgColor) {
     JTextField textField = ClientGUIFactory.getTextField(columns, font, textColor, bgColor);
     textField.setText(initialText);
+    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     return textField;
   }
 
@@ -208,6 +213,7 @@ public class ClientGUIFactory {
     textField.setFont(font);
     textField.setForeground(textColor);
     textField.setBackground(bgColor);
+    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return textField;
   }
@@ -217,6 +223,7 @@ public class ClientGUIFactory {
     passField.setFont(font);
     passField.setForeground(textColor);
     passField.setBackground(bgColor);
+    passField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     passField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return passField;
   }
@@ -231,6 +238,7 @@ public class ClientGUIFactory {
     JTextArea textField = new JTextArea();
     textField.setFont(font);
     textField.setForeground(textColor);
+    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     textField.setBackground(bgColor);
     textField.setLineWrap(true);
     return textField;
@@ -276,7 +284,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50, 50));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -321,7 +329,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50, 50));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -374,7 +382,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(new ImageIcon(ClientGUIFactory.getGroupChannelIcon()));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getGroupChannelIcon(100, 100));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -417,7 +425,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30, 30));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -469,7 +477,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30, 30));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -512,7 +520,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30, 30));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -573,15 +581,11 @@ public class ClientGUIFactory {
     return "";
   }
 
-  public static ImageIcon getUserIcon(int size) {
+  public static ImageIcon getUserIcon(int width, int height) {
     ImageIcon icon = null;
-
     try {
       BufferedImage img = ImageIO.read(new File(USER_ICON_PATH));
-      Image resized = img.getScaledInstance(
-        size, size,
-        Image.SCALE_SMOOTH
-      );
+      Image resized = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
       icon = new ImageIcon(resized);
     } catch (Exception e) {
       e.printStackTrace();
@@ -590,20 +594,24 @@ public class ClientGUIFactory {
     return icon;
   }
 
-  public static BufferedImage getGroupChannelIcon() {
-    BufferedImage icon = null;
+  public static ImageIcon getGroupChannelIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
     try {
-      icon = ImageIO.read(new File(GROUP_CHANNEL_ICON_PATH));
+      img = ImageIO.read(new File(GROUP_CHANNEL_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }
     return icon;
   }
 
-  public static BufferedImage getSettingsIcon() {
-    BufferedImage icon = null;
+  public static ImageIcon getSettingsIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
     try {
-      icon = ImageIO.read(new File(SETTINGS_ICON_PATH));
+      img = ImageIO.read(new File(SETTINGS_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }

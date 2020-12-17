@@ -11,8 +11,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
+import javax.swing.AbstractAction;
 import java.awt.event.MouseListener;
 import java.io.File;
+import javax.swing.KeyStroke;
+import javax.swing.InputMap;
+import javax.swing.ActionMap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Timestamp;
@@ -22,7 +26,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -32,11 +35,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
@@ -54,13 +57,15 @@ import common.entities.payload.client_to_server.RequestMessages;
 import common.gui.Theme;
 
 /**
- * Generates a label containing the name and icon of a channel.
+ * The panel for a channel's display.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
+
 @SuppressWarnings("serial")
 public class ChannelPanel extends JPanel implements ActionListener,
                                                     MouseListener, 
@@ -140,6 +145,22 @@ public class ChannelPanel extends JPanel implements ActionListener,
     );
     this.inputArea.setEditable(true);
     this.inputArea.getDocument().addDocumentListener(this);
+    InputMap input = inputArea.getInputMap();
+    KeyStroke enter = KeyStroke.getKeyStroke("ENTER");
+    KeyStroke shiftEnter = KeyStroke.getKeyStroke("shift ENTER");
+    input.put(shiftEnter, "insert-break");
+    input.put(enter, "message-submit");
+    ActionMap actions = this.inputArea.getActionMap();
+    actions.put(
+      "message-submit",
+      new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          sendMessage();
+        }
+      }
+    );
+
     JScrollPane inputScrollPane = ClientGUIFactory.getScrollPane(this.inputArea);
     inputScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     constraints.gridx = 0;
@@ -213,69 +234,8 @@ public class ChannelPanel extends JPanel implements ActionListener,
   
   @Override
   public void actionPerformed(ActionEvent e) {
-    String userId;
-    Token token;
-    synchronized (GlobalClient.clientData) {
-      userId = GlobalClient.clientData.getUserId();
-      token = GlobalClient.clientData.getToken();
-    }
-
     if (e.getSource() == this.sendMessageButton) {
-      String text = this.inputArea.getText();
-
-      File file = this.fileChooser.getSelectedFile();
-      byte[] attachment = null;
-      String attachmentName = null;
-      if (file != null) {
-        try {
-          attachment = Files.readAllBytes(file.toPath());
-          attachmentName = file.getName();
-        } catch (IOException ioException) {
-          JOptionPane.showMessageDialog(
-            this,
-            "Failed to upload attachment",
-            "Error",
-            JOptionPane.ERROR_MESSAGE,
-            ClientGUIFactory.getDialogErrorIcon(30, 30)
-          );
-        }
-      }
-
-      if ((text.length() > 0) || (attachment != null)) {
-        if (Constants.MESSAGE_VALIDATOR.matches(text)) {
-          GlobalPayloadQueue.enqueuePayload(
-            new MessageToServer (
-              1,
-              userId,
-              token,
-              this.channelId,
-              text,
-              attachment,
-              attachmentName
-            )
-          );
-          // reset inputs
-          this.inputArea.setText("");
-          this.attachmentLabel.setText(ChannelPanel.DEFAULT_ATTACHMENT_LABEL_TEXT);
-          this.fileChooser.setSelectedFile(null);
-        } else {
-          GlobalJDialogPrompter.warnInvalidInput(
-            this,
-            "message",
-            Constants.MESSAGE_VALIDATOR
-          );
-        }
-
-        
-      } else {
-        JOptionPane.showMessageDialog(
-          this,
-          "Please enter something or upload an attachment",
-          "Invalid Input", 
-          JOptionPane.INFORMATION_MESSAGE,
-          ClientGUIFactory.getDialogInformationIcon(30, 30)
-        );
-      }
+      this.sendMessage();
 
     } else if (e.getSource() == this.uploadAttachmentButton) {
       if (this.fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -317,16 +277,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
       int curValue = this.messageScrollBar.getValue();
       double fraction = 1 - curValue/1.0/maxValue;
       if (fraction > SCROLL_THRESHOLD) {
-        GlobalPayloadQueue.queue.add(
-          new RequestMessages(
-            1,
-            GlobalClient.clientData.getUserId(),
-            GlobalClient.clientData.getToken(),
-            this.channelId,
-            ChannelServices.getEarliestStoredMessageTime(this.channelId),
-            MESSAGE_REQUEST_QUANTITY
-          )
-        );
+        this.requestMessages();
       }
     }
   }
@@ -360,6 +311,66 @@ public class ChannelPanel extends JPanel implements ActionListener,
     return this.channelId;
   }
 
+  private void sendMessage() {
+    String userId = GlobalClient.clientData.getUserId();
+    Token token = GlobalClient.clientData.getToken();
+    
+    String text = this.inputArea.getText();
+    File file = this.fileChooser.getSelectedFile();
+    byte[] attachment = null;
+    String attachmentName = null;
+    if (file != null) {
+      try {
+        attachment = Files.readAllBytes(file.toPath());
+        attachmentName = file.getName();
+      } catch (IOException ioException) {
+        JOptionPane.showMessageDialog(
+          this,
+          "Failed to upload attachment",
+          "Error",
+          JOptionPane.ERROR_MESSAGE,
+          ClientGUIFactory.getDialogErrorIcon(30, 30)
+        );
+      }
+    }
+
+    if ((text.length() > 0) || (attachment != null)) {
+      if (Constants.MESSAGE_VALIDATOR.matches(text)) {
+        GlobalPayloadQueue.enqueuePayload(
+          new MessageToServer (
+            1,
+            userId,
+            token,
+            this.channelId,
+            text,
+            attachment,
+            attachmentName
+          )
+        );
+        // reset inputs
+        this.inputArea.setText("");
+        this.attachmentLabel.setText(ChannelPanel.DEFAULT_ATTACHMENT_LABEL_TEXT);
+        this.fileChooser.setSelectedFile(null);
+      } else {
+        GlobalJDialogPrompter.warnInvalidInput(
+          this,
+          "message",
+          Constants.MESSAGE_VALIDATOR
+        );
+      }
+
+      
+    } else {
+      JOptionPane.showMessageDialog(
+        this,
+        "Please enter something or upload an attachment",
+        "Invalid Input", 
+        JOptionPane.INFORMATION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30)
+      );
+    }
+  }
+
   private synchronized void updateJLists() {
     ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(this.channelId);
     if (messages != null) {
@@ -381,31 +392,31 @@ public class ChannelPanel extends JPanel implements ActionListener,
     }
   }
 
-  private void requestMessages() {
-    if (
-      (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) != null)
-      && (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) == true)
-     ) {
+  private synchronized void requestMessages() {
+    if (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) == null) {
+      GlobalClient.messageHistoryFullyLoaded.put(this.channelId, false);
+    }
+    
+    if (GlobalClient.messageHistoryFullyLoaded.get(this.channelId)) {
       return;
     }
-    synchronized (GlobalClient.clientData) {
-      Timestamp before = ChannelServices.getEarliestStoredMessageTime(this.channelId);
-      if (before == null) {
-        before = new Timestamp(System.currentTimeMillis());
-      }
-      
-      GlobalPayloadQueue.enqueuePayload(
-        new RequestMessages(
-          1,
-          GlobalClient.clientData.getUserId(),
-          GlobalClient.clientData.getToken(),
-          this.channelId,
-          before,
-          ChannelPanel.MESSAGE_REQUEST_QUANTITY
-        )
-      );
+    
+    Timestamp before = ChannelServices.getEarliestStoredMessageTime(this.channelId);
+    if (before == null) {
+      before = new Timestamp(System.currentTimeMillis());
     }
-    System.out.println("messages requested");
+    
+    GlobalPayloadQueue.enqueuePayload(
+      new RequestMessages(
+        1,
+        GlobalClient.clientData.getUserId(),
+        GlobalClient.clientData.getToken(),
+        this.channelId,
+        before,
+        ChannelPanel.MESSAGE_REQUEST_QUANTITY
+      )
+    );
+    System.out.println("------messages requested");
   }
 
 
@@ -424,14 +435,13 @@ public class ChannelPanel extends JPanel implements ActionListener,
       boolean isSelected,
       boolean hasFocus
     ) {
-      System.out.println("participant renderer: " + ClientGUIFactory.getStatusText(metadata.getStatus()));
       JPanel panel = ClientGUIFactory.getParticipantThumbnailPanel(
         channelMetadata,
         metadata,
         Theme.getBoldFont(15),
         ClientGUIFactory.BLUE_SHADE_3
       );
-      LineBorder border = new LineBorder(ClientGUIFactory.BLUE_SHADE_2, 1);
+      LineBorder border = new LineBorder(ClientGUIFactory.BLUE_SHADE_3, 1);
       panel.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 15)));
       panel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
       return panel;
@@ -467,7 +477,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
       senderPanel.add(Box.createHorizontalGlue());
       senderPanel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
       senderPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-      senderPanel.add(new JLabel(ClientGUIFactory.getUserIcon(15)));
+      senderPanel.add(new JLabel(ClientGUIFactory.getUserIcon(20, 20)));
       senderPanel.add(
         ClientGUIFactory.getTextLabel(
           this.getUsernameFromId(msg.getSenderId()),

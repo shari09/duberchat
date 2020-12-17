@@ -37,13 +37,14 @@ import common.entities.payload.server_to_client.ServerBroadcast;
 import common.gui.Theme;
 
 /**
- * The frame to display the GUI for the client.
+ * The frame used for viewing, adding and blocking friends.
  * <p>
  * Created on 2020.12.09.
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
+
 @SuppressWarnings("serial")
 public class UserFriendsFrame extends UserFrame implements ActionListener, MouseListener {
   private static final Dimension PREFERRED_DIMENSION = new Dimension(800, 600);
@@ -71,6 +72,8 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
 
   public UserFriendsFrame(ClientSocket clientSocket) {
     super(clientSocket);
+
+    this.setVisible(false);
     this.setTitle("Friends");
 
     this.setSize(UserFriendsFrame.PREFERRED_DIMENSION);

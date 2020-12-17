@@ -13,7 +13,6 @@ import java.util.LinkedHashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -44,6 +43,7 @@ import common.gui.Theme;
  * and buttons to navigate to the friends frame and settings frame.
  * <p>
  * Created on 2020.12.09.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
@@ -83,11 +83,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     this.setResizable(false);
 
     this.chatFrame = new UserChatFrame(clientSocket);
-    this.chatFrame.setVisible(false);
-
     this.friendsFrame = new UserFriendsFrame(clientSocket);
-    this.friendsFrame.setVisible(false);
-
     this.settingsFrame = new UserSettingsFrame(clientSocket);
     this.settingsFrame.setVisible(false);
 
@@ -156,7 +152,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     // button
     constraints.weightx = 0;
     constraints.weighty = 0;
-    this.settingsButton = ClientGUIFactory.getImageButton(new ImageIcon(ClientGUIFactory.getSettingsIcon()));
+    this.settingsButton = ClientGUIFactory.getImageButton(ClientGUIFactory.getSettingsIcon(50, 50));
     this.settingsButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 20));
     this.settingsButton.addActionListener(this);
 
@@ -221,11 +217,17 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
       }
 
     } else if (e.getSource() == this.friendsFrameButton) {
-      this.friendsFrame.setVisible(true);
+      if (!this.friendsFrame.isVisible()) {
+        this.friendsFrame.setVisible(true);
+        this.friendsFrame.setLocationRelativeTo(this);
+      }
       this.friendsFrame.requestFocus();
 
     } else if (e.getSource() == this.settingsButton) {
-      this.settingsFrame.setVisible(true);
+      if (!this.settingsFrame.isVisible()) {
+        this.settingsFrame.setVisible(true);
+        this.settingsFrame.setLocationRelativeTo(this);
+      }
       this.settingsFrame.requestFocus();
     }
   }
@@ -277,7 +279,10 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
         if (!this.chatFrame.hasChannelTab(metadata.getChannelId())) {
           this.chatFrame.addChannel(metadata.getChannelId());
         }
-        this.chatFrame.setVisible(true);
+        if (!this.chatFrame.isVisible()) {
+          this.chatFrame.setVisible(true);
+          this.chatFrame.setLocationRelativeTo(this);
+        }
         this.chatFrame.requestFocus();
         this.privateChannelsList.setSelectedValue(null, false);
       
@@ -297,7 +302,10 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
         if ((metadata != null) && (!this.chatFrame.hasChannelTab(metadata.getChannelId()))) {
           this.chatFrame.addChannel(metadata.getChannelId());
         }
-        this.chatFrame.setVisible(true);
+        if (!this.chatFrame.isVisible()) {
+          this.chatFrame.setVisible(true);
+          this.chatFrame.setLocationRelativeTo(this);
+        }
         this.chatFrame.requestFocus();
         this.privateChannelsList.setSelectedValue(null, false);
       }

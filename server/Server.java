@@ -1,6 +1,5 @@
 package server;
 
-import server.entities.EventType;
 import server.entities.LogType;
 import server.gui.MainFrame;
 import server.gui.StartFrame;
@@ -11,7 +10,6 @@ import server.services.ClientDisconnectHandler;
 import server.services.ClientQueue;
 import server.services.CommunicationService;
 import server.services.FriendInfoUpdater;
-import server.services.GlobalServices;
 import server.services.LoggingHandler;
 import server.services.MessageQueue;
 import server.services.PayloadProcessor;

@@ -14,6 +14,7 @@ import client.entities.ClientSocket;
  * and disconnects the client socket upon closing.
  * <p>
  * Created on 2020.12.09.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
@@ -50,18 +51,9 @@ public abstract class DisconnectOnCloseFrame extends UserFrame implements Window
     );
     
     if (choice == JOptionPane.OK_OPTION) {
-      try {
-        this.getClientSocket().close();
-        this.dispose();
-      } catch (IOException ioException) {
-        JOptionPane.showMessageDialog(
-          this,
-          "failed to disconnect",
-          "Error",
-          JOptionPane.ERROR_MESSAGE,
-          ClientGUIFactory.getDialogErrorIcon(30, 30)
-        );
-      }
+      this.getClientSocket().terminate();
+      this.dispose();
+      System.exit(0); // manual EXIT_ON_CLOSE lol
     }
   }
 

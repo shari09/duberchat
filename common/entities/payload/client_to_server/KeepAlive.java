@@ -18,7 +18,7 @@ public class KeepAlive extends Payload {
   private static final long serialVersionUID = 1L;
 
   public KeepAlive() {
-    super(PayloadType.KEEP_ALIVE, 2);
+    super(PayloadType.KEEP_ALIVE, 3);
   }
 
 }

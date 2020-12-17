@@ -19,8 +19,8 @@ public class MessagesToClient extends Payload {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
-  private final Message[] messages;
   private final String channelId;
+  private final Message[] messages;
 
   public MessagesToClient(
     int priority,
@@ -28,16 +28,16 @@ public class MessagesToClient extends Payload {
     Message[] messages
   ) {
     super(PayloadType.MESSAGES_TO_CLIENT, priority);
-    this.messages = messages;
     this.channelId = channelId;
+    this.messages = messages;
   }
   
-  public Message[] getMessages() {
-    return this.messages;
-  }
-
   public String getChannelId() {
     return this.channelId;
+  }
+
+  public Message[] getMessages() {
+    return this.messages;
   }
 
 }

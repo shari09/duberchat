@@ -1,6 +1,5 @@
 package client.resources;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,7 +11,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
 
 import client.gui.ClientGUIFactory;
 import common.entities.Constants;
@@ -37,6 +35,7 @@ import common.entities.payload.client_to_server.RequestAttachment;
 import common.entities.payload.client_to_server.TransferOwnership;
 import common.gui.Theme;
 import common.services.RegexValidator;
+import server.entities.Client;
 
 /**
  * Contains static methods to prompt for and respond to user inputs/choices.
@@ -115,7 +114,7 @@ public class GlobalJDialogPrompter {
       "Change Password",
       JOptionPane.NO_OPTION,
       JOptionPane.QUESTION_MESSAGE,
-      null,
+      ClientGUIFactory.getDialogInformationIcon(30, 30),
       options,
       null
     );
@@ -237,7 +236,7 @@ public class GlobalJDialogPrompter {
       "Friend request response",
       JOptionPane.YES_NO_CANCEL_OPTION,
       JOptionPane.QUESTION_MESSAGE,
-      null,
+      ClientGUIFactory.getDialogInformationIcon(30, 30),
       options,
       null
     );
@@ -279,7 +278,7 @@ public class GlobalJDialogPrompter {
       "Cancel Friend Request",
       JOptionPane.YES_NO_OPTION,
       JOptionPane.QUESTION_MESSAGE,
-      null,
+      ClientGUIFactory.getDialogInformationIcon(30, 30),
       options,
       null
     );

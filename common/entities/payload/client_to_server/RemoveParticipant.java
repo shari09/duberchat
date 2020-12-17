@@ -20,7 +20,6 @@ public class RemoveParticipant extends AuthenticatablePayload {
   private final String channelId;
   private final String participantId;
   
-
   public RemoveParticipant(
     int priority,
     String userId,

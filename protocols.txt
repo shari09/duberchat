@@ -1,14 +1,168 @@
-//outdated
-
 client to server:
 
 {
-  type:        NEW_USER,
+  type:        ADD_PARTICIPANT,
   priority:    int,
 
-  username:    String,
-  password:    String,
-  description: String
+  userId:      String,
+  token:       Token,
+
+  channelId:      String,
+  participantId:  String
+}
+
+{
+  type:        BLACKLIST_USER,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  channelId:      String,
+  participantId:  String
+}
+
+{
+  type:        BLACKLIST_USER,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  channelId:      String,
+  participantId:  String
+}
+
+{
+  type:        BLACKLIST_USER,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  channelId:      String,
+  participantId:  String
+}
+
+{
+  type:        BLOCK_USER,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  blockUsername:  String
+  (by name so that can blocking strangers can be implemented in the future)
+}
+
+{
+  type:        CANCEL_FRIEND_REQUEST,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  recipientId:  String
+}
+
+{
+  type:        CHANGE_CHANNEL,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  channelId:  String,
+  fieldToChange: ChannelField,
+  newValue:   String
+
+  -----------------------------
+  ChannelField types: NAME
+}
+
+{
+  type:        CHANGE_PASSWORD,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  originalPassword:  String
+  newPassword:       String
+}
+
+{
+  type:        CHANGE_PROFILE,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  fieldToChange:  ProfileField
+  newValue:       String
+
+  -----------------------------
+  ProfileField types: USERNAME, DESCRIPTION
+}
+
+{
+  type:        CREATE_CHANNEL,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  participants:  LinkedHashSet<UserMetadata>
+  name:          String
+}
+
+{
+  type:        EDIT_MESSAGE,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  channelId:   String,
+  messageId:   String,
+  newContent:  String
+}
+
+{
+  type:        FRIEND_REQUEST,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  recipientName:   String,
+  requestMessage:  String
+}
+
+{
+  type:        FRIEND_REQUEST_RESPONSE,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  requesterId: String,
+  accepted:    boolean
+}
+
+{
+  type:        KEEP_ALIVE,
+  priority:    3 (should have higher priority than other payloads)
+}
+
+{
+  type:        LEAVE_CHANNEL,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  channelId:   String
 }
 
 {
@@ -20,204 +174,107 @@ client to server:
 }
 
 {
-  type:        CHANGE_PASSWORD,
+  type:        MESSAGE_TO_SERVER,
   priority:    int,
 
   userId:      String,
   token:       Token,
 
-  originalPassword: String,
-  newPassword:      String
+  channelId:      String,
+  content:        String,
+  attachment:     byte[], or null if no attachment
+  attachmentName: String, or null if no attachment
 }
 
 {
-  type:          CHANGE_PROFILE,
-  priority:      int,
+  type:        NEW_USER,
+  priority:    int,
 
-  userId:        String,
-  token:         Token,
+  userId:      String,
+  token:       Token,
 
-  fieldToChange: ProfileField
-  newValue:      String
+  username:      String,
+  password:      String,
+  description:   String
 }
 
 {
-  type:          UPDATE_STATUS,
-  priority:      int,
+  type:        REMOVE_FRIEND,
+  priority:    int,
 
-  userId:        String,
-  token:         Token,
+  userId:      String,
+  token:       Token,
 
-  status:        UserStatus  
+  friendId:    String
 }
 
 {
-  type:        CHANGE_CHANNEL,
+  type:        REMOVE_MESSAGE,
   priority:    int,
 
   userId:      String,
   token:       Token,
 
   channelId:   String,
-  changeField: ChannelField
-  newValue:    String
+  messageId:   String
 }
 
 {
-  type:        CREATE_CHANNEL,
+  type:        REMOVE_PARTICIPANT,
   priority:    int,
 
   userId:      String,
   token:       Token,
 
-  participants:       LinkedHashSet<UserMetadata> 
+  channelId:       String,
+  participantId:   String
 }
 
 {
-  type:              ADD_PARTICIPANT,
-  priority:          int,
+  type:          REQUEST_ATTACHMENT,
+  priority:      int,
 
-  userId:            String,
-  token:             Token,
+  userId:        String,
+  token:         Token,
 
-  channelId:         String,
-  participantId:     String
+  attachmentId:  String
 }
 
 {
-  type:              REMOVE_PARTICIPANT,
-  priority:          int,
+  type:          REQUEST_MESSAGES,
+  priority:      int,
 
-  userId:            String,
-  token:             Token,
+  userId:        String,
+  token:         Token,
 
-  channelId:         String,
-  participantId:     String //user id
+  channelId:     String,
+  created:       Timestamp,
+  quantity:      int
+  (requests for an amount of messages before the timestamp)
 }
 
 {
-  type:              BLACKLIST_USER,
-  priority:          int,
+  type:        TRANSFER_OWNERSHIP,
+  priority:    int,
 
-  userId:            String,
-  token:             Token,
+  userId:      String,
+  token:       Token,
 
-  channelId:         String,
-  userId:     String //user id
+  channelId:   String,
+  recipientId: String
 }
 
 {
-  type:              LEAVE_CHANNEL,
-  priority:          int,
+  type:        UPDATE_STATUS,
+  priority:    int,
 
-  userId:            String,
-  token:             Token,
+  userId:      String,
+  token:       Token,
 
-  channelId:         String,
+  status:      UserStatus
 }
 
-{
-  type:              TRANSFER_OWNERSHIP,
-  priority:          int,
-
-  userId:            String,
-  token:             Token,
-
-  channelId:         String,
-  recipientId:       String //user id
-}
-
-
-
-{
-  type:       MESSAGE_TO_SERVER,
-  priority:   int,
-
-  userId:     String,
-  token:      Token,
-
-  channelId:  String,
-  content:    String,
-  attachment: null / byte[]
-}
-
-{
-  type:       REMOVE_MESSAGE,
-  priority:   int,
-
-  userId:     String,
-  token:      Token,
-
-  channelId:  String,
-  messageId:  String,
-}
-
-{
-  type:       EDIT_MESSAGE,
-  priority:   int,
-
-  userId:     String,
-  token:      Token,
-
-  channelId:  String,
-  messageId:  String,
-  newContent: String,
-}
-
-{
-  type:       REQUEST_MESSAGES,
-  priority:   int,
-
-  userId:     String,
-  token:      Token,
-
-  channelId:  String,
-  before:     Timestamp, //earliest timestamp in cache
-  quantity:   int
-}
-
-{
-  type:       FRIEND_REQUEST,
-  priority:   int,
-
-  userId:     String,
-  token:      Token,
-
-  recipientName:  String,
-  requestMessage: String 
-}
-
-{
-  type:           BLOCK_USER,
-  priority:       int,
-
-  userId:         String,
-  token:          Token,
-
-  blockUsername:  String,
-}
-
-{
-  type:       FRIEND_REQUEST_RESPONSE,
-  priority:   int,
-
-  userId:     String,
-  token:      Token,
-
-  recipientId:  String,
-  accepted:     boolean
-}
-
-{
-  type: REQUEST_ATTACHMENT,
-  priority: priority,
-
-  userId: String,
-  token: Token,
-
-  fileId: String
-}
-
+----------------------------------------------
 
 server to client:
 
@@ -225,36 +282,40 @@ server to client:
   type:     CLIENT_REQUEST_STATUS,
   priority: priority,
 
-  error:  null / String (errorMsg)
+  errorMessage:  null / String
+  (if null, the request was successful)
 }
 
 {
   type:     CLIENT_INFO,
   priority: priority,
 
-  userId:   String,
-  token:    Token,
-  status:   UserStatus,
-  friends:  LinkedHashSet<userMetadata> (userId),
-  incoming_friend_requests: ArrayList<userMetadata> (userId),
-  outgoing_friend_requests: ArrayList<userMetadata> (userId),
-  channels: LinkedHashSet<channelMetadata> (channelId)
+  clientData: ClientData
+  (used to initialize the user's data when the client logs in)
 }
 
 {
-  type:        CLIENT_FRIENDS_UPDATE,
-  priority:    int,
+  type:      ATTACHMENT_TO_CLIENT,
+  priority:  priority,
 
-  friends:     LinkedHashSet<userMetadata> (userId),
-  incoming_friend_requests: ConcurrentHashMap<UserMetadata, String> (userId),
-  outgoing_friend_requests: ConcurrentHashMap<UserMetadata, String> (userId),
+  attachment:  Attachment
 }
 
 {
   type:        CLIENT_CHANNELS_UPDATE,
   priority:    int,
 
-  channels:    LinkedHashSet<channelMetadata> (channelId),
+  channels:    LinkedHashSet<channelMetadata>
+}
+
+{
+  type:        CLIENT_FRIENDS_UPDATE,
+  priority:    int,
+
+  friends:     LinkedHashSet<userMetadata>,
+  incomingFriendRequests: ConcurrentHashMap<UserMetadata, String>,
+  outgoingFriendRequests: ConcurrentHashMap<UserMetadata, String>,
+  (The Strings are request messages)
 }
 
 {
@@ -262,7 +323,7 @@ server to client:
   priority: priority,
 
   channelId: channelId,
-  content: Message[]
+  messages:  Message[]
 }
 
 {
@@ -272,53 +333,7 @@ server to client:
   channelId:  String,
   message:    Message,
 
-  updateType: NEW/EDIT/REMOVE
-}
-
-{
-  type:      ATTACHMENT_TO_CLIENT,
-  priority:  priority,
-
-  filename:  String,
-  content:   byte[]
-}
-
-Data:
-user = {
-  userId:      String,
-  username:    String,
-  password:    String,
-  description: String,
-  status:   UserStatus (active/idle/invisible/dnd),
-
-  friends:  ArrayList<userMetadata>, //user id
-  incoming_friend_requests: ArrayList<userMetadata>, //user id
-  outgoing_friend_requests: ConcurrentHashMap<userMetadata, FriendRequestStatus>,
-  blocked:  ArrayList<userMetadata>, //user id
-  
-  channels: ArrayList<channelMetadata>, //channel id
-}
-
-privateChannel = {
-  channelId: channelId,
-  channelName: channelName,
-  participants: [userId]
-}
-
-groupChannel = {
-  channelId: channelId,
-  channelName: channelName,
-  participants: [userId],
-  blacklist: [userId],
-  admin: userId
-}
-
-message = {
-  content:        String,
-  senderId:       String (userId),
-  channelId:      String
-  created:        Timestamp,
-  edited:         Timestamp,
-  attachmentId:   null/String,
-  attachmentName: null/String
+  updateType: MessageUpdateType
+  -----------------------------
+  MessageUpdateType types: NEW, EDIT, REMOVE
 }

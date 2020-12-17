@@ -73,7 +73,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     // title
     JLabel titleLabel = ClientGUIFactory.getTextLabel(
       "Create an account",
-      Theme.getBoldFont(35),
+      Theme.getBoldFont(30),
       ClientGUIFactory.BLUE_SHADE_4
     );
     titleLabel.setHorizontalAlignment(SwingConstants.CENTER);

@@ -60,7 +60,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
     // title
     JLabel titleLabel = ClientGUIFactory.getTextLabel(
       "Welcome",
-      Theme.getBoldFont(30),
+      Theme.getBoldFont(25),
       ClientGUIFactory.PURPLE_SHADE_4
     );
     titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -119,7 +119,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
     // confirmation button
     JButton button = ClientGUIFactory.getTextButton(
       "Connect",
-      Theme.getBoldFont(25),
+      Theme.getBoldFont(23),
       ClientGUIFactory.PURPLE_SHADE_4,
       ClientGUIFactory.PURPLE_SHADE_1
     );

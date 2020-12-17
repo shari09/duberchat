@@ -75,7 +75,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     // title
     JLabel titleLabel = ClientGUIFactory.getTextLabel(
       "User Login",
-      Theme.getBoldFont(35),
+      Theme.getBoldFont(30),
       ClientGUIFactory.PURPLE_SHADE_4
     );
     titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -130,7 +130,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     // login button
     this.loginButton = ClientGUIFactory.getTextButton(
       "Login",
-      Theme.getBoldFont(25),
+      Theme.getBoldFont(23),
       ClientGUIFactory.PURPLE_SHADE_4,
       ClientGUIFactory.PURPLE_SHADE_1
     );

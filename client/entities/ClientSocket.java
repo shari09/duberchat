@@ -228,6 +228,7 @@ public class ClientSocket implements Runnable {
         GlobalClient.clientData.setFriends(friendsUpdate.getFriends());
         GlobalClient.clientData.setIncomingFriendRequests(friendsUpdate.getIncomingFriendRequests());
         GlobalClient.clientData.setOutgoingFriendRequests(friendsUpdate.getOutgoingFriendRequests());
+        GlobalClient.clientData.setBlocked(friendsUpdate.getBlocked());
         this.notifyClientDataUpdate();
         break;
 

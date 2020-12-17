@@ -64,7 +64,7 @@ public class MessagingService {
    */
   public void save(String channelId) {
     if (this.numChanges.containsKey(channelId)) {
-      this.numChanges.put(channelId, this.numChanges.get(channelId));
+      this.numChanges.put(channelId, this.numChanges.get(channelId)+1);
     } else {
       this.numChanges.put(channelId, 1);
     }

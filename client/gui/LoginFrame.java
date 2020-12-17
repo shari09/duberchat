@@ -28,6 +28,7 @@ import common.gui.Theme;
  * The frame for the client to log in by username and password.
  * <p>
  * Created on 2020.12.08.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0

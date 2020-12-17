@@ -43,6 +43,7 @@ public class GlobalClient {
    */
   public static UserMetadata getClientUserMetadata() {
     synchronized (clientData) {
+      System.out.println("------------client metadata");
       return new UserMetadata(
         clientData.getUserId(), 
         clientData.getUsername(),

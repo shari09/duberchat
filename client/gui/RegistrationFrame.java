@@ -31,6 +31,7 @@ import common.services.RegexValidator;
  * The frame for the client to register a new account.
  * <p>
  * Created on 2020.12.08.
+ * 
  * @author Candice Zhang
  * @version 
  * @since 

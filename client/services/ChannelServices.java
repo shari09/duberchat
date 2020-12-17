@@ -15,6 +15,7 @@ import common.entities.UserMetadata;
  * Contains static methods to retrieve or update channel information of the user.
  * <p>
  * Created on 2020.12.13.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
@@ -43,7 +44,7 @@ public class ChannelServices {
    * @param messages  The messages to be loaded.
    */
   public static synchronized void addMessages(String channelId, Message[] messages) {
-    boolean shouldRequest = true;
+    boolean fullyLoaded = false;
     ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
     if (channelMessages == null) {
       GlobalClient.messagesData.put(channelId, new ConcurrentSkipListSet<Message>());
@@ -54,10 +55,10 @@ public class ChannelServices {
         channelMessages.add(msg);
       } else {
         // if there are any nulls, the history is fully added and the channel does not need to further request
-        shouldRequest = false; 
+        fullyLoaded = true; 
       }
     }
-    GlobalClient.messageHistoryFullyLoaded.put(channelId, shouldRequest);
+    GlobalClient.messageHistoryFullyLoaded.put(channelId, fullyLoaded);
   }
 
   /**

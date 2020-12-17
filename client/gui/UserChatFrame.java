@@ -17,6 +17,7 @@ import common.gui.Theme;
  * The frame containing a list of the user's opened channels.
  * <p>
  * Created on 2020.12.05.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
@@ -49,6 +50,8 @@ public class UserChatFrame extends UserFrame implements ChangeListener {
 
   public UserChatFrame(ClientSocket clientSocket) {
     super(clientSocket);
+
+    this.setVisible(false);
     this.setTitle("Chat Window");
     
     this.setSize(UserChatFrame.PREFERRED_DIMENSION);

@@ -23,6 +23,7 @@ import common.gui.Theme;
  * The starting frame of the client gui, used to connect to the server.
  * <p>
  * Created on 2020.12.05.
+ * 
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0

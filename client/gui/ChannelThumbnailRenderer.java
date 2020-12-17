@@ -15,11 +15,14 @@ import common.gui.Theme;
 
 /**
  * Generates a panel containing the icon and relevant information of a channel.
+ * <ul>
  * <li>If the channel is private, the other user's name and status will be displayed.
  * <li>If the channel is a group channel,
  *     the channel's name and number of participants will be displayed.
+ * </ul>
  * <p>
  * Created on 2020.12.10.
+ * 
  * @author Candice Zhang
  * @version 1.0.0
  * @since 1.0.0

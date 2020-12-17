@@ -289,19 +289,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
 
   @Override
-  public void clientRequestStatusReceived(
-    PayloadType payloadType, 
-    boolean successful,
-    String notifMessage
-  ) {
-    super.clientRequestStatusReceived(payloadType, successful, notifMessage);
-    if ((payloadType == PayloadType.KEEP_ALIVE) && (!successful)) {
-      this.dispose();
-      System.exit(0);
-    }
-  }
-
-  @Override
   public void serverBroadcastReceived(ServerBroadcast broadcast) {
     this.requestFocus();
     synchronized (broadcast) {

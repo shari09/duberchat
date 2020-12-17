@@ -53,7 +53,7 @@ public abstract class DisconnectOnCloseFrame extends UserFrame implements Window
     if (choice == JOptionPane.OK_OPTION) {
       this.getClientSocket().terminate();
       this.dispose();
-      System.exit(0); // manual EXIT_ON_CLOSE lol
+      System.exit(0); // manual EXIT_ON_CLOSE again lol
     }
   }
 

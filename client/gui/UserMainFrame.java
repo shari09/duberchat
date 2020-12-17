@@ -222,7 +222,15 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   @Override
   public void actionPerformed(ActionEvent e) { 
     if (e.getSource() == this.createGroupChannelButton) {
-      String channelName = JOptionPane.showInputDialog(this, "Channel Name: ");
+      String channelName = (String)(JOptionPane.showInputDialog(
+        this,
+        "Channel name: ",
+        "Create Channel",
+        JOptionPane.QUESTION_MESSAGE,
+        ClientGUIFactory.getDialogInformationIcon(30, 30),
+        null,
+        null
+      ));
       
       if ((channelName == null) || (channelName.length() == 0)) {
         return;
@@ -283,7 +291,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
 
   @Override
-  public synchronized void clientRequestStatusReceived(
+  public void clientRequestStatusReceived(
     PayloadType payloadType, 
     boolean successful,
     String notifMessage
@@ -291,6 +299,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     super.clientRequestStatusReceived(payloadType, successful, notifMessage);
     if ((payloadType == PayloadType.KEEP_ALIVE) && (!successful)) {
       this.dispose();
+      System.exit(0);
     }
   }
 
@@ -368,13 +377,13 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   public void mouseExited(MouseEvent e) {
   }
 
-  @Override
-  public void dispose() {
-    this.friendsFrame.dispose();
-    this.chatFrame.dispose();
-    this.settingsFrame.dispose();
-    super.dispose();
-  }
+  // @Override
+  // public void dispose() {
+  //   this.friendsFrame.dispose();
+  //   this.chatFrame.dispose();
+  //   this.settingsFrame.dispose();
+  //   super.dispose();
+  // }
   
   private void updateUserProfilePanel() {
     this.usernameLabel.setText(GlobalClient.getClientUserMetadata().getUsername());

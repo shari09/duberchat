@@ -178,6 +178,7 @@ public class ClientSocket implements Runnable {
     } catch (SocketException socketException) {
       // notify listeners
       this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "You have been disconnected");
+      System.out.println("end");
     } catch (IOException ioException) {
       //System.out.println("An error has occurred!");
       ioException.printStackTrace();
@@ -203,8 +204,16 @@ public class ClientSocket implements Runnable {
    * Removes a {@code ClientSocketListener} from this {@code ClientSocket}'s listeners.
    * @param listener The {@code ClientSocketListener} to be removed.
    */
-  public synchronized void removeListener(ClientSocketListener listener) {
-    this.listeners.remove(listener);
+  public void removeListener(ClientSocketListener listener) {
+    Iterator<ClientSocketListener> iterator = this.listeners.iterator();
+    while (iterator.hasNext()) {
+      ClientSocketListener curListener = iterator.next();
+      if (curListener == listener) {
+        iterator.remove();
+        System.out.println("removed");
+        return;
+      }
+    }
   }
 
   /**
@@ -473,14 +482,19 @@ public class ClientSocket implements Runnable {
    * @param successful    Whether or not the request is successful.
    * @param notifMessage  The notification message for the listeners.
    */
-  private synchronized void notifyRequestStatus(
+  private void notifyRequestStatus(
     PayloadType payloadType,
     boolean successful,
     String notifMessage
   ) {
-    for (ClientSocketListener listener: this.listeners) {
+    Iterator<ClientSocketListener> iterator = this.listeners.iterator();
+    while (iterator.hasNext()) {
+      ClientSocketListener listener = iterator.next();
+      System.out.println("next");
       listener.clientRequestStatusReceived(payloadType, successful, notifMessage);
+      System.out.println("done");
     }
+    
   }
   
   /**

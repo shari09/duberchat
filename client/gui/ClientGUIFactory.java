@@ -378,7 +378,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getGroupChannelIcon(100, 100));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getGroupChannelIcon(75, 75));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -421,7 +421,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30, 30));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50, 50));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;

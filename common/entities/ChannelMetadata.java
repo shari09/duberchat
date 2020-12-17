@@ -13,11 +13,8 @@ import java.util.LinkedHashSet;
  * @since 1.0.0
  */
 
-
 public abstract class ChannelMetadata implements Serializable, Comparable<ChannelMetadata> {
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
   private String channelId;

@@ -6,7 +6,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import javax.swing.border.LineBorder;
 
 import common.entities.UserMetadata;
 import common.gui.Theme;

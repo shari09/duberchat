@@ -677,4 +677,16 @@ public class ClientGUIFactory {
     }
     return icon;
   }
+
+  public static ImageIcon getDialogBroadcastIcon(int width, int height) {
+    Image img = null;
+    ImageIcon icon = null;
+    try {
+      img = ImageIO.read(new File(DIALOG_BROADCAST_ICON_PATH));
+      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return icon;
+  }
 }

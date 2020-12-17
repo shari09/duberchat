@@ -2,7 +2,6 @@ package client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -58,11 +57,23 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   public static final Dimension DIMENSION = new Dimension(450, 850);
   
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
-    PayloadType.CREATE_CHANNEL
+    PayloadType.CREATE_CHANNEL,
+    PayloadType.CHANGE_CHANNEL,
+    PayloadType.REMOVE_PARTICIPANT,
+    PayloadType.ADD_PARTICIPANT,
+    PayloadType.BLACKLIST_USER,
+    PayloadType.LEAVE_CHANNEL,
+    PayloadType.TRANSFER_OWNERSHIP
   };
   private static final PayloadType[] ERROR_NOTIF_TYPES = new PayloadType[] {
     PayloadType.KEEP_ALIVE,
-    PayloadType.CREATE_CHANNEL
+    PayloadType.CREATE_CHANNEL,
+    PayloadType.CHANGE_CHANNEL,
+    PayloadType.REMOVE_PARTICIPANT,
+    PayloadType.ADD_PARTICIPANT,
+    PayloadType.BLACKLIST_USER,
+    PayloadType.LEAVE_CHANNEL,
+    PayloadType.TRANSFER_OWNERSHIP
   };
 
   private UserChatFrame chatFrame;
@@ -297,7 +308,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
         broadcast.getMessage(),
         "!Important Message From Server!",
         JOptionPane.WARNING_MESSAGE,
-        ClientGUIFactory.getIcon("client/assets/dialog_icon_broadcast.png", 30, 30)
+        ClientGUIFactory.getDialogBroadcastIcon(30, 30)
       );
     }
   }

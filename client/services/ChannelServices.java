@@ -53,15 +53,19 @@ public class ChannelServices {
       channelMessages = GlobalClient.messagesData.get(channelId);
     }
     synchronized (messages) {
-      for (Message msg: messages) {
-        if (msg != null) {
-          channelMessages.add(msg);
+      for (int i = 0; i < messages.length; i++) {
+        if (messages[i] != null) {
+          System.out.print(messages[i].getContent());
+          System.out.print(", ");
+          channelMessages.add(messages[i]);
         } else {
           // if there are any nulls, the history is fully added and the channel does not need to further request
           fullyLoaded = true; 
         }
       }
     }
+    System.out.println(fullyLoaded);
+    System.out.println();
     GlobalClient.messageHistoryFullyLoaded.put(channelId, fullyLoaded);
   }
 

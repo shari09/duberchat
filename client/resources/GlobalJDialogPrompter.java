@@ -609,8 +609,10 @@ public class GlobalJDialogPrompter {
             null,
             metadata.getChannelName()
           ));
-          if ((newName != null) && (newName.equals(metadata.getChannelName()))) {
+          if ((newName != null) && (!newName.equals(metadata.getChannelName()))) {
+            System.out.println("uhhh..");
             if (Constants.NAME_VALIDATOR.matches(newName)) {
+              System.out.println("renaming..");
               GlobalPayloadQueue.enqueuePayload(
                 new ChangeChannel(
                   1,

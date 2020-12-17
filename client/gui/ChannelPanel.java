@@ -5,28 +5,25 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
-import javax.swing.AbstractAction;
 import java.awt.event.MouseListener;
 import java.io.File;
-import javax.swing.KeyStroke;
-import javax.swing.InputMap;
-import javax.swing.ActionMap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.awt.FlowLayout;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -36,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
@@ -396,9 +394,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
   private void updateJLists() {
     ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(this.channelId);
     if (messages != null) {
-      System.out.println(messages);
       DefaultListModel<Message> messagesListModel = new DefaultListModel<>();
-      System.out.println(messages);
       for (Message msg: messages) {
         messagesListModel.add(0, msg); // most recent to earliest messages from bottom to top
       }
@@ -432,7 +428,6 @@ public class ChannelPanel extends JPanel implements ActionListener,
     if (before == null) {
       before = new Timestamp(System.currentTimeMillis());
     }
-    
     GlobalPayloadQueue.enqueuePayload(
       new RequestMessages(
         1,

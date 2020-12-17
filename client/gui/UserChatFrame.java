@@ -28,22 +28,16 @@ public class UserChatFrame extends UserFrame implements ChangeListener {
   private static final Dimension PREFERRED_DIMENSION = new Dimension(1000, 800);
 
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
-    PayloadType.REMOVE_PARTICIPANT,
-    PayloadType.BLACKLIST_USER,
-    PayloadType.LEAVE_CHANNEL,
-    PayloadType.TRANSFER_OWNERSHIP
+    PayloadType.EDIT_MESSAGE,
+    PayloadType.REMOVE_MESSAGE,
+    PayloadType.REQUEST_ATTACHMENT
   };
   private static final PayloadType[] ERROR_NOTIF_TYPES = new PayloadType[] {
     PayloadType.MESSAGE_TO_SERVER,
     PayloadType.EDIT_MESSAGE,
     PayloadType.REMOVE_MESSAGE,
     PayloadType.REQUEST_MESSAGES,
-    PayloadType.REQUEST_ATTACHMENT,
-    PayloadType.ADD_PARTICIPANT,
-    PayloadType.REMOVE_PARTICIPANT,
-    PayloadType.BLACKLIST_USER,
-    PayloadType.LEAVE_CHANNEL,
-    PayloadType.TRANSFER_OWNERSHIP
+    PayloadType.REQUEST_ATTACHMENT
   };
 
   private JTabbedPane tabbedPane;

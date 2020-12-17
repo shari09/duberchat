@@ -357,7 +357,6 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
 
   private synchronized void updateUserStatus(UserStatus status) {
-    //System.out.println(status);
     switch (status) {
       case ACTIVE:
         this.activeButton.setSelected(true);

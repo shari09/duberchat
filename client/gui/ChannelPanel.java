@@ -409,18 +409,12 @@ public class ChannelPanel extends JPanel implements ActionListener,
       DefaultListModel<UserMetadata> participantsListModel = new DefaultListModel<>();
       for (UserMetadata participant: participants) {
         participantsListModel.addElement(participant);
-        System.out.println("participant" + participant.getStatus());
       }
       this.participantsList.setModel(participantsListModel);
       this.participantsList.revalidate();
     }
 
     this.messagesList.repaint();
-
-
-    if (this.participantsList != null && this.participantsList.getModel().getSize() > 0) {
-      System.out.println("sync"+this.participantsList.getModel().getElementAt(0).getStatus());
-    }
 
   }
 
@@ -448,7 +442,6 @@ public class ChannelPanel extends JPanel implements ActionListener,
         ChannelPanel.MESSAGE_REQUEST_QUANTITY
       )
     );
-    //System.out.println("------messages requested");
   }
 
 

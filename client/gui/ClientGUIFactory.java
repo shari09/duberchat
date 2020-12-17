@@ -276,6 +276,9 @@ public class ClientGUIFactory {
     Font statusFont,
     Color textColor
   ) {
+    String username = metadata.getUsername();
+    UserStatus status = metadata.getStatus();
+
     JPanel panel = new JPanel(new GridBagLayout());
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
@@ -296,16 +299,16 @@ public class ClientGUIFactory {
     constraints.gridheight = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     JLabel nameLabel = ClientGUIFactory.getTextLabel(
-      metadata.getUsername(),
+      username,
       nameFont,
       textColor
     );
     panel.add(nameLabel, constraints);
 
     JLabel statusLabel = ClientGUIFactory.getTextLabel(
-      ClientGUIFactory.getStatusText(metadata.getStatus()),
+      ClientGUIFactory.getStatusText(status),
       statusFont,
-      ClientGUIFactory.getStatusColor(metadata.getStatus())
+      ClientGUIFactory.getStatusColor(status)
     );
     constraints.gridy = 1;
     panel.add(statusLabel, constraints);
@@ -378,7 +381,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getGroupChannelIcon(75, 75));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getGroupChannelIcon(50, 50));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -449,7 +452,6 @@ public class ClientGUIFactory {
       textColor
     );
     panel.add(nameLabel, constraints);
-
     JLabel statusLabel = ClientGUIFactory.getTextLabel(
       ClientGUIFactory.getStatusText(participant.getStatus()),
       font,

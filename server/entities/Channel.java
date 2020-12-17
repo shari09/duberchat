@@ -85,12 +85,6 @@ public abstract class Channel implements Identifiable, Serializable {
   }
 
   public ChannelMetadata getMetadata() {
-    for (UserMetadata user : this.metadata.getParticipants()) {
-      System.out.println("Meta" + user.getStatus());
-    }
-    for (UserMetadata user : this.getParticipants()) {
-      System.out.println("part"+user.getStatus());
-    }
     return this.metadata;
   }
 

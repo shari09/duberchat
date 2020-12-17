@@ -323,9 +323,12 @@ public class MessagingService {
     String channelName,
     String ownerId
   ) {    
-    
-    GroupChannel channel = new GroupChannel(participants, channelName, ownerId);
-    for (UserMetadata user: participants) {
+    LinkedHashSet<UserMetadata> participantsMetadata = new LinkedHashSet<>();
+    for (UserMetadata user : participants) {
+      participantsMetadata.add(GlobalServices.users.getUserMetadata(user.getUserId()));
+    }
+    GroupChannel channel = new GroupChannel(participantsMetadata, channelName, ownerId);
+    for (UserMetadata user: participantsMetadata) {
       GlobalServices.users.addChannel(
         user.getUserId(), 
         channel.getMetadata()

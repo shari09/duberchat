@@ -66,7 +66,7 @@ public class ClientSocketServices {
           case NAME:
             strToReturn += "name";
         }
-        strToReturn = " to " + ((ChangeChannel)payload).getNewValue();
+        strToReturn += " to " + ((ChangeChannel)payload).getNewValue();
         break;
 
       case CHANGE_PASSWORD:
@@ -81,7 +81,7 @@ public class ClientSocketServices {
           case DESCRIPTION:
             strToReturn += "description";
         }
-        strToReturn = " to " + ((ChangeProfile)payload).getNewValue();
+        strToReturn += " to " + ((ChangeProfile)payload).getNewValue();
         break;
 
       case CREATE_CHANNEL:

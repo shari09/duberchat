@@ -12,11 +12,9 @@ Shari - server
 
 Candice - client
 - communications protocol
-- client gui/swing/application
 - client sending/receiving payloads
+- client gui/swing/application
 - admin power (group chat)
-
-
 
 
 check features.pdf for details

@@ -193,14 +193,14 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     constraints.gridheight = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     this.usernameLabel = ClientGUIFactory.getTextLabel(
-      "",
+      GlobalClient.clientData.getUsername(),
       Theme.getBoldFont(20),
       ClientGUIFactory.PURPLE_SHADE_3
     );
     panel.add(this.usernameLabel, constraints);
 
     this.statusLabel = ClientGUIFactory.getTextLabel(
-      "",
+      ClientGUIFactory.getStatusText(GlobalClient.clientData.getStatus()),
       Theme.getItalicFont(15),
       ClientGUIFactory.PURPLE_SHADE_3
     );
@@ -311,7 +311,8 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
         this,
         broadcast.getMessage(),
         "!Important Message From Server!",
-        JOptionPane.WARNING_MESSAGE
+        JOptionPane.WARNING_MESSAGE,
+        ClientGUIFactory.getIcon("client/assets/dialog_icon_broadcast.png", 30, 30)
       );
     }
   }
@@ -376,14 +377,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   @Override
   public void mouseExited(MouseEvent e) {
   }
-
-  // @Override
-  // public void dispose() {
-  //   this.friendsFrame.dispose();
-  //   this.chatFrame.dispose();
-  //   this.settingsFrame.dispose();
-  //   super.dispose();
-  // }
   
   private void updateUserProfilePanel() {
     this.usernameLabel.setText(GlobalClient.getClientUserMetadata().getUsername());

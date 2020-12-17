@@ -440,12 +440,12 @@ public class ClientGUIFactory {
     constraints.gridheight = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     String nameLabelText = participant.getUsername();
-    if (
-      (metadata instanceof GroupChannelMetadata)
-      && (((GroupChannelMetadata)metadata).getOwnerId().equals(participant.getUserId()))
-    ) {
-      nameLabelText += " (Owner)";
-    }
+    // if (
+    //   (metadata instanceof GroupChannelMetadata)
+    //   && (((GroupChannelMetadata)metadata).getOwnerId().equals(participant.getUserId()))
+    // ) {
+    //   nameLabelText += " (Owner)";
+    // }
     JLabel nameLabel = ClientGUIFactory.getTextLabel(
       nameLabelText,
       font,

@@ -101,7 +101,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
         ChannelServices.getChannelByChannelId(channelId)
       )
     );
-    this.messagesList = new JList<Message>();
+    this.messagesList = new JList<Message>(new DefaultListModel<>());
     this.messagesList.addMouseListener(this);
     this.messagesList.setCellRenderer(new MessageRenderer(this.participantsList));
     this.messagesList.setBackground(ClientGUIFactory.GRAY_SHADE_1);
@@ -320,7 +320,6 @@ public class ChannelPanel extends JPanel implements ActionListener,
   }
 
   public void syncClientData() {
-    
     this.updateJLists();
     this.revalidate();
     this.repaint();
@@ -394,16 +393,20 @@ public class ChannelPanel extends JPanel implements ActionListener,
     }
   }
 
-  private synchronized void updateJLists() {
+  private void updateJLists() {
     ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(this.channelId);
     if (messages != null) {
+      System.out.println(messages);
       DefaultListModel<Message> messagesListModel = new DefaultListModel<>();
+      System.out.println(messages);
       for (Message msg: messages) {
         messagesListModel.add(0, msg); // most recent to earliest messages from bottom to top
       }
       this.messagesList.setModel(messagesListModel);
       this.messagesList.revalidate();
+      this.messagesList.repaint();
     }
+    
     LinkedHashSet<UserMetadata> participants = ChannelServices.getChannelByChannelId(this.channelId).getParticipants();
     if (participants != null) {
       DefaultListModel<UserMetadata> participantsListModel = new DefaultListModel<>();
@@ -412,13 +415,11 @@ public class ChannelPanel extends JPanel implements ActionListener,
       }
       this.participantsList.setModel(participantsListModel);
       this.participantsList.revalidate();
+      this.participantsList.repaint();
     }
-
-    this.messagesList.repaint();
-
   }
 
-  private synchronized void requestMessages() {
+  private void requestMessages() {
     if (GlobalClient.messageHistoryFullyLoaded.get(this.channelId) == null) {
       GlobalClient.messageHistoryFullyLoaded.put(this.channelId, false);
     }

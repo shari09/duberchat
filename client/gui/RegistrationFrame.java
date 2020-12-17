@@ -212,7 +212,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
   }
 
   @Override
-  public synchronized void actionPerformed(ActionEvent e) {
+  public void actionPerformed(ActionEvent e) {
     if (e.getSource() == this.registerButton) {
       String username = this.usernameField.getText();
       String description = this.descriptionField.getText();

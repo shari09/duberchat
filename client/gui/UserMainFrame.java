@@ -96,8 +96,6 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
     // user's profile section
-    
-    // this.updateUserProfilePanel();
     JPanel profilePanel = this.getProfilePanel();
     constraints.weightx = 1;
     constraints.weighty = 0;
@@ -202,7 +200,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     this.statusLabel = ClientGUIFactory.getTextLabel(
       ClientGUIFactory.getStatusText(GlobalClient.clientData.getStatus()),
       Theme.getItalicFont(15),
-      ClientGUIFactory.PURPLE_SHADE_3
+      ClientGUIFactory.getStatusColor(GlobalClient.clientData.getStatus())
     );
     constraints.gridy = 1;
     panel.add(this.statusLabel, constraints);
@@ -388,11 +386,11 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     this.repaint();
   }
 
-  private synchronized void updateChannelsJLists() {
+  private void updateChannelsJLists() {
     DefaultListModel<GroupChannelMetadata> groupChannelsListModel = new DefaultListModel<>();
     DefaultListModel<PrivateChannelMetadata> privateChannelsListModel = new DefaultListModel<>();
-    synchronized (GlobalClient.clientData) {
-      LinkedHashSet<ChannelMetadata> channelsMetadata = GlobalClient.clientData.getChannels();
+    LinkedHashSet<ChannelMetadata> channelsMetadata = GlobalClient.clientData.getChannels();
+    synchronized (channelsMetadata) {
       for (ChannelMetadata curMetadata: channelsMetadata) {
         if (curMetadata instanceof GroupChannelMetadata) {
           groupChannelsListModel.addElement((GroupChannelMetadata)curMetadata);

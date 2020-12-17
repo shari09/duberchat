@@ -24,7 +24,7 @@ public class ClientSocketServices {
   /**
    * Sets the last active time of the user to the current time.
    */
-  public static synchronized void updateLastActiveTime() {
+  public static void updateLastActiveTime() {
     ClientSocketServices.lastActiveTimeMills = System.currentTimeMillis();
   }
 
@@ -32,7 +32,7 @@ public class ClientSocketServices {
    * Returns the latest time the user is reported active, in milliseconds.
    * @return The latest time the user is reported active, in milliseconds.
    */
-  public static synchronized long getLastActiveTimeMills() {
+  public static long getLastActiveTimeMills() {
     return ClientSocketServices.lastActiveTimeMills;
   }
 

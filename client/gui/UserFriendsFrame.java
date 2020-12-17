@@ -317,16 +317,18 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
   public void mouseClicked(MouseEvent e) {
   }
 
-  private synchronized void updateJLists() {
+  private void updateJLists() {
     ClientData clientData = GlobalClient.clientData;
     // friends and online friends
     DefaultListModel<UserMetadata> friendsListModel = new DefaultListModel<>();
     DefaultListModel<UserMetadata> onlineFriendsListModel = new DefaultListModel<>();
     LinkedHashSet<UserMetadata> friendsMetadata = clientData.getFriends();
-    for (UserMetadata curMetadata: friendsMetadata) {
-      friendsListModel.addElement(curMetadata);
-      if (curMetadata.getStatus() != UserStatus.OFFLINE) {
-        onlineFriendsListModel.addElement(curMetadata);
+    synchronized (friendsMetadata) {
+      for (UserMetadata curMetadata: friendsMetadata) {
+        friendsListModel.addElement(curMetadata);
+        if (curMetadata.getStatus() != UserStatus.OFFLINE) {
+          onlineFriendsListModel.addElement(curMetadata);
+        }
       }
     }
     this.friends.setModel(friendsListModel);
@@ -337,13 +339,15 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     // incoming friend requests
     DefaultListModel<IncomingFriendRequest> incomingFriendRequestListModel = new DefaultListModel<>();
     ConcurrentHashMap<UserMetadata, String> incomingFriendRequestsMetadata = clientData.getIncomingFriendRequests();
-    for (UserMetadata curMetadata: incomingFriendRequestsMetadata.keySet()) {
-      incomingFriendRequestListModel.addElement(
-        new IncomingFriendRequest(
-          curMetadata,
-          incomingFriendRequestsMetadata.get(curMetadata)
-        )
-      );
+    synchronized (incomingFriendRequestsMetadata.keySet()) {
+      for (UserMetadata curMetadata: incomingFriendRequestsMetadata.keySet()) {
+        incomingFriendRequestListModel.addElement(
+          new IncomingFriendRequest(
+            curMetadata,
+            incomingFriendRequestsMetadata.get(curMetadata)
+          )
+        );
+      }
     }
     this.incomingFriendRequests.setModel(incomingFriendRequestListModel);
     this.incomingFriendRequests.revalidate();
@@ -351,13 +355,15 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     // outgoing friend requests
     DefaultListModel<OutgoingFriendRequest> outgoingFriendRequestListModel = new DefaultListModel<>();
     ConcurrentHashMap<UserMetadata, String> outgoingFriendRequestsMetadata = clientData.getOutgoingFriendRequests();
-    for (UserMetadata curMetadata: outgoingFriendRequestsMetadata.keySet()) {
-      outgoingFriendRequestListModel.addElement(
-        new OutgoingFriendRequest(
-          curMetadata,
-          outgoingFriendRequestsMetadata.get(curMetadata)
-        )
-      );
+    synchronized (outgoingFriendRequestsMetadata.keySet()) {
+      for (UserMetadata curMetadata: outgoingFriendRequestsMetadata.keySet()) {
+        outgoingFriendRequestListModel.addElement(
+          new OutgoingFriendRequest(
+            curMetadata,
+            outgoingFriendRequestsMetadata.get(curMetadata)
+          )
+        );
+      }
     }
     this.outgoingFriendRequests.setModel(outgoingFriendRequestListModel);
     this.outgoingFriendRequests.revalidate();
@@ -365,8 +371,10 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     // blocked
     DefaultListModel<UserMetadata> blockedListModel = new DefaultListModel<>();
     LinkedHashSet<UserMetadata> blockedMetadata = clientData.getBlocked();
-    for (UserMetadata curMetadata: blockedMetadata) {
-      blockedListModel.addElement(curMetadata);
+    synchronized (blockedMetadata) {
+      for (UserMetadata curMetadata: blockedMetadata) {
+        blockedListModel.addElement(curMetadata);
+      }
     }
     this.blocked.setModel(blockedListModel);
     this.blocked.revalidate();

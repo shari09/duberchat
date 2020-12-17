@@ -311,7 +311,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
 
   @Override
-  public synchronized void clientDataUpdated() {
+  public void clientDataUpdated() {
     ClientData updatedClientData = GlobalClient.clientData;
     this.updateLabels(updatedClientData);
     this.updateUserStatus(updatedClientData.getStatus());
@@ -322,7 +322,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   public void serverBroadcastReceived(ServerBroadcast broadcast) {
   }
 
-  public synchronized void promptUpdateStatus(JRadioButton radioButton) {
+  public void promptUpdateStatus(JRadioButton radioButton) {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
     UserStatus currentStatus = GlobalClient.clientData.getStatus();
@@ -349,14 +349,14 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
     }
   }
 
-  private synchronized void updateLabels(ClientData updatedClientData) {
+  private void updateLabels(ClientData updatedClientData) {
     this.usernameText.setText(updatedClientData.getUsername());
     this.usernameText.revalidate();
     this.descriptionText.setText(updatedClientData.getDescription());
     this.descriptionText.revalidate();
   }
 
-  private synchronized void updateUserStatus(UserStatus status) {
+  private void updateUserStatus(UserStatus status) {
     switch (status) {
       case ACTIVE:
         this.activeButton.setSelected(true);

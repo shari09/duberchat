@@ -70,11 +70,13 @@ public class GlobalClient {
    * @param userId The user id of the other user.
    * @return true if the client is friends with the given userId, false otherwise.
    */
-  public static synchronized boolean hasFriend(String userId) {
+  public static boolean hasFriend(String userId) {
     LinkedHashSet<UserMetadata> friends = GlobalClient.clientData.getFriends();
-    for (UserMetadata friend: friends) {
-      if (friend.getUserId().equals(userId)) {
-        return true;
+    synchronized (friends) {
+      for (UserMetadata friend: friends) {
+        if (friend.getUserId().equals(userId)) {
+          return true;
+        }
       }
     }
     return false;
@@ -85,11 +87,13 @@ public class GlobalClient {
    * @param userId The user id of the other user.
    * @return true if the client blocked the given userId, false otherwise.
    */
-  public static synchronized boolean hasBlocked(String userId) {
+  public static boolean hasBlocked(String userId) {
     LinkedHashSet<UserMetadata> blockedUsers = GlobalClient.clientData.getBlocked();
-    for (UserMetadata blocked: blockedUsers) {
-      if (blocked.getUserId().equals(userId)) {
-        return true;
+    synchronized (blockedUsers) {
+      for (UserMetadata blocked: blockedUsers) {
+        if (blocked.getUserId().equals(userId)) {
+          return true;
+        }
       }
     }
     return false;

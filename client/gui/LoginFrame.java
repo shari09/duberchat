@@ -173,7 +173,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
   }
 
   @Override
-  public synchronized void actionPerformed(ActionEvent e) {
+  public void actionPerformed(ActionEvent e) {
     if (e.getSource() == this.loginButton) {
       String username = this.usernameField.getText();
       String password = String.valueOf(this.passwordField.getPassword());

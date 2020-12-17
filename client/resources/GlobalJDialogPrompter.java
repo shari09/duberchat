@@ -13,6 +13,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 
 import client.gui.ClientGUIFactory;
+import common.entities.ChannelField;
 import common.entities.Constants;
 import common.entities.GroupChannelMetadata;
 import common.entities.Message;
@@ -23,6 +24,7 @@ import common.entities.payload.client_to_server.AddParticipant;
 import common.entities.payload.client_to_server.BlacklistUser;
 import common.entities.payload.client_to_server.BlockUser;
 import common.entities.payload.client_to_server.CancelFriendRequest;
+import common.entities.payload.client_to_server.ChangeChannel;
 import common.entities.payload.client_to_server.ChangePassword;
 import common.entities.payload.client_to_server.ChangeProfile;
 import common.entities.payload.client_to_server.EditMessage;
@@ -35,7 +37,6 @@ import common.entities.payload.client_to_server.RequestAttachment;
 import common.entities.payload.client_to_server.TransferOwnership;
 import common.gui.Theme;
 import common.services.RegexValidator;
-import server.entities.Client;
 
 /**
  * Contains static methods to prompt for and respond to user inputs/choices.
@@ -49,11 +50,15 @@ import server.entities.Client;
 
 public class GlobalJDialogPrompter {
 
-  public static synchronized void promptChangeUsername(Component parentComponent) {
-    String curUsername = GlobalClient.clientData.getUsername();
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
-
+  public static void promptChangeUsername(Component parentComponent) {
+    String curUsername;
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      curUsername = GlobalClient.clientData.getUsername();
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
     String newUsername = (String)(JOptionPane.showInputDialog(
       parentComponent,
       "New username: ",
@@ -92,9 +97,13 @@ public class GlobalJDialogPrompter {
     );
   }
 
-  public static synchronized void promptChangePassword(Component parentComponent) {
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
+  public static void promptChangePassword(Component parentComponent) {
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
 
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -178,10 +187,15 @@ public class GlobalJDialogPrompter {
     );
   }
 
-  public static synchronized void promptChangeProfileDescription(Component parentComponent) {
-    String curDescription = GlobalClient.clientData.getDescription();
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
+  public static void promptChangeProfileDescription(Component parentComponent) {
+    String curDescription;
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      curDescription = GlobalClient.clientData.getDescription();
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
 
     String newDescription = (String)(JOptionPane.showInputDialog(
       parentComponent,
@@ -195,7 +209,6 @@ public class GlobalJDialogPrompter {
 
     if (
       (newDescription == null)
-      || (newDescription.length() == 0)
       || (newDescription == curDescription)
     ) {
       return;
@@ -224,13 +237,17 @@ public class GlobalJDialogPrompter {
     );
   }
 
-  public static synchronized void promptRespondFriendRequest(
+  public static void promptRespondFriendRequest(
     Component parentComponent,
     UserMetadata sender,
     String requestMessage
   ) {
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
 
     String strToShow = "Accept friend request from " + sender.getUsername() + "?";
     if ((requestMessage != null) && (requestMessage.length() > 0)) {
@@ -272,12 +289,16 @@ public class GlobalJDialogPrompter {
     }
   }
 
-  public static synchronized void promptCancelFriendRequest(
+  public static void promptCancelFriendRequest(
     Component parentComponent,
     UserMetadata recipient
   ) {
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
 
     String[] options = new String[] {"Confirm", "Cancel"};
     int choice = JOptionPane.showOptionDialog(
@@ -303,7 +324,7 @@ public class GlobalJDialogPrompter {
     }
   }
   
-  public static synchronized void displayUserMetadata(
+  public static void displayUserMetadata(
     Component parentComponent,
     UserMetadata metadata
   ) {
@@ -323,12 +344,16 @@ public class GlobalJDialogPrompter {
     );
   }
 
-  public static synchronized void promptFriendAction(
+  public static void promptFriendAction(
     Component parentComponent,
     UserMetadata metadata
   ) {
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
     String[] choices = new String[] {
       "block",
       "remove friend"
@@ -376,12 +401,16 @@ public class GlobalJDialogPrompter {
     }
   }
 
-  public static synchronized void promptMessageAction(
+  public static void promptMessageAction(
     Component parentComponent,
     Message message
   ) {
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
     String[] choices;
     if (message.getSenderId().equals(userId)) {
       if (message.hasAttachment()) {
@@ -469,12 +498,16 @@ public class GlobalJDialogPrompter {
     }
   }
 
-  public static synchronized void promptGroupChannelAction(
+  public static void promptGroupChannelAction(
     Component parentComponent,
     GroupChannelMetadata metadata
   ) {
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
 
     String[] options;
     // admin options
@@ -565,7 +598,37 @@ public class GlobalJDialogPrompter {
               )
             );
           }
-
+        
+        } else if (choice.equals("rename channel")) {
+          String newName = (String)(JOptionPane.showInputDialog(
+            parentComponent,
+            "New name: ",
+            "Change Channel Name",
+            JOptionPane.QUESTION_MESSAGE,
+            ClientGUIFactory.getDialogInformationIcon(30, 30),
+            null,
+            metadata.getChannelName()
+          ));
+          if ((newName != null) && (newName.equals(metadata.getChannelName()))) {
+            if (Constants.NAME_VALIDATOR.matches(newName)) {
+              GlobalPayloadQueue.enqueuePayload(
+                new ChangeChannel(
+                  1,
+                  userId,
+                  token,
+                  metadata.getChannelId(),
+                  ChannelField.NAME,
+                  newName
+                )
+              );
+            } else {
+              GlobalJDialogPrompter.warnInvalidInput(
+                parentComponent,
+                "channel name",
+                Constants.NAME_VALIDATOR
+              );
+            }
+          }
         } else if (choice.equals("leave channel")) {
           if (GlobalJDialogPrompter.confirmAction(parentComponent)) {
             GlobalPayloadQueue.enqueuePayload(
@@ -635,7 +698,7 @@ public class GlobalJDialogPrompter {
     }
   }
 
-  public static synchronized void warnInvalidInput(Component parentComponent, String field, RegexValidator validator) {
+  public static void warnInvalidInput(Component parentComponent, String field, RegexValidator validator) {
     String strToShow = field + " does not meet requirement:" + "\n" + validator.getDescription();
     JOptionPane.showMessageDialog(
       parentComponent,
@@ -647,7 +710,7 @@ public class GlobalJDialogPrompter {
     return;
   }
 
-  public static synchronized void warnInvalidInput(Component parentComponent, String field, RegexValidator[] validators) {
+  public static void warnInvalidInput(Component parentComponent, String field, RegexValidator[] validators) {
     String strToShow = field + " does not meet requirements:";
     for (int i = 0; i < validators.length; i++) {
       strToShow += "\n" + validators[i].getDescription();
@@ -662,12 +725,16 @@ public class GlobalJDialogPrompter {
     return;
   }
 
-  public static synchronized void promptAddParticipantToChannel(
+  public static void promptAddParticipantToChannel(
     Component parentComponent,
     GroupChannelMetadata metadata
   ) {
-    String userId = GlobalClient.clientData.getUserId();
-    Token token = GlobalClient.clientData.getToken();
+    String userId;
+    Token token;
+    synchronized (GlobalClient.clientData) {
+      userId = GlobalClient.clientData.getUserId();
+      token = GlobalClient.clientData.getToken();
+    }
 
     LinkedHashSet<UserMetadata> friends = GlobalClient.clientData.getFriends();
     int numFriends = friends.size();
@@ -707,12 +774,15 @@ public class GlobalJDialogPrompter {
     }
   }
 
-  public static synchronized String promptSelectParticipantFromChannel(
+  public static String promptSelectParticipantFromChannel(
     Component parentComponent,
     GroupChannelMetadata metadata,
     boolean canBeSelf
   ) {
-    String userId = GlobalClient.clientData.getUserId();
+    String userId;
+    synchronized (GlobalClient.clientData) {
+      userId = GlobalClient.clientData.getUserId();
+    }
     
     LinkedHashSet<UserMetadata> participants = metadata.getParticipants();
     int numChoices = participants.size();
@@ -751,7 +821,7 @@ public class GlobalJDialogPrompter {
     return participantsIds[index];
   }
 
-  public static synchronized boolean confirmAction(Component parentComponent, String customMessage) {
+  public static boolean confirmAction(Component parentComponent, String customMessage) {
     int n = JOptionPane.showConfirmDialog(
       parentComponent,
       customMessage,
@@ -766,7 +836,7 @@ public class GlobalJDialogPrompter {
     return false;
   }
 
-  public static synchronized boolean confirmAction(Component parentComponent) {
+  public static boolean confirmAction(Component parentComponent) {
     int n = JOptionPane.showConfirmDialog(
       parentComponent,
       "Are you sure you want to perform this action?",

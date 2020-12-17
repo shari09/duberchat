@@ -180,8 +180,10 @@ public class ClientSocket implements Runnable {
    * Adds a {@code ClientSocketListener} to listen for the events of this {@code ClientSocket}.
    * @param listener The {@code ClientSocketListener} to be added.
    */
-  public synchronized void addListener(ClientSocketListener listener) {
-    this.listeners.add(listener);
+  public void addListener(ClientSocketListener listener) {
+    synchronized (this.listeners) {
+      this.listeners.add(listener);
+    }
   }
 
   /**
@@ -356,7 +358,7 @@ public class ClientSocket implements Runnable {
    * Attempts to download an attachment.
    * @param attachment The {@code Attachment} to be downloaded.
    */
-  private synchronized void saveAttachment(Attachment attachment) {
+  private void saveAttachment(Attachment attachment) {
     File directory = new File(GlobalClient.getDownloadFolderPath());
     if (!directory.exists()) {
       directory.mkdirs();
@@ -397,18 +399,20 @@ public class ClientSocket implements Runnable {
    * Changes a profile field of the user.
    * @param changeProfile The {@code ChangeProfile} payload to be processed.
    */
-  private synchronized void changeProfile(ChangeProfile changeProfile) {
+  private void changeProfile(ChangeProfile changeProfile) {
     String newValue = changeProfile.getNewValue();
-    switch (changeProfile.getFieldToChange()) {
-      case USERNAME:
-        GlobalClient.clientData.setUsername(newValue);
-        this.notifyClientDataUpdate(); // notify listeners
-        break;
-
-      case DESCRIPTION:
-        GlobalClient.clientData.setDescription(newValue);
-        this.notifyClientDataUpdate(); // notify listeners
-        break;
+    synchronized (GlobalClient.clientData) {
+      switch (changeProfile.getFieldToChange()) {
+        case USERNAME:
+          GlobalClient.clientData.setUsername(newValue);
+          this.notifyClientDataUpdate(); // notify listeners
+          break;
+  
+        case DESCRIPTION:
+          GlobalClient.clientData.setDescription(newValue);
+          this.notifyClientDataUpdate(); // notify listeners
+          break;
+      }
     }
   }
 
@@ -434,9 +438,11 @@ public class ClientSocket implements Runnable {
    * Notifies this {@code ClientSocket's} listeners about a broadcast from the server.
    * @param broadcast The {@code ServerBroadcast} payload to notify about.
    */
-  private synchronized void notifyServerBroadcast(ServerBroadcast broadcast) {
-    for (ClientSocketListener listener: this.listeners) {
-      listener.serverBroadcastReceived(broadcast);
+  private void notifyServerBroadcast(ServerBroadcast broadcast) {
+    synchronized (this.listeners) {
+      for (ClientSocketListener listener: this.listeners) {
+        listener.serverBroadcastReceived(broadcast);
+      }
     }
   }
 
@@ -444,7 +450,7 @@ public class ClientSocket implements Runnable {
    * Notifies this {@code ClientSocket's} listeners about a broadcast from the server.
    * @param broadcast The {@code ServerBroadcast} payload to be notified about.
    */
-  private synchronized void sendHeartbeat() {
+  private void sendHeartbeat() {
     GlobalPayloadQueue.enqueuePayload(new KeepAlive());
     this.lastHeartBeatTimeMills = System.currentTimeMillis();
   }
@@ -474,13 +480,15 @@ public class ClientSocket implements Runnable {
    * latest mouse location would be updated with the current mouse location.
    */
   private void updateMouseMovement() {
-    Point curPoint = MouseInfo.getPointerInfo().getLocation();
-    if (
-      (curPoint.getX() != this.latestMousePoint.getX())
-      || (curPoint.getY() != this.latestMousePoint.getY())
-    ) {
-      ClientSocketServices.updateLastActiveTime();
-      this.latestMousePoint = curPoint;
+    if (MouseInfo.getPointerInfo() != null) {
+      Point curPoint = MouseInfo.getPointerInfo().getLocation();
+      if (
+        (curPoint.getX() != this.latestMousePoint.getX())
+        || (curPoint.getY() != this.latestMousePoint.getY())
+      ) {
+        ClientSocketServices.updateLastActiveTime();
+        this.latestMousePoint = curPoint;
+      }
     }
   }
 

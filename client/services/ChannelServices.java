@@ -28,10 +28,12 @@ public class ChannelServices {
    * @return A {@code ChannelMetadata} object of the channel with the given channel id,
    *         or null if the user is not in such channel.
    */
-  public static synchronized ChannelMetadata getChannelByChannelId(String channelId) {
-    for (ChannelMetadata channelMetadata: GlobalClient.clientData.getChannels()) {
-      if (channelMetadata.getChannelId().equals(channelId)) {
-        return channelMetadata;
+  public static ChannelMetadata getChannelByChannelId(String channelId) {
+    synchronized (GlobalClient.clientData.getChannels()) {
+      for (ChannelMetadata channelMetadata: GlobalClient.clientData.getChannels()) {
+        if (channelMetadata.getChannelId().equals(channelId)) {
+          return channelMetadata;
+        }
       }
     }
     return null;
@@ -43,19 +45,21 @@ public class ChannelServices {
    * @param channelId The id of the channel.
    * @param messages  The messages to be loaded.
    */
-  public static synchronized void addMessages(String channelId, Message[] messages) {
+  public static void addMessages(String channelId, Message[] messages) {
     boolean fullyLoaded = false;
     ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
     if (channelMessages == null) {
       GlobalClient.messagesData.put(channelId, new ConcurrentSkipListSet<Message>());
       channelMessages = GlobalClient.messagesData.get(channelId);
     }
-    for (Message msg: messages) {
-      if (msg != null) {
-        channelMessages.add(msg);
-      } else {
-        // if there are any nulls, the history is fully added and the channel does not need to further request
-        fullyLoaded = true; 
+    synchronized (messages) {
+      for (Message msg: messages) {
+        if (msg != null) {
+          channelMessages.add(msg);
+        } else {
+          // if there are any nulls, the history is fully added and the channel does not need to further request
+          fullyLoaded = true; 
+        }
       }
     }
     GlobalClient.messageHistoryFullyLoaded.put(channelId, fullyLoaded);
@@ -66,12 +70,14 @@ public class ChannelServices {
    * @param channelId The id of the channel.
    * @param messages  The messages to be removed.
    */
-  public static synchronized void removeMessages(String channelId, Message[] messages) {
+  public static void removeMessages(String channelId, Message[] messages) {
     ConcurrentSkipListSet<Message> channelMessages = GlobalClient.messagesData.get(channelId);
     if (channelMessages != null) {
-      for (Message msg: messages) {
-        if (msg != null) {
-          channelMessages.remove(msg);
+      synchronized (messages) {
+        for (Message msg: messages) {
+          if (msg != null) {
+            channelMessages.remove(msg);
+          }
         }
       }
     }
@@ -83,7 +89,7 @@ public class ChannelServices {
    * If the channel is a group channel, the title would be the channel's name.
    * @return A string representation of the channel's title.
    */
-  public static synchronized String getChannelTitle(String channelId) {
+  public static String getChannelTitle(String channelId) {
     String title = "";
     ChannelMetadata channelMetadata = ChannelServices.getChannelByChannelId(channelId);
     

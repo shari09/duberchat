@@ -18,9 +18,6 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import javax.swing.JFrame;
-
-import client.gui.ClientGUIFactory;
 import client.resources.GlobalClient;
 import client.resources.GlobalPayloadQueue;
 import client.services.ChannelServices;
@@ -129,6 +126,12 @@ public class ClientSocket implements Runnable {
         if (GlobalPayloadQueue.queue.size() > 0) {
           try {
               Payload payloadToSend = GlobalPayloadQueue.queue.poll();
+              if (payloadToSend.getType() != PayloadType.KEEP_ALIVE){
+                System.out.println("---------putting payload");
+                System.out.println(payloadToSend.toString());
+                System.out.println(payloadToSend.getType());
+                System.out.println(payloadToSend.getId());
+              }
               this.output.writeObject(payloadToSend);
               this.pendingRequests.put(payloadToSend.getId(), payloadToSend);
 
@@ -148,6 +151,8 @@ public class ClientSocket implements Runnable {
       try {
         if (this.rawInput.available() > 0) {
           Payload payload = (Payload)this.input.readObject();
+          System.out.println("Response received");
+          System.out.println(payload.toString());
           this.processPayload(payload);
         }
         
@@ -168,15 +173,12 @@ public class ClientSocket implements Runnable {
       this.socket.close();
       this.input.close();
       this.output.close();
-
     } catch (SocketException socketException) {
       // notify listeners
       this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "You have been disconnected");
-
     } catch (IOException ioException) {
       System.out.println("An error has occurred!");
       ioException.printStackTrace();
-
     }
   }
 
@@ -256,8 +258,10 @@ public class ClientSocket implements Runnable {
         break;
 
       default:
+        System.out.println("unknown payload type: " + payload);
         break;
     }
+    System.out.println("processed payload " + payload);
   }
 
   /**
@@ -321,7 +325,8 @@ public class ClientSocket implements Runnable {
     String errorMessage = requestStatus.getErrorMessage();
 
     if (originalPayload == null) {
-      return;
+      System.out.println(originalPayloadId);
+      System.out.println("client request originalPayload not found");
 
     } else if (errorMessage != null) {
       // notify listeners
@@ -337,7 +342,7 @@ public class ClientSocket implements Runnable {
           break;
 
         case UPDATE_STATUS:
-          System.out.println("NOT SERVER'S FAULT");
+          System.out.println("hiiiiiiiiiiiiiiii");
           this.updateUserStatus((UpdateStatus)originalPayload);
           break;
 
@@ -353,6 +358,7 @@ public class ClientSocket implements Runnable {
     }
     // remove the original payload from pending requests
     this.pendingRequests.remove(originalPayloadId);
+    System.out.println(originalPayloadId);
   }
 
   /**
@@ -420,20 +426,16 @@ public class ClientSocket implements Runnable {
    * @param updateStatus The {@code UpdateStatus} payload to be processed.
    */
   private synchronized void updateUserStatus(UpdateStatus updateStatus) {
-    synchronized (GlobalClient.clientData) {
-      System.out.println("--------------the status to be updated is..." + ClientGUIFactory.getStatusText(updateStatus.getStatus()));
-      GlobalClient.clientData.setStatus(updateStatus.getStatus());
-    }
+    GlobalClient.clientData.setStatus(updateStatus.getStatus());
+    System.out.println("status:" + updateStatus.getStatus());
     this.notifyClientDataUpdate(); // notify listeners
   }
 
   /**
    * Notifies this {@code ClientSocket's} listeners about a change in the client's data.
    */
-  private synchronized void notifyClientDataUpdate() {
-    Iterator<ClientSocketListener> iterator = this.listeners.iterator();
-    while (iterator.hasNext()) {
-      ClientSocketListener listener = iterator.next();
+  private void notifyClientDataUpdate() {
+    for (ClientSocketListener listener: this.listeners) {
       listener.clientDataUpdated();
     }
   }
@@ -443,9 +445,7 @@ public class ClientSocket implements Runnable {
    * @param broadcast The {@code ServerBroadcast} payload to notify about.
    */
   private synchronized void notifyServerBroadcast(ServerBroadcast broadcast) {
-    Iterator<ClientSocketListener> iterator = this.listeners.iterator();
-    while (iterator.hasNext()) {
-      ClientSocketListener listener = iterator.next();
+    for (ClientSocketListener listener: this.listeners) {
       listener.serverBroadcastReceived(broadcast);
     }
   }
@@ -470,16 +470,8 @@ public class ClientSocket implements Runnable {
     boolean successful,
     String notifMessage
   ) {
-    Iterator<ClientSocketListener> iterator = this.listeners.iterator();
-    while (iterator.hasNext()) {
-      ClientSocketListener listener = iterator.next();
+    for (ClientSocketListener listener: this.listeners) {
       listener.clientRequestStatusReceived(payloadType, successful, notifMessage);
-      if ((payloadType == PayloadType.KEEP_ALIVE) && (!successful)) {
-        if (listener instanceof JFrame) {
-          ((JFrame)listener).dispose(); // dispose the frames
-        }
-        iterator.remove();
-      }
     }
   }
   

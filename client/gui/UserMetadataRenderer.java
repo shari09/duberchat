@@ -6,6 +6,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+import javax.swing.border.LineBorder;
 
 import common.entities.UserMetadata;
 import common.gui.Theme;
@@ -36,7 +37,9 @@ public class UserMetadataRenderer implements ListCellRenderer<UserMetadata> {
       Theme.getItalicFont(10),
       ClientGUIFactory.BLUE_SHADE_3
     );
-    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 15));
+    LineBorder border = new LineBorder(ClientGUIFactory.GRAY_SHADE_3, 1);
+    panel.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(10, 10, 10, 15)));
+    panel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
     return panel;
   }
 }

@@ -1,6 +1,7 @@
 package client.gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -43,8 +45,7 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     PayloadType.LOGIN
   };
   private static final PayloadType[] ERROR_NOTIF_TYPES = new PayloadType[] {
-    PayloadType.LOGIN,
-    PayloadType.KEEP_ALIVE
+    PayloadType.LOGIN
   };
 
   private JTextField usernameField;
@@ -209,7 +210,6 @@ public class LoginFrame extends DisconnectOnCloseFrame implements ActionListener
     if (GlobalClient.hasData()) {
       UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());
       nextFrame.setLocationRelativeTo(this);
-      this.getClientSocket().removeListener(this);
       this.dispose();
     } else {
       System.out.println("failed to initialize client data");

@@ -2,11 +2,11 @@ package client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.util.Iterator;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -180,15 +180,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   @Override
   public void actionPerformed(ActionEvent e) { 
     if (e.getSource() == this.createGroupChannelButton) {
-      String channelName = (String)(JOptionPane.showInputDialog(
-        this,
-        "Channel name: ",
-        "Create Channel",
-        JOptionPane.QUESTION_MESSAGE,
-        ClientGUIFactory.getDialogInformationIcon(30, 30),
-        null,
-        null
-      ));
+      String channelName = JOptionPane.showInputDialog(this, "Channel Name: ");
       
       if ((channelName == null) || (channelName.length() == 0)) {
         return;
@@ -240,12 +232,24 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
       this.settingsFrame.requestFocus();
     }
   }
-
-  @Override 
+  
+  @Override
   public void clientDataUpdated() {
-    this.updateChannelsJLists();
     this.updateUserProfilePanel();
+    this.updateChannelsJLists();
     this.repaint();
+  }
+
+  @Override
+  public synchronized void clientRequestStatusReceived(
+    PayloadType payloadType, 
+    boolean successful,
+    String notifMessage
+  ) {
+    super.clientRequestStatusReceived(payloadType, successful, notifMessage);
+    if ((payloadType == PayloadType.KEEP_ALIVE) && (!successful)) {
+      this.dispose();
+    }
   }
 
   @Override
@@ -337,6 +341,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
       Theme.getItalicFont(15),
       ClientGUIFactory.PURPLE_SHADE_3
     );
+    System.out.println("profile panel: " + ClientGUIFactory.getStatusText(GlobalClient.getClientUserMetadata().getStatus()));
     this.userProfilePanel.revalidate();
   }
 
@@ -345,9 +350,7 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     DefaultListModel<PrivateChannelMetadata> privateChannelsListModel = new DefaultListModel<>();
     synchronized (GlobalClient.clientData) {
       LinkedHashSet<ChannelMetadata> channelsMetadata = GlobalClient.clientData.getChannels();
-      Iterator<ChannelMetadata> iterator = channelsMetadata.iterator();
-      while (iterator.hasNext()) {
-        ChannelMetadata curMetadata = iterator.next();
+      for (ChannelMetadata curMetadata: channelsMetadata) {
         if (curMetadata instanceof GroupChannelMetadata) {
           groupChannelsListModel.addElement((GroupChannelMetadata)curMetadata);
         } else if (curMetadata instanceof PrivateChannelMetadata) {

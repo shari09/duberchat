@@ -23,11 +23,13 @@ public class DisconnectPanel extends AdminPanel {
    */
   private static final long serialVersionUID = 1L;
 
-  private static final String PROMPT = "Disconnection message...";
-
   public DisconnectPanel() {
-    super("Disconnect", "Disconnecting (Connected users)", EventType.DISCONNECT);
-    this.setMessageText(DisconnectPanel.PROMPT);
+    super(
+      "Disconnect", 
+      "Disconnecting (Connected users)", 
+      EventType.DISCONNECT,
+      "Disconnection message..."
+    );
   }
 
   @Override
@@ -67,7 +69,7 @@ public class DisconnectPanel extends AdminPanel {
           );
         }
     }
-    this.setMessageText(DisconnectPanel.PROMPT);
+    this.resetMessagePrompt();;
   }
   
 }

@@ -31,8 +31,8 @@ import common.gui.Theme;
 
 @SuppressWarnings("serial")
 public class ClientStartFrame extends JFrame implements ActionListener {
-  public static final int WIDTH = 600;
-  public static final int HEIGHT = 800;
+  public static final int WIDTH = 340;
+  public static final int HEIGHT = 500;
 
   private static final String DEFAULT_ADDRESS = "127.0.0.1";
   private static final String DEFAULT_PORT = "5000";
@@ -48,7 +48,7 @@ public class ClientStartFrame extends JFrame implements ActionListener {
 
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setSize(ClientStartFrame.WIDTH, ClientStartFrame.HEIGHT);
-    this.setResizable(true);
+    this.setResizable(false);
 
     JPanel panel = new JPanel();
     panel.setLayout(new GridBagLayout());

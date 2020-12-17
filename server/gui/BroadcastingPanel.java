@@ -22,11 +22,14 @@ public class BroadcastingPanel extends AdminPanel {
    */
   private static final long serialVersionUID = 1L;
 
-  private static final String PROMPT = "Message to broadcast...";
 
   public BroadcastingPanel() {
-    super("Broadcast", "Broadcasting (Connected users)", EventType.BROADCAST);
-    this.setMessageText(BroadcastingPanel.PROMPT);
+    super(
+      "Broadcast", 
+      "Broadcasting (Connected users)", 
+      EventType.BROADCAST,
+      "Message to broadcast..."
+    );
   }
 
   @Override
@@ -52,7 +55,7 @@ public class BroadcastingPanel extends AdminPanel {
     for (ObjectOutputStream out: this.getSelectedUsersOut()) {
         CommunicationService.send(out, new ServerBroadcast(this.getMessageText()));
     }
-    this.setMessageText(BroadcastingPanel.PROMPT);
+    this.resetMessagePrompt();;
   }
   
 }

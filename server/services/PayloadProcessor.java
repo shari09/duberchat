@@ -4,6 +4,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import common.entities.ClientData;
 import common.entities.Token;
+import common.entities.UserStatus;
 import common.entities.payload.PayloadType;
 import common.entities.payload.client_to_server.AuthenticatablePayload;
 import common.entities.payload.client_to_server.Login;
@@ -207,7 +208,7 @@ public class PayloadProcessor implements Subscribable {
         token, 
         user.getUsername(), 
         user.getDescription(), 
-        user.getStatus(),
+        UserStatus.ACTIVE,
         user.getFriends(), 
         user.getIncomingFriendRequests(), 
         user.getOutgoingFriendRequests(), 

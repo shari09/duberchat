@@ -39,8 +39,8 @@ import common.services.RegexValidator;
 
 @SuppressWarnings("serial")
 public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionListener {
-  public static final int WIDTH = 600;
-  public static final int HEIGHT = 800;
+  public static final int WIDTH = 500;
+  public static final int HEIGHT = 550;
 
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
     PayloadType.NEW_USER

@@ -306,6 +306,7 @@ public class UserService {
       recipientId == null 
       || !this.validUserId(recipientId) 
       || this.isBlocked(recipientId, userId)
+      || this.isFriend(userId, recipientId)
     ) {
       return false;
     }

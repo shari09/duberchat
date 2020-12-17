@@ -581,6 +581,19 @@ public class ClientGUIFactory {
     return "";
   }
 
+  public static ImageIcon getIcon(String path, int width, int height) {
+    ImageIcon icon = null;
+    try {
+      BufferedImage img = ImageIO.read(new File(path));
+      Image resized = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+      icon = new ImageIcon(resized);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return icon;
+  }
+
   public static ImageIcon getUserIcon(int width, int height) {
     ImageIcon icon = null;
     try {

@@ -281,7 +281,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
       if (e.getSource() == this.friends) {
         int row = this.friends.locationToIndex(e.getPoint());
         this.friends.setSelectedIndex(row);
-        System.out.println("-----asdasdasd");
+        //System.out.println("-----asdasdasd");
         UserMetadata metadata = this.onlineFriends.getSelectedValue();
         if (metadata != null) {
           GlobalJDialogPrompter.promptFriendAction(this, metadata);
@@ -363,7 +363,7 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     DefaultListModel<UserMetadata> blockedListModel = new DefaultListModel<>();
     LinkedHashSet<UserMetadata> blockedMetadata = clientData.getBlocked();
     for (UserMetadata curMetadata: blockedMetadata) {
-      System.out.println("blocked: " + curMetadata);
+      //System.out.println("blocked: " + curMetadata);
       blockedListModel.addElement(curMetadata);
     }
     this.blocked.setModel(blockedListModel);

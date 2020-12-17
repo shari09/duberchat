@@ -15,6 +15,7 @@ import java.util.LinkedHashSet;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -68,7 +69,9 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   private UserFriendsFrame friendsFrame;
   private UserSettingsFrame settingsFrame;
 
-  private JPanel userProfilePanel;
+  // private JPanel userProfilePanel;
+  private JLabel usernameLabel;
+  private JLabel statusLabel;
 
   private JList<PrivateChannelMetadata> privateChannelsList;
   private JList<GroupChannelMetadata> groupChannelsList;
@@ -93,12 +96,14 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
     // user's profile section
-    this.updateUserProfilePanel();
+    
+    // this.updateUserProfilePanel();
+    JPanel profilePanel = this.getProfilePanel();
     constraints.weightx = 1;
     constraints.weighty = 0;
     constraints.gridwidth = 5;
     constraints.gridheight = 2;
-    panel.add(this.userProfilePanel, constraints);
+    panel.add(profilePanel, constraints);
     constraints.weighty = 1;
     // tabbed pane for channels
     this.privateChannelsList = new JList<PrivateChannelMetadata>();
@@ -165,6 +170,43 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
 
     this.getContentPane().add(panel);
     this.setVisible(true);
+  }
+
+  private JPanel getProfilePanel() {
+    JPanel panel = new JPanel(new GridBagLayout());
+    panel.setBackground(Color.WHITE);
+    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50, 50));
+    constraints.weightx = 0.3;
+    constraints.weighty = 0;
+    constraints.gridwidth = 2;
+    constraints.gridheight = 2;
+    constraints.ipadx = 2;
+    panel.add(iconLabel, constraints);
+
+    constraints.weightx = 1;
+    constraints.weighty = 0;
+    constraints.ipadx = 0;
+    constraints.gridx = 2;
+    constraints.gridwidth = 3;
+    constraints.gridheight = 1;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    this.usernameLabel = ClientGUIFactory.getTextLabel(
+      "",
+      Theme.getBoldFont(20),
+      ClientGUIFactory.PURPLE_SHADE_3
+    );
+    panel.add(this.usernameLabel, constraints);
+
+    this.statusLabel = ClientGUIFactory.getTextLabel(
+      "",
+      Theme.getItalicFont(15),
+      ClientGUIFactory.PURPLE_SHADE_3
+    );
+    constraints.gridy = 1;
+    panel.add(this.statusLabel, constraints);
+    return panel;
   }
 
   @Override
@@ -335,14 +377,13 @@ public class UserMainFrame extends DisconnectOnCloseFrame implements ActionListe
   }
   
   private void updateUserProfilePanel() {
-    this.userProfilePanel = ClientGUIFactory.getUserThumbnailPanel(
-      GlobalClient.getClientUserMetadata(),
-      Theme.getBoldFont(20),
-      Theme.getItalicFont(15),
-      ClientGUIFactory.PURPLE_SHADE_3
-    );
-    System.out.println("profile panel: " + ClientGUIFactory.getStatusText(GlobalClient.getClientUserMetadata().getStatus()));
-    this.userProfilePanel.revalidate();
+    this.usernameLabel.setText(GlobalClient.getClientUserMetadata().getUsername());
+    this.statusLabel.setText(ClientGUIFactory.getStatusText(GlobalClient.getClientUserMetadata().getStatus()));
+    this.statusLabel.setForeground(ClientGUIFactory.getStatusColor(GlobalClient.getClientUserMetadata().getStatus()));
+    this.usernameLabel.repaint();
+    this.statusLabel.repaint();
+    this.revalidate();
+    this.repaint();
   }
 
   private synchronized void updateChannelsJLists() {

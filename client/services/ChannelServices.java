@@ -31,6 +31,7 @@ public class ChannelServices {
   public static synchronized ChannelMetadata getChannelByChannelId(String channelId) {
     for (ChannelMetadata channelMetadata: GlobalClient.clientData.getChannels()) {
       if (channelMetadata.getChannelId().equals(channelId)) {
+        System.out.println(channelMetadata.getParticipants().iterator().next().getStatus());
         return channelMetadata;
       }
     }

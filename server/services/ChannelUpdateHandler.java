@@ -51,7 +51,11 @@ public class ChannelUpdateHandler implements Subscribable {
   private void updateUser(UserMetadata user) {
     String userId = user.getUserId();
     LinkedHashSet<ChannelMetadata> channels = GlobalServices.users.getChannels(userId);
-    
+    for (ChannelMetadata channel: channels) {
+      for (UserMetadata userData : channel.getParticipants()) {
+        System.out.println(userData.getUsername() + " " + userData.getStatus());
+      }
+    }
     CommunicationService.send(userId, new ClientChannelsUpdate(1, channels));
     GlobalServices.users.save();
   }

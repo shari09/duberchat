@@ -23,8 +23,10 @@ import client.resources.GlobalPayloadQueue;
 import client.services.ChannelServices;
 import client.services.ClientSocketServices;
 import common.entities.Attachment;
+import common.entities.ChannelMetadata;
 import common.entities.Constants;
 import common.entities.Message;
+import common.entities.UserMetadata;
 import common.entities.payload.Payload;
 import common.entities.payload.PayloadType;
 import common.entities.payload.client_to_server.ChangeProfile;
@@ -127,10 +129,10 @@ public class ClientSocket implements Runnable {
           try {
               Payload payloadToSend = GlobalPayloadQueue.queue.poll();
               if (payloadToSend.getType() != PayloadType.KEEP_ALIVE){
-                System.out.println("---------putting payload");
-                System.out.println(payloadToSend.toString());
-                System.out.println(payloadToSend.getType());
-                System.out.println(payloadToSend.getId());
+                //System.out.println("---------putting payload");
+                //System.out.println(payloadToSend.toString());
+                //System.out.println(payloadToSend.getType());
+                //System.out.println(payloadToSend.getId());
               }
               this.output.writeObject(payloadToSend);
               this.pendingRequests.put(payloadToSend.getId(), payloadToSend);
@@ -142,7 +144,7 @@ public class ClientSocket implements Runnable {
               
           } catch (IOException ioException) {
             ioException.printStackTrace();
-            System.out.println("Failed to write payload");
+            //System.out.println("Failed to write payload");
           }
         }
       }
@@ -151,8 +153,8 @@ public class ClientSocket implements Runnable {
       try {
         if (this.rawInput.available() > 0) {
           Payload payload = (Payload)this.input.readObject();
-          System.out.println("Response received");
-          System.out.println(payload.toString());
+          //System.out.println("Response received");
+          //System.out.println(payload.toString());
           this.processPayload(payload);
         }
         
@@ -162,7 +164,7 @@ public class ClientSocket implements Runnable {
         this.running = false;
             
       } catch (Exception e) {
-        System.out.println("Failed to receive/process response from server");
+        //System.out.println("Failed to receive/process response from server");
         e.printStackTrace();
       }
     }
@@ -177,7 +179,7 @@ public class ClientSocket implements Runnable {
       // notify listeners
       this.notifyRequestStatus(PayloadType.KEEP_ALIVE, false, "You have been disconnected");
     } catch (IOException ioException) {
-      System.out.println("An error has occurred!");
+      //System.out.println("An error has occurred!");
       ioException.printStackTrace();
     }
   }
@@ -226,6 +228,12 @@ public class ClientSocket implements Runnable {
       case CLIENT_CHANNELS_UPDATE:
         ClientChannelsUpdate channelsUpdate = (ClientChannelsUpdate)payload;
         GlobalClient.clientData.setChannels(channelsUpdate.getChannels());
+        for (ChannelMetadata channel: channelsUpdate.getChannels()) {
+          for (UserMetadata user: channel.getParticipants()) {
+            System.out.println(user.getUsername() + " " + user.getStatus());
+          }
+        }
+        System.out.println(channelsUpdate.getChannels().iterator().next().getParticipants().iterator().next().getStatus());
         this.notifyClientDataUpdate();
         break;
 
@@ -258,10 +266,10 @@ public class ClientSocket implements Runnable {
         break;
 
       default:
-        System.out.println("unknown payload type: " + payload);
+        //System.out.println("unknown payload type: " + payload);
         break;
     }
-    System.out.println("processed payload " + payload);
+    //System.out.println("processed payload " + payload);
   }
 
   /**
@@ -325,13 +333,13 @@ public class ClientSocket implements Runnable {
     String errorMessage = requestStatus.getErrorMessage();
 
     if (originalPayload == null) {
-      System.out.println(originalPayloadId);
-      System.out.println("client request originalPayload not found");
+      //System.out.println(originalPayloadId);
+      //System.out.println("client request originalPayload not found");
 
     } else if (errorMessage != null) {
       // notify listeners
       this.notifyRequestStatus(originalPayload.getType(), false, errorMessage);
-      System.out.println("An error has occurred! (" + errorMessage + ")");
+      //System.out.println("An error has occurred! (" + errorMessage + ")");
 
     } else {
       // error message is null: request successful
@@ -342,7 +350,7 @@ public class ClientSocket implements Runnable {
           break;
 
         case UPDATE_STATUS:
-          System.out.println("hiiiiiiiiiiiiiiii");
+          //System.out.println("hiiiiiiiiiiiiiiii");
           this.updateUserStatus((UpdateStatus)originalPayload);
           break;
 
@@ -358,7 +366,7 @@ public class ClientSocket implements Runnable {
     }
     // remove the original payload from pending requests
     this.pendingRequests.remove(originalPayloadId);
-    System.out.println(originalPayloadId);
+    //System.out.println(originalPayloadId);
   }
 
   /**
@@ -427,7 +435,7 @@ public class ClientSocket implements Runnable {
    */
   private synchronized void updateUserStatus(UpdateStatus updateStatus) {
     GlobalClient.clientData.setStatus(updateStatus.getStatus());
-    System.out.println("status:" + updateStatus.getStatus());
+    //System.out.println("status:" + updateStatus.getStatus());
     this.notifyClientDataUpdate(); // notify listeners
   }
 

@@ -30,6 +30,10 @@ public class GroupChannel extends Channel {
     String ownerId
   ) {
     super(participants);
+    // super(new LinkedHashSet<UserMetadata>());
+    // for (UserMetadata participant: participants) {
+    //   super.addParticipant(participant);
+    // }
     this.ownerId = ownerId;
     this.channelName = channelName;
     this.blacklist = new LinkedHashSet<>();

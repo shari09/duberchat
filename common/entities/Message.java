@@ -16,9 +16,7 @@ import java.util.UUID;
  */
 
 public class Message implements Serializable, Identifiable, Comparable<Message> {
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
   private String id;

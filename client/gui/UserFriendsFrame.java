@@ -29,6 +29,7 @@ import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
 import client.resources.GlobalPayloadQueue;
 import common.entities.ClientData;
+import common.entities.Constants;
 import common.entities.UserMetadata;
 import common.entities.UserStatus;
 import common.entities.payload.PayloadType;
@@ -39,6 +40,7 @@ import common.gui.Theme;
 /**
  * The frame used for viewing, adding and blocking friends.
  * <p>
+ * 
  * Created on 2020.12.09.
  * @author Candice Zhang, Shari Sun
  * @version 1.0.0
@@ -217,6 +219,8 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
           JOptionPane.INFORMATION_MESSAGE,
           ClientGUIFactory.getDialogInformationIcon(30, 30)
         );
+      } else if (!Constants.FRIEND_REQUEST_VALIDATOR.matches(this.requestMessageField.getText())) {
+        GlobalJDialogPrompter.warnInvalidInput(this, "request message", Constants.FRIEND_REQUEST_VALIDATOR);
       } else {
         GlobalPayloadQueue.enqueuePayload(
           new FriendRequest(

@@ -12,10 +12,9 @@ import java.util.LinkedHashSet;
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class PrivateChannelMetadata extends ChannelMetadata {
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   
   /**

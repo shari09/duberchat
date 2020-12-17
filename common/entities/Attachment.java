@@ -12,9 +12,11 @@ import java.util.UUID;
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class Attachment implements Serializable, Identifiable {
-  
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
+  
   private String name;
   private String id;
   private byte[] data;

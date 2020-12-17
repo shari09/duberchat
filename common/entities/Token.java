@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * [insert description]
+ * A token used for client request authentication,
+ * received after a user has verified their identity.
  * <p>
  * Created on 2020.12.05.
  * @author Shari Sun
@@ -13,9 +14,7 @@ import java.sql.Timestamp;
  */
 
 public class Token implements Serializable {
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   private String value;
   private Timestamp created;

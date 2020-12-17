@@ -3,11 +3,11 @@ package common.entities;
 import common.services.RegexValidator;
 
 /**
- * [description]
+ * Contains constants that are shared between the client and the server.
  * <p>
  * Created on 2020.12.08.
  * 
- * @author Shari Sun, Candice Zhang
+ * @author  Candice Zhang, Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -16,7 +16,7 @@ public class Constants {
 
   public static final int HEARTBEAT_FREQUENCY = 1000*5;
   
-  public static final int SOCKET_TIMEOUT = 1000*300;
+  public static final int SOCKET_TIMEOUT = 1000*60*5;
 
   public static final String APPLICATION_NAME = "DQ";
   
@@ -55,8 +55,8 @@ public class Constants {
 
   public static final RegexValidator FRIEND_REQUEST_VALIDATOR = new RegexValidator(
     new String[] {
-      "^.{1,20}$"
+      "^.{0,20}$"
     },
-    "Friend request: between 1 to 20 characters."
+    "Friend request message: between 0 to 20 characters."
   );
 }

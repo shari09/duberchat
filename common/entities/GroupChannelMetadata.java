@@ -11,11 +11,9 @@ import java.util.LinkedHashSet;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class GroupChannelMetadata extends ChannelMetadata {
 
-  /**
-   *
-   */
+public class GroupChannelMetadata extends ChannelMetadata {
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
   private String channelName;
   private String ownerId;

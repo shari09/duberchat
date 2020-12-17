@@ -3,7 +3,7 @@ package common.entities;
 import java.io.Serializable;
 
 /**
- * Contains the id and profile information of a user.
+ * Contains the id, profile information, and status of a user.
  * <p>
  * Created on 2020.12.06.
  * @author Shari Sun, Candice Zhang
@@ -12,9 +12,7 @@ import java.io.Serializable;
  */
 
 public class UserMetadata implements Serializable, Comparable<UserMetadata> {
-  /**
-   *
-   */
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
   private String userId;

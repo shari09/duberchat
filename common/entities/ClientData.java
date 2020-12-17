@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * [description]
+ * Contains the data of a logged in client.
  * <p>
  * Created on 2020.12.09.
  * @author Candice Zhang, Shari Sun
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class ClientData implements Serializable {
-  
+  /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
   private String userId;

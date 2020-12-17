@@ -50,4 +50,8 @@ public class GroupChannelMetadata extends ChannelMetadata {
     this.ownerId = ownerId;
   }
 
+  public void updateChannelName(String name) {
+    this.channelName = name;
+  }
+
 }

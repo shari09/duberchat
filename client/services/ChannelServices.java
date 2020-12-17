@@ -64,8 +64,6 @@ public class ChannelServices {
         }
       }
     }
-    System.out.println(fullyLoaded);
-    System.out.println();
     GlobalClient.messageHistoryFullyLoaded.put(channelId, fullyLoaded);
   }
 

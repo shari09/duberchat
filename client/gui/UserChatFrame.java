@@ -25,7 +25,7 @@ import common.gui.Theme;
 
 @SuppressWarnings("serial")
 public class UserChatFrame extends UserFrame implements ChangeListener {
-  private static final Dimension PREFERRED_DIMENSION = new Dimension(1000, 800);
+  private static final Dimension PREFERRED_DIMENSION = new Dimension(900, 600);
 
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
     PayloadType.EDIT_MESSAGE,
@@ -50,6 +50,7 @@ public class UserChatFrame extends UserFrame implements ChangeListener {
     
     this.setSize(UserChatFrame.PREFERRED_DIMENSION);
     this.setPreferredSize(UserChatFrame.PREFERRED_DIMENSION);
+    this.setMinimumSize(UserChatFrame.PREFERRED_DIMENSION);
     this.setResizable(true);
 
     this.tabbedPane = ClientGUIFactory.getTabbedPane(Theme.getBoldFont(15));

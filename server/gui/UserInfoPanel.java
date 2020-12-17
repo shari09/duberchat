@@ -68,6 +68,7 @@ public class UserInfoPanel extends JPanel {
 
     JTextArea content = new JTextArea(contentMsg);
     content.setLineWrap(true);
+    content.setWrapStyleWord(true);
     content.setFont(Theme.getPlainFont(20));
     content.setForeground(ServerGUIFactory.GENERAL_TEXT);
     content.setOpaque(false);

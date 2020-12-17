@@ -17,6 +17,8 @@ import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -223,7 +225,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
     panel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
     this.uploadAttachmentButton = ClientGUIFactory.getImageButton(
-      ClientGUIFactory.getIcon("client/assets/attach.png", 20, 20)
+      ClientGUIFactory.getAttachmentIcon(20, 20)
     );
     this.uploadAttachmentButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     this.uploadAttachmentButton.addActionListener(this);
@@ -498,7 +500,8 @@ public class ChannelPanel extends JPanel implements ActionListener,
       boolean isSelected,
       boolean hasFocus
     ) {
-      JPanel panel = new JPanel(new GridBagLayout());
+      JPanel panel = new JPanel();
+      panel.setLayout(new GridBagLayout());
       GridBagConstraints c = ClientGUIFactory.getDefaultGridBagConstraints();
       c.fill = GridBagConstraints.NONE;
       c.anchor = GridBagConstraints.WEST;
@@ -559,8 +562,10 @@ public class ChannelPanel extends JPanel implements ActionListener,
       c.gridwidth = 3;
       content.setEditable(false);
       content.setBorder(BorderFactory.createEmptyBorder());
+      content.setWrapStyleWord(true);
+      content.setRows(2);
       
-      c.fill = GridBagConstraints.HORIZONTAL;
+      c.fill = GridBagConstraints.BOTH;
       panel.add(content, c);
 
       if (msg.hasAttachment()) {

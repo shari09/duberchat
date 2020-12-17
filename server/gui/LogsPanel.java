@@ -100,6 +100,7 @@ public class LogsPanel extends JPanel {
     msgLabel.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
     msgLabel.setForeground(textColor);
     msgLabel.setLineWrap(true);
+    msgLabel.setWrapStyleWord(true);
     msgLabel.setEditable(false);
 
     this.logPane.add(ServerGUIFactory.getEmptyHeight(10), this.c);

@@ -13,6 +13,7 @@ import server.entities.AuthenticatedClientRequest;
 import server.entities.Client;
 import server.entities.ClientRequest;
 import server.entities.EventType;
+import server.entities.LogType;
 import server.entities.User;
 
 /**
@@ -126,11 +127,9 @@ public class PayloadProcessor implements Subscribable {
       payload.getToken()
     );
 
-    CommunicationService.sendResponse(
-      client, 
-      authenticated, 
-      String.format("Authenticating request from user:%s", payload.getUserId()), 
-      "Unauthorized"
+    CommunicationService.log(
+      String.format("Authenticating request from user:%s", payload.getUserId()),
+      LogType.PROCESSING
     );
 
     if (authenticated) {

@@ -204,7 +204,6 @@ public class ClientGUIFactory {
   public static JTextField getTextField(int columns, String initialText, Font font, Color textColor, Color bgColor) {
     JTextField textField = ClientGUIFactory.getTextField(columns, font, textColor, bgColor);
     textField.setText(initialText);
-    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     return textField;
   }
 
@@ -213,7 +212,6 @@ public class ClientGUIFactory {
     textField.setFont(font);
     textField.setForeground(textColor);
     textField.setBackground(bgColor);
-    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return textField;
   }
@@ -223,7 +221,6 @@ public class ClientGUIFactory {
     passField.setFont(font);
     passField.setForeground(textColor);
     passField.setBackground(bgColor);
-    passField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     passField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return passField;
   }
@@ -238,7 +235,6 @@ public class ClientGUIFactory {
     JTextArea textField = new JTextArea();
     textField.setFont(font);
     textField.setForeground(textColor);
-    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     textField.setBackground(bgColor);
     textField.setLineWrap(true);
     return textField;

@@ -66,7 +66,7 @@ public class ClientHandler implements Runnable {
         Payload payload = (Payload) obj;
         if (payload.getType() != PayloadType.KEEP_ALIVE) {
           CommunicationService.log(String.format(
-            "Socket:%s sent %s payload",
+            "%s sent %s payload",
             this.socket.toString(),
             payload.getType().toString()
           ), LogType.SUCCESS);

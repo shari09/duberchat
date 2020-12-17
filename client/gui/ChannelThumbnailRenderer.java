@@ -1,6 +1,7 @@
 package client.gui;
 
 import java.awt.Component;
+import java.awt.Cursor;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -54,10 +55,12 @@ public class ChannelThumbnailRenderer implements ListCellRenderer<ChannelMetadat
         ClientGUIFactory.BLUE_SHADE_3
       );
     }
+    panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
     
     if (isSelected) {
       panel.setBackground(ClientGUIFactory.GRAY_SHADE_1);
     }
+
     panel.setBorder(new EmptyBorder(10, 5, 10, 5));
     return panel;
   }

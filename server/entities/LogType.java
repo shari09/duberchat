@@ -9,9 +9,16 @@ package server.entities;
  * @since 1.0.0
  */
 public enum LogType {
+  /** Success operation sending/receiving */
   SUCCESS,
+  /** An error on client's end such as incorrect username/password */
   CLIENT_ERROR,
+  /** Server throwing errors */
   SERVER_ERROR,
+  /** Connecting and disconnecting */
   CONNECTION,
-  SERVER
+  /** Server starting */
+  SERVER,
+  /** Processing */
+  PROCESSING
 }

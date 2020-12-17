@@ -442,7 +442,7 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
         msg = "Channel not found";
       }
     } else {
-      msg = "You have been blocked/blacklisted";
+      msg = "You have/have been blocked/blacklisted";
     }
     
     CommunicationService.sendAuthenticatedResponse(

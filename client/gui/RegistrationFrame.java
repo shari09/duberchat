@@ -46,7 +46,8 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     PayloadType.NEW_USER
   };
   private static final PayloadType[] ERROR_NOTIF_TYPES = new PayloadType[] {
-    PayloadType.NEW_USER
+    PayloadType.NEW_USER,
+    PayloadType.KEEP_ALIVE
   };
 
   private JTextField usernameField;
@@ -283,6 +284,7 @@ public class RegistrationFrame extends DisconnectOnCloseFrame implements ActionL
     if (GlobalClient.hasData()) {
       UserMainFrame nextFrame = new UserMainFrame(this.getClientSocket());
       nextFrame.setLocationRelativeTo(this);
+      this.getClientSocket().removeListener(this);
       this.dispose();
     }
   }

@@ -1,9 +1,11 @@
 package client.resources;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import client.gui.ClientGUIFactory;
 import common.entities.ClientData;
 import common.entities.Message;
 import common.entities.UserMetadata;
@@ -44,12 +46,17 @@ public class GlobalClient {
   public static UserMetadata getClientUserMetadata() {
     synchronized (clientData) {
       System.out.println("------------client metadata");
-      return new UserMetadata(
+      UserMetadata clientUserMetadata = new UserMetadata(
         clientData.getUserId(), 
         clientData.getUsername(),
         clientData.getDescription(),
         clientData.getStatus()
       );
+      System.out.println(clientUserMetadata.getUsername());
+      System.out.println(clientUserMetadata.getDescription());
+      System.out.println(ClientGUIFactory.getStatusText(clientUserMetadata.getStatus()));
+      System.out.println("------------end of client metadata");
+      return clientUserMetadata;
     }
   }
   
@@ -73,7 +80,9 @@ public class GlobalClient {
    */
   public static synchronized boolean hasFriend(String userId) {
     LinkedHashSet<UserMetadata> friends = GlobalClient.clientData.getFriends();
-    for (UserMetadata friend: friends) {
+    Iterator<UserMetadata> iterator = friends.iterator();
+    while (iterator.hasNext()) {
+      UserMetadata friend = iterator.next();
       if (friend.getUserId().equals(userId)) {
         return true;
       }

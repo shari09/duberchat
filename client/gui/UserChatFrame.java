@@ -104,7 +104,7 @@ public class UserChatFrame extends UserFrame implements ChangeListener {
   }
 
   public boolean hasChannelTab(String channelId) {
-    for(int i = 0; i < this.tabbedPane.getTabCount(); i++) {
+    for (int i = 0; i < this.tabbedPane.getTabCount(); i++) {
       Component comp = this.tabbedPane.getComponentAt(i);
       if (comp instanceof ChannelPanel) {
         ChannelPanel panel = ((ChannelPanel)comp);
@@ -123,7 +123,7 @@ public class UserChatFrame extends UserFrame implements ChangeListener {
   }
 
   private void syncTabs() {
-    for(int i = 0; i < this.tabbedPane.getTabCount(); i++) {
+    for (int i = 0; i < this.tabbedPane.getTabCount(); i++) {
       Component comp = this.tabbedPane.getComponentAt(i);
       if (comp instanceof ChannelPanel) {
         ChannelPanel panel = ((ChannelPanel)comp);

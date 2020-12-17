@@ -1,5 +1,33 @@
 client to server:
 
+// --- before logged in
+{
+  type:        KEEP_ALIVE,
+  priority:    3 (should have higher priority than other payloads)
+}
+
+{
+  type:        LOGIN,
+  priority:    int,
+
+  username:    String,
+  password:    String
+}
+
+{
+  type:        NEW_USER,
+  priority:    int,
+
+  userId:      String,
+  token:       Token,
+
+  username:      String,
+  password:      String,
+  description:   String
+}
+
+
+// --- after logged in
 {
   type:        ADD_PARTICIPANT,
   priority:    int,
@@ -151,11 +179,6 @@ client to server:
 }
 
 {
-  type:        KEEP_ALIVE,
-  priority:    3 (should have higher priority than other payloads)
-}
-
-{
   type:        LEAVE_CHANNEL,
   priority:    int,
 
@@ -165,13 +188,6 @@ client to server:
   channelId:   String
 }
 
-{
-  type:        LOGIN,
-  priority:    int,
-
-  username:    String,
-  password:    String
-}
 
 {
   type:        MESSAGE_TO_SERVER,
@@ -184,18 +200,6 @@ client to server:
   content:        String,
   attachment:     byte[], or null if no attachment
   attachmentName: String, or null if no attachment
-}
-
-{
-  type:        NEW_USER,
-  priority:    int,
-
-  userId:      String,
-  token:       Token,
-
-  username:      String,
-  password:      String,
-  description:   String
 }
 
 {

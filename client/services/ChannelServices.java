@@ -3,7 +3,8 @@ package client.services;
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-
+import java.util.LinkedHashSet;
+import java.util.Iterator;
 import client.resources.GlobalClient;
 import common.entities.ChannelMetadata;
 import common.entities.GroupChannelMetadata;
@@ -29,9 +30,11 @@ public class ChannelServices {
    *         or null if the user is not in such channel.
    */
   public static synchronized ChannelMetadata getChannelByChannelId(String channelId) {
-    for (ChannelMetadata channelMetadata: GlobalClient.clientData.getChannels()) {
-      if (channelMetadata.getChannelId().equals(channelId)) {
-        return channelMetadata;
+    Iterator<ChannelMetadata> iterator = GlobalClient.clientData.getChannels().iterator();
+    while (iterator.hasNext()) {
+      ChannelMetadata curMetadata = iterator.next();
+      if (curMetadata.getChannelId().equals(channelId)) {
+        return curMetadata;
       }
     }
     return null;

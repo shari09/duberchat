@@ -5,28 +5,26 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
-import javax.swing.AbstractAction;
 import java.awt.event.MouseListener;
 import java.io.File;
-import javax.swing.KeyStroke;
-import javax.swing.InputMap;
-import javax.swing.ActionMap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Timestamp;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.awt.FlowLayout;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -36,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
@@ -397,7 +396,9 @@ public class ChannelPanel extends JPanel implements ActionListener,
     ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(this.channelId);
     if (messages != null) {
       DefaultListModel<Message> messagesListModel = new DefaultListModel<>();
-      for (Message msg: messages) {
+      Iterator<Message> iterator = messages.iterator();
+      while (iterator.hasNext()) {
+        Message msg = iterator.next();
         messagesListModel.add(0, msg); // most recent to earliest messages from bottom to top
       }
       this.messagesList.setModel(messagesListModel);
@@ -406,7 +407,9 @@ public class ChannelPanel extends JPanel implements ActionListener,
     LinkedHashSet<UserMetadata> participants = ChannelServices.getChannelByChannelId(this.channelId).getParticipants();
     if (participants != null) {
       DefaultListModel<UserMetadata> participantsListModel = new DefaultListModel<>();
-      for (UserMetadata participant: participants) {
+      Iterator<UserMetadata> iterator = participants.iterator();
+      while (iterator.hasNext()) {
+        UserMetadata participant = iterator.next();
         participantsListModel.addElement(participant);
       }
       this.participantsList.setModel(participantsListModel);

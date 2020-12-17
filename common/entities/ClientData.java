@@ -84,11 +84,11 @@ public class ClientData implements Serializable {
     this.description = description;
   }
 
-  public UserStatus getStatus() {
+  public synchronized UserStatus getStatus() {
     return this.status;
   }
 
-  public void setStatus(UserStatus status) {
+  public synchronized void setStatus(UserStatus status) {
     this.status = status;
   }
 

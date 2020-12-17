@@ -76,13 +76,16 @@ public abstract class UserFrame extends JFrame implements ClientSocketListener {
         }
       }
     }
+    if (payloadType == PayloadType.KEEP_ALIVE) {
+      this.dispose();
+    }
   }
 
-  @Override
-  public void dispose() {
-    this.clientSocket.removeListener(this);
-    super.dispose();
-  }
+  // @Override
+  // public void dispose() {
+  //   //this.clientSocket.removeListener(this);
+  //   super.dispose();
+  // }
 
   public abstract PayloadType[] getSuccessNotifTypes();
 

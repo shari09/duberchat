@@ -23,7 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-
+import java.util.Iterator;
 import client.entities.ClientSocket;
 import client.resources.GlobalClient;
 import client.resources.GlobalJDialogPrompter;
@@ -320,7 +320,9 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     DefaultListModel<UserMetadata> friendsListModel = new DefaultListModel<>();
     DefaultListModel<UserMetadata> onlineFriendsListModel = new DefaultListModel<>();
     LinkedHashSet<UserMetadata> friendsMetadata = clientData.getFriends();
-    for (UserMetadata curMetadata: friendsMetadata) {
+    Iterator<UserMetadata> iterator = friendsMetadata.iterator();
+    while (iterator.hasNext()) {
+      UserMetadata curMetadata = iterator.next();
       friendsListModel.addElement(curMetadata);
       if (curMetadata.getStatus() != UserStatus.OFFLINE) {
         onlineFriendsListModel.addElement(curMetadata);
@@ -334,7 +336,9 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     // incoming friend requests
     DefaultListModel<IncomingFriendRequest> incomingFriendRequestListModel = new DefaultListModel<>();
     ConcurrentHashMap<UserMetadata, String> incomingFriendRequestsMetadata = clientData.getIncomingFriendRequests();
-    for (UserMetadata curMetadata: incomingFriendRequestsMetadata.keySet()) {
+    Iterator<UserMetadata> incomingRequestIterator = incomingFriendRequestsMetadata.keySet().iterator();
+    while (incomingRequestIterator.hasNext()) {
+      UserMetadata curMetadata = incomingRequestIterator.next();
       incomingFriendRequestListModel.addElement(
         new IncomingFriendRequest(
           curMetadata,
@@ -348,7 +352,9 @@ public class UserFriendsFrame extends UserFrame implements ActionListener, Mouse
     // outgoing friend requests
     DefaultListModel<OutgoingFriendRequest> outgoingFriendRequestListModel = new DefaultListModel<>();
     ConcurrentHashMap<UserMetadata, String> outgoingFriendRequestsMetadata = clientData.getOutgoingFriendRequests();
-    for (UserMetadata curMetadata: outgoingFriendRequestsMetadata.keySet()) {
+    Iterator<UserMetadata> outgoingRequestIterator = incomingFriendRequestsMetadata.keySet().iterator();
+    while (outgoingRequestIterator.hasNext()) {
+      UserMetadata curMetadata = outgoingRequestIterator.next();
       outgoingFriendRequestListModel.addElement(
         new OutgoingFriendRequest(
           curMetadata,

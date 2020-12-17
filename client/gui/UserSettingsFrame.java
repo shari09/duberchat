@@ -43,7 +43,7 @@ import common.gui.Theme;
 @SuppressWarnings("serial")
 public class UserSettingsFrame extends UserFrame implements ActionListener {
 
-  private static final Dimension PREFERRED_DIMENSION = new Dimension(450, 500);
+  private static final Dimension PREFERRED_DIMENSION = new Dimension(450, 550);
 
   private static final PayloadType[] SUCCESS_NOTIF_TYPES = new PayloadType[] {
     PayloadType.CHANGE_PROFILE,
@@ -357,7 +357,6 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
   }
 
   private synchronized void updateUserStatus(UserStatus status) {
-    System.out.println(status);
     switch (status) {
       case ACTIVE:
         this.activeButton.setSelected(true);

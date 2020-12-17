@@ -204,6 +204,7 @@ public class ClientGUIFactory {
   public static JTextField getTextField(int columns, String initialText, Font font, Color textColor, Color bgColor) {
     JTextField textField = ClientGUIFactory.getTextField(columns, font, textColor, bgColor);
     textField.setText(initialText);
+    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     return textField;
   }
 
@@ -212,6 +213,7 @@ public class ClientGUIFactory {
     textField.setFont(font);
     textField.setForeground(textColor);
     textField.setBackground(bgColor);
+    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     textField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return textField;
   }
@@ -221,6 +223,7 @@ public class ClientGUIFactory {
     passField.setFont(font);
     passField.setForeground(textColor);
     passField.setBackground(bgColor);
+    passField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     passField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     return passField;
   }
@@ -235,6 +238,7 @@ public class ClientGUIFactory {
     JTextArea textField = new JTextArea();
     textField.setFont(font);
     textField.setForeground(textColor);
+    textField.setCursor(new Cursor(Cursor.HAND_CURSOR));
     textField.setBackground(bgColor);
     textField.setLineWrap(true);
     return textField;
@@ -276,41 +280,46 @@ public class ClientGUIFactory {
     Font statusFont,
     Color textColor
   ) {
-    JPanel panel = new JPanel(new GridBagLayout());
-    panel.setBackground(Color.WHITE);
-    GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+    synchronized (metadata) {
+      System.out.println("status of " + metadata.getUsername() + " is " + ClientGUIFactory.getStatusText(metadata.getStatus()));
+      JPanel panel = new JPanel(new GridBagLayout());
+      panel.setBackground(Color.WHITE);
+      GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
+  
+      JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(75, 75));
+      constraints.weightx = 0.3;
+      constraints.weighty = 0;
+      constraints.gridwidth = 2;
+      constraints.gridheight = 2;
+      constraints.ipadx = 2;
+      panel.add(iconLabel, constraints);
+  
+      constraints.weightx = 1;
+      constraints.weighty = 0;
+      constraints.ipadx = 0;
+      constraints.gridx = 2;
+      constraints.gridwidth = 3;
+      constraints.gridheight = 1;
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      JLabel nameLabel = ClientGUIFactory.getTextLabel(
+        metadata.getUsername(),
+        nameFont,
+        textColor
+      );
+      panel.add(nameLabel, constraints);
+  
+      JLabel statusLabel = ClientGUIFactory.getTextLabel(
+        ClientGUIFactory.getStatusText(metadata.getStatus()),
+        statusFont,
+        ClientGUIFactory.getStatusColor(metadata.getStatus())
+      );
+      System.out.println("this is the text being added to the panel: " + statusLabel.getText());
+      constraints.gridy = 1;
+      panel.add(statusLabel, constraints);
+      
+      return panel;
+    }
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50, 50));
-    constraints.weightx = 0.3;
-    constraints.weighty = 0;
-    constraints.gridwidth = 2;
-    constraints.gridheight = 2;
-    constraints.ipadx = 2;
-    panel.add(iconLabel, constraints);
-
-    constraints.weightx = 1;
-    constraints.weighty = 0;
-    constraints.ipadx = 0;
-    constraints.gridx = 2;
-    constraints.gridwidth = 3;
-    constraints.gridheight = 1;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    JLabel nameLabel = ClientGUIFactory.getTextLabel(
-      metadata.getUsername(),
-      nameFont,
-      textColor
-    );
-    panel.add(nameLabel, constraints);
-
-    JLabel statusLabel = ClientGUIFactory.getTextLabel(
-      ClientGUIFactory.getStatusText(metadata.getStatus()),
-      statusFont,
-      ClientGUIFactory.getStatusColor(metadata.getStatus())
-    );
-    constraints.gridy = 1;
-    panel.add(statusLabel, constraints);
-    
-    return panel;
   }
 
   public static JPanel getUserProfilePanel(
@@ -325,7 +334,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(50, 50));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(100, 100));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -361,6 +370,7 @@ public class ClientGUIFactory {
       descriptionColor,
       Color.WHITE
     );
+    description.setEditable(false);
     constraints.gridy = 2;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     panel.add(description, constraints);
@@ -378,7 +388,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getGroupChannelIcon(100, 100));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getGroupChannelIcon(75, 75));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;
@@ -421,7 +431,7 @@ public class ClientGUIFactory {
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints = ClientGUIFactory.getDefaultGridBagConstraints();
 
-    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(30, 30));
+    JLabel iconLabel = new JLabel(ClientGUIFactory.getUserIcon(75, 75));
     constraints.weightx = 0.3;
     constraints.weighty = 0;
     constraints.gridwidth = 2;

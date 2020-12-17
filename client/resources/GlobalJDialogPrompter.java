@@ -35,7 +35,6 @@ import common.entities.payload.client_to_server.RequestAttachment;
 import common.entities.payload.client_to_server.TransferOwnership;
 import common.gui.Theme;
 import common.services.RegexValidator;
-import server.entities.Client;
 
 /**
  * Contains static methods to prompt for and respond to user inputs/choices.
@@ -54,11 +53,15 @@ public class GlobalJDialogPrompter {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
 
-    String newUsername = JOptionPane.showInputDialog(
+    String newUsername = (String)(JOptionPane.showInputDialog(
       parentComponent,
-      "New Username: ",
-      curUsername
-    );
+      "New username: ",
+      "Change Username",
+      JOptionPane.QUESTION_MESSAGE,
+      ClientGUIFactory.getDialogInformationIcon(30, 30),
+      null,
+      null
+    ));
 
     if (
       (newUsername == null)
@@ -179,11 +182,15 @@ public class GlobalJDialogPrompter {
     String userId = GlobalClient.clientData.getUserId();
     Token token = GlobalClient.clientData.getToken();
 
-    String newDescription = JOptionPane.showInputDialog(
+    String newDescription = (String)(JOptionPane.showInputDialog(
       parentComponent,
-      "New Description: ",
-      curDescription
-    );
+      "New description: ",
+      "Change Description",
+      JOptionPane.QUESTION_MESSAGE,
+      ClientGUIFactory.getDialogInformationIcon(30, 30),
+      null,
+      null
+    ));
 
     if (
       (newDescription == null)

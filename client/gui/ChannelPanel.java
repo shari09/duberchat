@@ -17,8 +17,6 @@ import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.awt.Dimension;
-import java.awt.Rectangle;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;

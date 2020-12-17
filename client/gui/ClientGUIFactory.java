@@ -574,10 +574,14 @@ public class ClientGUIFactory {
   }
 
   public static ImageIcon getUserIcon(int size) {
+    return ClientGUIFactory.getIcon(USER_ICON_PATH, size);
+  }
+
+  public static ImageIcon getIcon(String path, int size) {
     ImageIcon icon = null;
 
     try {
-      BufferedImage img = ImageIO.read(new File(USER_ICON_PATH));
+      BufferedImage img = ImageIO.read(new File(path));
       Image resized = img.getScaledInstance(
         size, size,
         Image.SCALE_SMOOTH

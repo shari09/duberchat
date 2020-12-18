@@ -181,7 +181,11 @@ public class AuthenticatedPayloadProcessor implements Subscribable {
     CommunicationService.sendAuthenticatedResponse(
       client, 
       success, 
-      String.format("Changing channel %s", payload.getFieldToChange()), 
+      String.format(
+        "Changing channel %s to %s", 
+        payload.getFieldToChange(), 
+        payload.getNewValue()
+      ), 
       "Error changing channel settings"
     );
   }

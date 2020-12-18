@@ -64,8 +64,6 @@ public class ChannelServices {
         }
       }
     }
-    System.out.println(fullyLoaded);
-    System.out.println();
     GlobalClient.messageHistoryFullyLoaded.put(channelId, fullyLoaded);
   }
 
@@ -137,7 +135,7 @@ public class ChannelServices {
       if ((messages == null) || (messages.size() == 0)) {
         return null;
       } else {
-        return messages.first().getCreated();
+        return messages.last().getCreated();
       }
     }
   }

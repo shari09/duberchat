@@ -10,6 +10,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -84,6 +85,17 @@ public class ClientGUIFactory {
   public final static String DIALOG_ERROR_ICON_PATH = "client/assets/dialog_icon_error.png";
   public final static String DIALOG_SUCCESS_ICON_PATH = "client/assets/dialog_icon_success.png";
   public final static String DIALOG_BROADCAST_ICON_PATH = "client/assets/dialog_icon_broadcast.png";
+  public final static String ATTACHMENT_ICON_PATH = "client/assets/attach.png";
+
+  public static ConcurrentHashMap<Integer, ImageIcon> userIcons = new ConcurrentHashMap<>();
+  public static ImageIcon groupChannelIcon;
+  public static ImageIcon settingsIcon;
+  public static ImageIcon dialogConfirmationIcon;
+  public static ImageIcon dialogInformationIcon;
+  public static ImageIcon dialogErrorIcon;
+  public static ImageIcon dialogSuccessIcon;
+  public static ImageIcon dialogBroadcastIcon;
+  public static ImageIcon attachmentIcon;
 
   public static void initializeLookAndFeel() {
     UIManager.put("Panel.background", Color.WHITE);
@@ -579,114 +591,137 @@ public class ClientGUIFactory {
     return "";
   }
 
-  public static ImageIcon getIcon(String path, int width, int height) {
-    ImageIcon icon = null;
+  public static ImageIcon getAttachmentIcon(int width, int height) {
+    if (ClientGUIFactory.attachmentIcon != null) {
+      return ClientGUIFactory.attachmentIcon;
+    }
+
     try {
-      BufferedImage img = ImageIO.read(new File(path));
+      BufferedImage img = ImageIO.read(new File(ATTACHMENT_ICON_PATH));
       Image resized = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-      icon = new ImageIcon(resized);
+      ClientGUIFactory.attachmentIcon = new ImageIcon(resized);
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    return icon;
+    return ClientGUIFactory.attachmentIcon;
   }
+  
 
   public static ImageIcon getUserIcon(int width, int height) {
-    ImageIcon icon = null;
+    if (ClientGUIFactory.userIcons.contains(width)) {
+      return ClientGUIFactory.userIcons.get(width);
+    }
+
     try {
       BufferedImage img = ImageIO.read(new File(USER_ICON_PATH));
       Image resized = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-      icon = new ImageIcon(resized);
+      ClientGUIFactory.userIcons.put(width, new ImageIcon(resized));
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    return icon;
+    return ClientGUIFactory.userIcons.get(width);
   }
 
   public static ImageIcon getGroupChannelIcon(int width, int height) {
+    if (ClientGUIFactory.groupChannelIcon != null) {
+      return ClientGUIFactory.groupChannelIcon;
+    }
     Image img = null;
-    ImageIcon icon = null;
     try {
       img = ImageIO.read(new File(GROUP_CHANNEL_ICON_PATH));
-      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+      ClientGUIFactory.groupChannelIcon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return icon;
+    return ClientGUIFactory.groupChannelIcon;
   }
 
   public static ImageIcon getSettingsIcon(int width, int height) {
+    if (ClientGUIFactory.settingsIcon != null) {
+      return ClientGUIFactory.settingsIcon;
+    }
+    
     Image img = null;
-    ImageIcon icon = null;
     try {
       img = ImageIO.read(new File(SETTINGS_ICON_PATH));
-      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+      ClientGUIFactory.settingsIcon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return icon;
+    return ClientGUIFactory.settingsIcon;
   }
 
   
   public static ImageIcon getDialogConfirmationIcon(int width, int height) {
+    if (ClientGUIFactory.dialogConfirmationIcon != null) {
+      return ClientGUIFactory.dialogConfirmationIcon;
+    }
+    
     Image img = null;
-    ImageIcon icon = null;
     try {
       img = ImageIO.read(new File(DIALOG_CONFIRMATION_ICON_PATH));
-      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+      ClientGUIFactory.dialogConfirmationIcon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return icon;
+    return ClientGUIFactory.dialogConfirmationIcon;
   }
 
   public static ImageIcon getDialogInformationIcon(int width, int height) {
+    if (ClientGUIFactory.dialogInformationIcon != null) {
+      return ClientGUIFactory.dialogInformationIcon;
+    }
     Image img = null;
-    ImageIcon icon = null;
     try {
       img = ImageIO.read(new File(DIALOG_INFORMATION_ICON_PATH));
-      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+      ClientGUIFactory.dialogInformationIcon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return icon;
+    return ClientGUIFactory.dialogInformationIcon;
   }
 
   public static ImageIcon getDialogErrorIcon(int width, int height) {
+    if (ClientGUIFactory.dialogErrorIcon != null) {
+      return ClientGUIFactory.dialogErrorIcon;
+    }
     Image img = null;
-    ImageIcon icon = null;
     try {
       img = ImageIO.read(new File(DIALOG_ERROR_ICON_PATH));
-      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+      ClientGUIFactory.dialogErrorIcon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return icon;
+    return ClientGUIFactory.dialogErrorIcon;
   }
 
   public static ImageIcon getDialogSuccessIcon(int width, int height) {
+    if (ClientGUIFactory.dialogSuccessIcon != null) {
+      return ClientGUIFactory.dialogSuccessIcon;
+    }
     Image img = null;
-    ImageIcon icon = null;
     try {
       img = ImageIO.read(new File(DIALOG_SUCCESS_ICON_PATH));
-      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+      ClientGUIFactory.dialogSuccessIcon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return icon;
+    return ClientGUIFactory.dialogSuccessIcon;
   }
 
   public static ImageIcon getDialogBroadcastIcon(int width, int height) {
+    if (ClientGUIFactory.dialogBroadcastIcon != null) {
+      return ClientGUIFactory.dialogBroadcastIcon;
+    }
     Image img = null;
-    ImageIcon icon = null;
     try {
       img = ImageIO.read(new File(DIALOG_BROADCAST_ICON_PATH));
-      icon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+      ClientGUIFactory.dialogBroadcastIcon = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return icon;
+    return ClientGUIFactory.dialogBroadcastIcon;
   }
 }

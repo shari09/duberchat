@@ -136,19 +136,14 @@ public abstract class Channel implements Identifiable, Serializable {
                                                     .entrySet()
                                                     .iterator();
     Message[] msgs = new Message[numMessages];
-    System.out.println("get");
     int i = 0;
     while (itr.hasNext()) {
       if (i == numMessages) {
         return msgs;
       }
       Message curMsg = itr.next().getValue();
-      System.out.println("created time: " + curMsg.getCreated().toString());
-      System.out.println("before: " + before);
-      System.out.println("outside "+curMsg.getContent());
       if (curMsg.getCreated().compareTo(before) <= 0) {
         msgs[i++] = curMsg;
-        System.out.println(curMsg.getContent());
       }
     }
     return msgs;

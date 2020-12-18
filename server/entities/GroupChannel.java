@@ -66,6 +66,7 @@ public class GroupChannel extends Channel {
 
   public void updateChannelName(String name) {
     this.channelName = name;
+    ((GroupChannelMetadata)this.getMetadata()).updateChannelName(name);
   }
 
   public void updateOwner(String userId) {

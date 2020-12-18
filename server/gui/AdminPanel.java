@@ -132,6 +132,7 @@ public abstract class AdminPanel extends JPanel implements Subscribable, ActionL
     this.msg = new JTextArea(this.prompt);
     this.msg.setFont(Theme.getPlainFont(15));
     this.msg.setLineWrap(true);
+    this.msg.setWrapStyleWord(true);
     this.msg.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     this.msg.setBackground(ServerGUIFactory.GENERAL_TEXT_BG);
     this.msg.setForeground(ServerGUIFactory.GENERAL_TEXT);

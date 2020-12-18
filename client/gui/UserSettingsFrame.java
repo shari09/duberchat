@@ -187,6 +187,7 @@ public class UserSettingsFrame extends UserFrame implements ActionListener {
     content.setFont(Theme.getPlainFont(17));
     content.setForeground(ClientGUIFactory.GRAY_SHADE_4);
     content.setLineWrap(true);
+    content.setWrapStyleWord(true);
     content.setEditable(false);
     content.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
 

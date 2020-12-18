@@ -37,7 +37,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
@@ -76,8 +75,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
   private static final int MESSAGE_REQUEST_QUANTITY = 50;
 
-  private static final float SCROLL_THRESHOLD = 0.99f;
-  private static final long REQUEST_COOLDOWN_MILLS = 1000*5;
+  private static final float SCROLL_THRESHOLD = 0.95f;
 
   private final String channelId;
 
@@ -90,20 +88,19 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
   private JList<Message> messagesList;
   private JList<UserMetadata> participantsList;
-  private long lastRequestTime;
 
   public ChannelPanel(String channelId, ClientSocket clientSocket) {
     super();
     
     this.setLayout(new BorderLayout());
     this.channelId = channelId;
+
     this.participantsList = new JList<UserMetadata>();
     this.participantsList.setCellRenderer(
       new ParticipantRenderer(
         ChannelServices.getChannelByChannelId(channelId)
       )
     );
-    this.lastRequestTime = -1;
     this.messagesList = new JList<Message>(new DefaultListModel<>());
     this.messagesList.addMouseListener(this);
     this.messagesList.setCellRenderer(new MessageRenderer(this.participantsList));
@@ -140,7 +137,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
 
     JScrollPane msgScrollPane = ClientGUIFactory.getScrollPane(this.messagesList);
     this.messageScrollBar = msgScrollPane.getVerticalScrollBar();
-    // this.messageScrollBar.addAdjustmentListener(this);
+    this.messageScrollBar.addAdjustmentListener(this);
     c.gridy = 1;
     c.weightx = 1;
     c.weighty = 1;
@@ -212,36 +209,6 @@ public class ChannelPanel extends JPanel implements ActionListener,
     this.setVisible(true);
   }
 
-  public void enableScrollListener() {
-    AdjustmentListener[] listeners = this.messageScrollBar.getAdjustmentListeners();
-    if (listeners.length == 0) {
-      this.messageScrollBar.addAdjustmentListener(this);
-      return;
-    }
-    for (int i = 0; i < listeners.length; i++) {
-      if (listeners[i] == this) {
-        return;
-      }
-    }
-    this.messageScrollBar.addAdjustmentListener(this);
-  }
-
-  public void disableScrollListener() {
-    AdjustmentListener[] listeners = this.messageScrollBar.getAdjustmentListeners();
-    if (listeners.length == 0) {
-      return;
-    }
-    boolean shouldRemove = false;
-    for (int i = 0; i < listeners.length; i++) {
-      if (listeners[i] == this) {
-        shouldRemove = true;
-        break;
-      }
-    }
-    if (shouldRemove) {
-      this.messageScrollBar.removeAdjustmentListener(this);
-    }    
-  }
 
   private JPanel getButtons() {
     JPanel panel = new JPanel(new GridBagLayout());
@@ -425,30 +392,13 @@ public class ChannelPanel extends JPanel implements ActionListener,
       );
     }
   }
-  private boolean canRequestMessages() {
-    if (this.lastRequestTime == -1) {
-      return true;
-    }
-    return System.currentTimeMillis() - this.lastRequestTime >= REQUEST_COOLDOWN_MILLS;
-  }
 
-  private synchronized void updateJLists() {
-    ListModel<Message> oldMessages = this.messagesList.getModel();
+  private void updateJLists() {
     ConcurrentSkipListSet<Message> messages = GlobalClient.messagesData.get(this.channelId);
     if (messages != null) {
       DefaultListModel<Message> messagesListModel = new DefaultListModel<>();
       for (Message msg: messages) {
         messagesListModel.add(0, msg); // most recent to earliest messages from bottom to top
-      }
-      for (int i = 0; i < oldMessages.getSize(); i++) {
-        Message m = oldMessages.getElementAt(i);
-        if (messagesListModel.indexOf(m) != -1) {
-          this.disableScrollListener();
-          this.messagesList.ensureIndexIsVisible(messagesListModel.indexOf(m));
-          this.enableScrollListener();
-          System.out.println("hi");
-          break;
-        }
       }
       this.messagesList.setModel(messagesListModel);
       this.messagesList.revalidate();
@@ -476,15 +426,10 @@ public class ChannelPanel extends JPanel implements ActionListener,
       return;
     }
     
-    if (!this.canRequestMessages()) {
-      return;
-    }
-
     Timestamp before = ChannelServices.getEarliestStoredMessageTime(this.channelId);
     if (before == null) {
       before = new Timestamp(System.currentTimeMillis());
     }
-    System.out.println("Current time: " + System.currentTimeMillis() + "\nrequesting messages before: " + before);
     GlobalPayloadQueue.enqueuePayload(
       new RequestMessages(
         1,
@@ -495,8 +440,8 @@ public class ChannelPanel extends JPanel implements ActionListener,
         ChannelPanel.MESSAGE_REQUEST_QUANTITY
       )
     );
-    this.lastRequestTime = System.currentTimeMillis();
   }
+
 
   private class ParticipantRenderer implements ListCellRenderer<UserMetadata> {
     private final ChannelMetadata channelMetadata;
@@ -558,6 +503,9 @@ public class ChannelPanel extends JPanel implements ActionListener,
         Theme.getBoldFont(15),
         ClientGUIFactory.PURPLE_SHADE_4
       );
+
+
+      
 
       String created = msg.getCreated().toString();
       JLabel time = ClientGUIFactory.getTextLabel(

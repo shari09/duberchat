@@ -135,7 +135,6 @@ public abstract class Channel implements Identifiable, Serializable {
     Iterator<Map.Entry<Message, Message>> itr = this.messages
                                                     .entrySet()
                                                     .iterator();
-    System.out.println("server getting msgs..");
     Message[] msgs = new Message[numMessages];
     int i = 0;
     while (itr.hasNext()) {
@@ -147,7 +146,6 @@ public abstract class Channel implements Identifiable, Serializable {
         msgs[i++] = curMsg;
       }
     }
-    System.out.println();
     return msgs;
   }
 

@@ -96,6 +96,7 @@ public class UserChatFrame extends UserFrame implements ChangeListener {
     this.syncTabs();
     this.requestFocus();
     this.scrollToBottom(panel);
+    panel.enableScrollListener();
   }
 
   public boolean hasChannelTab(String channelId) {

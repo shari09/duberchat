@@ -14,19 +14,19 @@ import server.entities.EventType;
 import server.entities.LogType;
 
 /**
- * Handles client sockets.
- * This server implements parallel blocking threads
- * where a thread will be blocked while waiting for client input.
+ * Handles client sockets. This server implements parallel
+ * blocking threads where a thread will be blocked while
+ * waiting for client input.
  * <p>
  * This waits for a request to come, then throws the payload
  * into the payload processor for it to process.
  * <p>
- * It also checks to see if a client disconnected.
- * If so, it emits a {@code CLIENT_DISCONNECTED} event
- * and subscribers can handle the disconnection of a client.
+ * It also checks to see if a client disconnected. If so, it
+ * emits a {@code CLIENT_DISCONNECTED} event and subscribers
+ * can handle the disconnection of a client.
  * <p>
  * Created on 2020.12.07.
- * 
+ *
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
@@ -39,6 +39,10 @@ public class ClientHandler implements Runnable {
   private ObjectInputStream input;
   private boolean running;
 
+  /**
+   *
+   * @param client
+   */
   public ClientHandler(Socket client) {
     this.socket = client;
     try {
@@ -71,12 +75,12 @@ public class ClientHandler implements Runnable {
             payload.getType().toString()
           ), LogType.SUCCESS);
           GlobalServices.serverEventQueue.emitEvent(
-            EventType.PAYLOAD, 
-            1, 
+            EventType.PAYLOAD,
+            1,
             new ClientRequest(payload, this.output, this.socket)
           );
         }
-        
+
       }
     } catch (SocketTimeoutException e) { // inactive client timing out
       this.handleDisconnection("has timed out");
@@ -86,7 +90,7 @@ public class ClientHandler implements Runnable {
       this.handleDisconnection(" has reset their connection");
     } catch (Exception e) {
       CommunicationService.log(String.format(
-        "Failed to receive payload from the client\n%s\n%s", 
+        "Failed to receive payload from the client\n%s\n%s",
         e.getMessage(),
         CommunicationService.getStackTrace(e)
       ), LogType.SERVER_ERROR);
@@ -110,13 +114,13 @@ public class ClientHandler implements Runnable {
       EventType.CLIENT_DISCONNECTED, 2, this.output
     );
     CommunicationService.log(String.format(
-      "User %s:%s at %s %s\n", 
-      username, 
-      userId, 
-      this.socket, 
+      "User %s:%s at %s %s\n",
+      username,
+      userId,
+      this.socket,
       disconnectMsg
     ), LogType.CONNECTION);
-    
+
     this.running = false;
   }
 
@@ -132,7 +136,7 @@ public class ClientHandler implements Runnable {
 
     } catch (Exception e) {
       CommunicationService.log(String.format(
-        "Failed to close socket: %s \n%s", 
+        "Failed to close socket: %s \n%s",
         e.getMessage(),
         CommunicationService.getStackTrace(e)
       ), LogType.SERVER_ERROR);

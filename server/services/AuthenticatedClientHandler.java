@@ -10,6 +10,7 @@ import server.entities.EventType;
  * {@link GlobalServices}.
  * <p>
  * Created on 2020.12.07.
+ *
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0

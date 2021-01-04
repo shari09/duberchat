@@ -19,7 +19,7 @@ import server.gui.LogsPanel;
  * and logging.
  * <p>
  * Created on 2020.12.06.
- * 
+ *
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
@@ -39,12 +39,16 @@ public class CommunicationService {
         String userId = GlobalServices.clientConnections.getUserId(client);
         String msg = "";
         if (userId != null) {
-          msg = String.format("to user %s:%s", GlobalServices.users.getUsername(userId), userId);
+          msg = String.format(
+            "to user %s:%s",
+            GlobalServices.users.getUsername(userId),
+            userId
+          );
         }
         //log
         CommunicationService.log(String.format(
-          "Sending %s payload %s", 
-          payload.getType(), 
+          "Sending %s payload %s",
+          payload.getType(),
           msg
         ), LogType.SUCCESS);
 
@@ -77,8 +81,8 @@ public class CommunicationService {
         }
         //log
         CommunicationService.log(String.format(
-          "Sending %s payload %s", 
-          payload.getType(), 
+          "Sending %s payload %s",
+          payload.getType(),
           msg
         ), LogType.SUCCESS);
       } catch (Exception e) {
@@ -91,7 +95,7 @@ public class CommunicationService {
    * Sends the response to an {@link AuthenticatibleClientRequest}.
    * @param client             the authenticated client request
    * @param success            if the client request was a success
-   * @param log                log to the logging panel of this operation 
+   * @param log                log to the logging panel of this operation
    * @param errorMsgToClient   the error message to client if the request errored
    * @see                      AuthenticatedPayloadProcessor
    * @see                      AuthenticatedPayload
@@ -112,14 +116,14 @@ public class CommunicationService {
       sendError(client, errorMsgToClient);
       log(String.format("%s:%s: %s", username, payload.getUserId(), log), LogType.CLIENT_ERROR);
     }
-    
+
   }
 
   /**
    * Sends the response to an {@link ClientRequest}.
    * @param client             the authenticated client request
    * @param success            if the client request was a success
-   * @param log                log to the logging panel of this operation 
+   * @param log                log to the logging panel of this operation
    * @param errorMsgToClient   the error message to client if the request errored
    * @see                      PayloadProcessor
    * @see                      LogsPanel
@@ -137,7 +141,7 @@ public class CommunicationService {
       sendError(client, errorMsgToClient);
       log(String.format("%s", log), LogType.CLIENT_ERROR);
     }
-    
+
   }
 
 
@@ -147,7 +151,7 @@ public class CommunicationService {
    */
   public static void sendSuccess(ClientRequest client) {
     CommunicationService.send(
-      client.getClientOut(), 
+      client.getClientOut(),
       new ClientRequestStatus(1, client.getPayload().getId(), null)
     );
   }
@@ -159,7 +163,7 @@ public class CommunicationService {
    */
   public static void sendError(ClientRequest client, String errorMsg) {
     CommunicationService.send(
-      client.getClientOut(), 
+      client.getClientOut(),
       new ClientRequestStatus(1, client.getPayload().getId(), errorMsg)
     );
   }

@@ -152,6 +152,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
     this.inputArea.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     this.inputArea.setEditable(true);
     this.inputArea.getDocument().addDocumentListener(this);
+    this.inputArea.requestFocus();
     InputMap input = inputArea.getInputMap();
     KeyStroke enter = KeyStroke.getKeyStroke("ENTER");
     KeyStroke shiftEnter = KeyStroke.getKeyStroke("shift ENTER");
@@ -164,6 +165,7 @@ public class ChannelPanel extends JPanel implements ActionListener,
         @Override
         public void actionPerformed(ActionEvent e) {
           sendMessage();
+          inputArea.requestFocus();
         }
       }
     );

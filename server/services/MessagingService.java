@@ -5,11 +5,11 @@ import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import common.entities.Attachment;
 import common.entities.ChannelField;
 import common.entities.ChannelMetadata;
 import common.entities.Message;
 import common.entities.UserMetadata;
-import common.entities.Attachment;
 import server.entities.Channel;
 import server.entities.EventType;
 import server.entities.GroupChannel;
@@ -32,7 +32,7 @@ import server.entities.PrivateChannel;
  * </ul>
  * <p>
  * Created on 2020.12.08.
- * 
+ *
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
@@ -41,13 +41,13 @@ public class MessagingService {
   private final String CHANNELS_DIR_PATH = "database/channels/";
   private final String ASSETS_DIR_PATH = "database/assets/";
   private ConcurrentHashMap<String, Channel> channels;
-  /** The number of changes made to channels */
+  /** The number of changes made to channels. */
   private ConcurrentHashMap<String, Integer> numChanges;
   /**
    * Number of changes before a save operation.
    * <p>
-   * It is set at 1 right now (save on every change) 
-   * because properly data buffering to prevent data loss is not implemented. 
+   * It is set at 1 right now (save on every change)
+   * because properly data buffering to prevent data loss is not implemented.
    * However, this is useful in the long run.
    */
   private final int bufferEntriesNum = 1;
@@ -78,7 +78,7 @@ public class MessagingService {
 
   /**
    * Saving the specified channel data.
-   * The data is saved based on the channel ID under 
+   * The data is saved based on the channel ID under
    * {@link MessagingService#CHANNELS_DIR_PATH}.
    * @param channelId       the channel to save
    */
@@ -89,8 +89,8 @@ public class MessagingService {
       DataService.saveData(this.getChannel(channelId), path);
     } catch (Exception e) {
       CommunicationService.log(String.format(
-        "Saving channel data: %s \n%s", 
-        e.getMessage(), 
+        "Saving channel data: %s \n%s",
+        e.getMessage(),
         CommunicationService.getStackTrace(e)
       ), LogType.SERVER_ERROR);
     }
@@ -98,7 +98,7 @@ public class MessagingService {
 
   /**
    * Saves an attachment file and return the ID.
-   * 
+   *
    * @param name the name of the attachment
    * @param data the data of the attachment file
    * @return     the attachment ID
@@ -112,8 +112,8 @@ public class MessagingService {
   /**
    * Gets the channel.
    * <p>
-   * If the channel exist in cache, it will load from 
-   * {@code MessagingService#channels}. Otherwise, it 
+   * If the channel exist in cache, it will load from
+   * {@code MessagingService#channels}. Otherwise, it
    * will attempt to read from the save file.
    * @param channelId    the channel ID
    * @return             the channel/null
@@ -125,7 +125,7 @@ public class MessagingService {
     String filePath = this.CHANNELS_DIR_PATH + channelId + ".ser";
     Channel channel = DataService.loadData(filePath);
     this.channels.put(channelId, channel);
-    return channel;    
+    return channel;
   }
 
   /**
@@ -145,7 +145,7 @@ public class MessagingService {
   /**
    * If it's a private channel, and one of the users block the other,
    * they can't send messages.
-   * For group channels, if they are blacklisted, 
+   * For group channels, if they are blacklisted,
    * they also can't send messages
    * @param senderId     the sender's user ID
    * @param channelId    the channel ID
@@ -167,7 +167,7 @@ public class MessagingService {
       }
       return true;
     }
-    
+
     GroupChannel gc = (GroupChannel)channel;
     return !gc.isBlacklisted(GlobalServices.users.getUserMetadata(senderId));
 
@@ -176,10 +176,10 @@ public class MessagingService {
   /**
    * Add a message to a specific channel.
    * The message may or may not have a file attached to it.
-   * If so, it will save the attachment in total database and 
+   * If so, it will save the attachment in total database and
    * return an attachment ID so when a user requets to download,
    * the server can send back the original attachment.
-   * 
+   *
    * @param senderId           the sender's user ID
    * @param channelId          the channel ID
    * @param content            the message content
@@ -188,9 +188,9 @@ public class MessagingService {
    * @return                   successfully sent or not
    */
   public boolean addMessage(
-    String senderId, 
-    String channelId, 
-    String content, 
+    String senderId,
+    String channelId,
+    String content,
     byte[] attachment,
     String attachmentName
   ) {
@@ -286,18 +286,18 @@ public class MessagingService {
    * @see                   PrivateChannel
    */
   public ChannelMetadata createPrivateChannel(
-    UserMetadata userOne, 
+    UserMetadata userOne,
     UserMetadata userTwo
   ) {
     PrivateChannel channel = new PrivateChannel(userOne, userTwo);
     this.channels.put(channel.getId(), channel);
     this.hardSave(channel.getId());
     GlobalServices.users.addChannel(
-      userOne.getUserId(), 
+      userOne.getUserId(),
       channel.getMetadata()
     );
     GlobalServices.users.addChannel(
-      userTwo.getUserId(), 
+      userTwo.getUserId(),
       channel.getMetadata()
     );
     GlobalServices.serverEventQueue.emitEvent(
@@ -309,7 +309,7 @@ public class MessagingService {
   /**
    * Creates a group channel given a set of initial participants
    * that the owner (user) selected.
-   * 
+   *
    * <p>
    * Emits a {@code CHANNEL_UPDATE} event.
    * @param participants    a set of participants the user added
@@ -317,12 +317,12 @@ public class MessagingService {
    * @param ownerId         the owner's user ID
    * @return                the {@linke ChannelMetadata} of the new channel
    * @see                   GroupChannel
-   */ 
+   */
   public ChannelMetadata createGroupChannel(
-    LinkedHashSet<UserMetadata> participants, 
+    LinkedHashSet<UserMetadata> participants,
     String channelName,
     String ownerId
-  ) {    
+  ) {
     LinkedHashSet<UserMetadata> participantsMetadata = new LinkedHashSet<>();
     for (UserMetadata user : participants) {
       participantsMetadata.add(GlobalServices.users.getUserMetadata(user.getUserId()));
@@ -330,15 +330,15 @@ public class MessagingService {
     GroupChannel channel = new GroupChannel(participantsMetadata, channelName, ownerId);
     for (UserMetadata user: participantsMetadata) {
       GlobalServices.users.addChannel(
-        user.getUserId(), 
+        user.getUserId(),
         channel.getMetadata()
-      ); 
+      );
     }
     this.channels.put(channel.getId(), channel);
     this.hardSave(channel.getId());
     GlobalServices.serverEventQueue.emitEvent(
-      EventType.CHANNEL_UPDATE, 
-      1, 
+      EventType.CHANNEL_UPDATE,
+      1,
       channel.getMetadata()
     );
     return channel.getMetadata();
@@ -357,7 +357,7 @@ public class MessagingService {
   /**
    * Add a selected participant to the channel.
    * If the participant is blacklisted, they will not be able to be added.
-   * 
+   *
    * <p>
    * Emits a {@code CHANNEL_UPDATE} event.
    * @param userId           the to-be-added user's ID
@@ -372,8 +372,8 @@ public class MessagingService {
     channel.addParticipant(GlobalServices.users.getUserMetadata(userId));
     GlobalServices.users.addChannel(userId, channel.getMetadata());
     GlobalServices.serverEventQueue.emitEvent(
-      EventType.CHANNEL_UPDATE, 
-      1, 
+      EventType.CHANNEL_UPDATE,
+      1,
       channel.getMetadata()
     );
     this.save(channelId);
@@ -381,15 +381,15 @@ public class MessagingService {
   }
 
   /**
-   * Removes a participant from a channel. 
+   * Removes a participant from a channel.
    * The user attempting this action must be the owner of the group channel.
-   * @param userId       the user attempting the removal 
+   * @param userId       the user attempting the removal
    * @param removedId    the user that is being removed
    * @param channelId    the channel ID
    * @return             whether the participant is successfully removed
    */
   public boolean removeParticipant(
-    String userId, 
+    String userId,
     String removedId,
     String channelId
   ) {
@@ -399,16 +399,16 @@ public class MessagingService {
 
     GroupChannel gc = (GroupChannel) this.getChannel(channelId);
     gc.removeParticipant(GlobalServices.users.getUserMetadata(removedId));
-    
+
     GlobalServices.users.leaveChannel(removedId, gc.getMetadata());
     GlobalServices.serverEventQueue.emitEvent(
-      EventType.CHANNEL_UPDATE, 
-      1, 
+      EventType.CHANNEL_UPDATE,
+      1,
       gc.getMetadata()
     );
     GlobalServices.serverEventQueue.emitEvent(
-      EventType.LEFT_CHANNEL, 
-      1, 
+      EventType.LEFT_CHANNEL,
+      1,
       GlobalServices.users.getUserMetadata(removedId)
     );
     this.save(channelId);
@@ -452,8 +452,8 @@ public class MessagingService {
     GlobalServices.users.leaveChannel(blacklistedId, channel.getMetadata());
     channel.addToBlacklist(GlobalServices.users.getUserMetadata(blacklistedId));
     GlobalServices.serverEventQueue.emitEvent(
-      EventType.CHANNEL_UPDATE, 
-      1, 
+      EventType.CHANNEL_UPDATE,
+      1,
       channel.getMetadata()
     );
     this.save(channelId);
@@ -477,16 +477,16 @@ public class MessagingService {
     }
     GroupChannel channel = (GroupChannel) this.getChannel(channelId);
     channel.removeParticipant(GlobalServices.users.getUserMetadata(userId));
-    
+
     GlobalServices.users.leaveChannel(userId, channel.getMetadata());
     GlobalServices.serverEventQueue.emitEvent(
-      EventType.CHANNEL_UPDATE, 
-      1, 
+      EventType.CHANNEL_UPDATE,
+      1,
       channel.getMetadata()
     );
     GlobalServices.serverEventQueue.emitEvent(
-      EventType.LEFT_CHANNEL, 
-      1, 
+      EventType.LEFT_CHANNEL,
+      1,
       GlobalServices.users.getUserMetadata(userId)
     );
     this.save(channelId);
@@ -528,7 +528,7 @@ public class MessagingService {
     GlobalServices.serverEventQueue.emitEvent(
       EventType.CHANNEL_UPDATE, 1, gc.getMetadata()
     );
-    
+
     this.save(channelId);
     return true;
   }
@@ -541,8 +541,8 @@ public class MessagingService {
    * @return                 whether the value is successfully changed
    */
   public boolean changeChannelSettings(
-    String channelId, 
-    ChannelField fieldToChange, 
+    String channelId,
+    ChannelField fieldToChange,
     String newValue
   ) {
     Channel channel = this.getChannel(channelId);
